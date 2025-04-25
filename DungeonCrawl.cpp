@@ -2063,7 +2063,7 @@ void DungeonCrawl::PushDoors()
     CursorContext context;
     context.state = CursorState::DOOR;
     context.cursor = ANIMATION("select_door");
-    context.maxIndex = (int)m_currentFloor->rooms.size();
+    context.maxIndex = (int)m_currentFloor->rooms.size() - 1;
     m_ui.PushBack(context);
 }
 
