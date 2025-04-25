@@ -516,17 +516,17 @@ void DungeonCrawl::DrawHero(Time delta)
         }
 
         // Draw border and condition
-		hero.idle.SetAttributes(0, hero.condition.die != 0 ? ToAttribute(hero.condition.type) : 0x0007);
+        hero.idle.SetAttributes(0, hero.condition.die != 0 ? ToAttribute(hero.condition.type) : 0x0007);
         hero.idle.WriteData(m_console, delta, x, y, complete);
-		if (hero.condition.die != 0)
-			m_console.WriteData(x + 6, y, ToAttribute(hero.condition.type), " %s ", ToConditionString(hero.condition.type).c_str());
+        if (hero.condition.die != 0)
+            m_console.WriteData(x + 6, y, ToAttribute(hero.condition.type), " %s ", ToConditionString(hero.condition.type).c_str());
 
         // Animate selection
         if (m_ui.GetState() == CursorState::HERO
             || m_ui.GetState() == CursorState::USE_ITEM
             || m_ui.GetState() == CursorState::SHOP_HERO
             || m_ui.GetState() == CursorState::REWARD_HERO
-			|| m_ui.GetState() == CursorState::COMBAT_HERO
+            || m_ui.GetState() == CursorState::COMBAT_HERO
             || m_ui.GetState() == CursorState::ATTRIBUTES)
         {
             if (m_ui.GetCursorIndex() == index)
@@ -563,13 +563,13 @@ void DungeonCrawl::DrawHero(Time delta)
             m_console.WriteData(x + 2, y + 2, 0x0007, "MP: %d/%d", hero.currentMp, hero.totalMp);
             m_console.WriteData(x + 2, y + 3, 0x0007, "LV: %d", hero.level);
             m_console.WriteData(x + 2, y + 4, 0x0007, "XP: %d", hero.experience);
-			if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
-				m_console.WriteData(x + 4, y + 5, ToAttribute(hero.armor.rarity), "(AC %d) %s", hero.armor.armorClass + hero.level, hero.armor.name.c_str());
-			else
-			{
-				int len = m_console.WriteData(x + 4, y + 5, ToAttribute(hero.armor.rarity), "(AC %d) %s", hero.armor.armorClass, hero.armor.name.c_str());
-				m_console.WriteData(x + 4 + len + 1, y + 5, 0x0008, "Base");
-			}
+            if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
+                m_console.WriteData(x + 4, y + 5, ToAttribute(hero.armor.rarity), "(AC %d) %s", hero.armor.armorClass + hero.level, hero.armor.name.c_str());
+            else
+            {
+                int len = m_console.WriteData(x + 4, y + 5, ToAttribute(hero.armor.rarity), "(AC %d) %s", hero.armor.armorClass, hero.armor.name.c_str());
+                m_console.WriteData(x + 4 + len + 1, y + 5, 0x0008, "Base");
+            }
 
             for (int res = 0; res < (int)hero.armor.resistances.size(); res++)
             {
@@ -593,33 +593,33 @@ void DungeonCrawl::DrawHero(Time delta)
             m_console.WriteData("_________________", x + 6, y + 2, 17, 1, 0x0008);
             m_console.WriteData("#################", x + 6, y + 2, mp, 1, 0x0001);
 
-			Die buffDie = Die((hero.armor.target == Target::PLAYERAC_SPELL && hero.weapon1.mpCost) ? 1 : 0, 0, hero.level);
+            Die buffDie = Die((hero.armor.target == Target::PLAYERAC_SPELL && hero.weapon1.mpCost) ? 1 : 0, 0, hero.level);
 
             if (hero.currentMp >= hero.weapon1.mpCost)
             {
                 m_console.WriteData(x + 2, y + 3,
                     hero.weapon1.selected ? BLINK(ToAttribute(hero.weapon1.rarity)) : ToAttribute(hero.weapon1.rarity),
                     hero.weapon1.name.c_str());
-				if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
-					(hero.weapon1.die + buffDie).WriteData(m_console, x + 4, y + 4);
-				else
-				{
-					int len = (hero.weapon1.die).WriteData(m_console, x + 4, y + 4);
-					m_console.WriteData(x + 4 + len + 1, y + 4, 0x0008, "Base");
-				}
+                if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
+                    (hero.weapon1.die + buffDie).WriteData(m_console, x + 4, y + 4);
+                else
+                {
+                    int len = (hero.weapon1.die).WriteData(m_console, x + 4, y + 4);
+                    m_console.WriteData(x + 4 + len + 1, y + 4, 0x0008, "Base");
+                }
             }
             else
             {
                 m_console.WriteData(x + 2, y + 3,
                     hero.weapon1.selected ? BLINK(0x0007) : 0x0007,
                     hero.weapon1.name.c_str());
-				if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
-					(WEAPON("Unarmed").die + buffDie).WriteData(m_console, x + 4, y + 4);
-				else
-				{
-					int len = (WEAPON("Unarmed").die).WriteData(m_console, x + 4, y + 4);
-					m_console.WriteData(x + 4 + len + 1, y + 4, 0x0008, "Base");
-				}
+                if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
+                    (WEAPON("Unarmed").die + buffDie).WriteData(m_console, x + 4, y + 4);
+                else
+                {
+                    int len = (WEAPON("Unarmed").die).WriteData(m_console, x + 4, y + 4);
+                    m_console.WriteData(x + 4 + len + 1, y + 4, 0x0008, "Base");
+                }
             }
 
             if (hero.currentMp >= hero.weapon2.mpCost)
@@ -627,26 +627,26 @@ void DungeonCrawl::DrawHero(Time delta)
                 m_console.WriteData(x + 2, y + 5,
                     hero.weapon2.selected ? BLINK(ToAttribute(hero.weapon2.rarity)) : ToAttribute(hero.weapon2.rarity),
                     hero.weapon2.name.c_str());
-				if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
-					(hero.weapon2.die + buffDie).WriteData(m_console, x + 4, y + 6);
-				else
-				{
-					int len = (hero.weapon2.die).WriteData(m_console, x + 4, y + 6);
-					m_console.WriteData(x + 4 + len + 1, y + 6, 0x0008, "Base");
-				}
+                if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
+                    (hero.weapon2.die + buffDie).WriteData(m_console, x + 4, y + 6);
+                else
+                {
+                    int len = (hero.weapon2.die).WriteData(m_console, x + 4, y + 6);
+                    m_console.WriteData(x + 4 + len + 1, y + 6, 0x0008, "Base");
+                }
             }
             else
             {
                 m_console.WriteData(x + 2, y + 5,
                     hero.weapon2.selected ? BLINK(0x0007) : 0x0007,
                     hero.weapon2.name.c_str());
-				if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
-					(WEAPON("Unarmed").die + buffDie).WriteData(m_console, x + 4, y + 6);
-				else
-				{
-					int len = (WEAPON("Unarmed").die).WriteData(m_console, x + 4, y + 6);
-					m_console.WriteData(x + 4 + len + 1, y + 6, 0x0008, "Base");
-				}
+                if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
+                    (WEAPON("Unarmed").die + buffDie).WriteData(m_console, x + 4, y + 6);
+                else
+                {
+                    int len = (WEAPON("Unarmed").die).WriteData(m_console, x + 4, y + 6);
+                    m_console.WriteData(x + 4 + len + 1, y + 6, 0x0008, "Base");
+                }
             }
         }
     }
@@ -902,74 +902,74 @@ void DungeonCrawl::DrawAction(Time delta)
         auto iter = m_actions.begin();
         Action& action = (*iter);
 
-		if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
-		{
-			Hero* hero = static_cast<Hero*>(action.source);
-			hero->isTurn = true;
+        if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
+        {
+            Hero* hero = static_cast<Hero*>(action.source);
+            hero->isTurn = true;
 
-			if (action.weapon->target == Target::ALLENEMIES)
-			{
-				Actor* actor = action.targets[0];
-				if (actor->GetType() == ActorType::ACTOR_MONSTER)
-				{
-					if (m_damageTimeLeft == Time::Zero)
-					{
-						action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
-						action.weapon->attack.SetAnimating(false);
-						for (int index = 1; index < (int)action.targets.size(); index++)
-						{
-							Actor* actor = action.targets[index];
-							action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
-						}
-						action.weapon->attack.SetAnimating(true);
-					}
-					else
-					{
-						for (int index = 1; index < (int)action.targets.size(); index++)
-						{
-							Actor* actor = action.targets[index];
-							m_console.WriteData(actor->x + 5, actor->y + 8, m_damageAttribute, "%d", std::abs(m_damageFinal));
-							if (m_damageOriginal - m_damageFinal != 0)
-								m_console.WriteData(actor->x + 8, actor->y + 8, m_damageAttribute2, "(%d)", std::abs(m_damageOriginal - m_damageFinal));
-						}
-					}
-				}
-			}
-			else if (action.weapon->target == Target::ENEMY)
-			{
-				Actor* actor = action.targets[0];
-				if (m_damageTimeLeft == Time::Zero)
-				{
-					action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
-				}
-				else
-				{
-					m_console.WriteData(actor->x + 5, actor->y + 8, m_damageAttribute, "%d", std::abs(m_damageFinal));
-					if (m_damageOriginal - m_damageFinal != 0)
-						m_console.WriteData(actor->x + 8, actor->y + 8, m_damageAttribute2, "(%d)", std::abs(m_damageOriginal - m_damageFinal));
-				}
-			}
-		}
-		if (!action.source || action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
-		{
-			if (action.source)
-			{
-				// TODO: Animate hero getting hit
-				Monster* monster = static_cast<Monster*>(action.source);
-				monster->attacking = true;
-			}
+            if (action.weapon->target == Target::ALLENEMIES)
+            {
+                Actor* actor = action.targets[0];
+                if (actor->GetType() == ActorType::ACTOR_MONSTER)
+                {
+                    if (m_damageTimeLeft == Time::Zero)
+                    {
+                        action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
+                        action.weapon->attack.SetAnimating(false);
+                        for (int index = 1; index < (int)action.targets.size(); index++)
+                        {
+                            Actor* actor = action.targets[index];
+                            action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
+                        }
+                        action.weapon->attack.SetAnimating(true);
+                    }
+                    else
+                    {
+                        for (int index = 1; index < (int)action.targets.size(); index++)
+                        {
+                            Actor* actor = action.targets[index];
+                            m_console.WriteData(actor->x + 5, actor->y + 8, m_damageAttribute, "%d", std::abs(m_damageFinal));
+                            if (m_damageOriginal - m_damageFinal != 0)
+                                m_console.WriteData(actor->x + 8, actor->y + 8, m_damageAttribute2, "(%d)", std::abs(m_damageOriginal - m_damageFinal));
+                        }
+                    }
+                }
+            }
+            else if (action.weapon->target == Target::ENEMY)
+            {
+                Actor* actor = action.targets[0];
+                if (m_damageTimeLeft == Time::Zero)
+                {
+                    action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
+                }
+                else
+                {
+                    m_console.WriteData(actor->x + 5, actor->y + 8, m_damageAttribute, "%d", std::abs(m_damageFinal));
+                    if (m_damageOriginal - m_damageFinal != 0)
+                        m_console.WriteData(actor->x + 8, actor->y + 8, m_damageAttribute2, "(%d)", std::abs(m_damageOriginal - m_damageFinal));
+                }
+            }
+        }
+        if (!action.source || action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
+        {
+            if (action.source)
+            {
+                // TODO: Animate hero getting hit
+                Monster* monster = static_cast<Monster*>(action.source);
+                monster->attacking = true;
+            }
 
-			for (int index = 0; index < (int)m_heroes.size(); index++)
-				m_heroes[index].isTurn = false;
+            for (int index = 0; index < (int)m_heroes.size(); index++)
+                m_heroes[index].isTurn = false;
 
-			if (m_damageTimeLeft != Time::Zero)
-			{
-				Actor* actor = action.targets[0];
-				m_console.WriteData(actor->x + 7, actor->y - 1, m_damageAttribute, " %d ", std::abs(m_damageFinal));
-				if (m_damageOriginal - m_damageFinal != 0)
-					m_console.WriteData(actor->x + 11, actor->y - 1, m_damageAttribute2, "(%d) ", std::abs(m_damageOriginal - m_damageFinal));
-			}
-		}
+            if (m_damageTimeLeft != Time::Zero)
+            {
+                Actor* actor = action.targets[0];
+                m_console.WriteData(actor->x + 7, actor->y - 1, m_damageAttribute, " %d ", std::abs(m_damageFinal));
+                if (m_damageOriginal - m_damageFinal != 0)
+                    m_console.WriteData(actor->x + 11, actor->y - 1, m_damageAttribute2, "(%d) ", std::abs(m_damageOriginal - m_damageFinal));
+            }
+        }
 
         if (m_damageTimeLeft > Time::Zero)
         {
@@ -1449,65 +1449,65 @@ void DungeonCrawl::LevelUp(Hero& hero)
 
 void DungeonCrawl::UseWeapon(Action action)
 {
-	m_damageAttribute = 0x0004; // Red
+    m_damageAttribute = 0x0004; // Red
 
-	// Roll the damage to heal or deal
-	DamageType damageType;
-	Die damageDie = action.weapon->die;
-	int damage = 0;
+    // Roll the damage to heal or deal
+    DamageType damageType;
+    Die damageDie = action.weapon->die;
+    int damage = 0;
 
-	if (action.source)
-	{
-		// Apply robe buff to wand / staff weapon
-		if (action.weapon->mpCost > 0
-			&& action.source
-			&& action.source->GetType() == ActorType::ACTOR_HERO)
-		{
-			Hero* hero = static_cast<Hero*>(action.source);
-			if (hero->armor.target == Target::PLAYERAC_SPELL)
-			{
-				damageDie.multiplier += 1;
-				m_damageAttribute = 0x0006; // Gold
-			}
-		}
+    if (action.source)
+    {
+        // Apply robe buff to wand / staff weapon
+        if (action.weapon->mpCost > 0
+            && action.source
+            && action.source->GetType() == ActorType::ACTOR_HERO)
+        {
+            Hero* hero = static_cast<Hero*>(action.source);
+            if (hero->armor.target == Target::PLAYERAC_SPELL)
+            {
+                damageDie.multiplier += 1;
+                m_damageAttribute = 0x0006; // Gold
+            }
+        }
 
-		damage = damageDie.Roll(&damageType);
+        damage = damageDie.Roll(&damageType);
 
-		action.source->currentMp -= action.weapon->mpCost;
-		if (action.source->currentMp < 0)
-			action.source->currentMp = 0; // It's possible some moves drain MP
+        action.source->currentMp -= action.weapon->mpCost;
+        if (action.source->currentMp < 0)
+            action.source->currentMp = 0; // It's possible some moves drain MP
 
-		// Add the level of the hero performing the attack
-		if (action.source->GetType() == ActorType::ACTOR_HERO)
-			damage += static_cast<Hero*>(action.source)->level;
-	}
-	else
-	{
-		// Condition damage
-		damage = damageDie.Roll(&damageType);
-	}
+        // Add the level of the hero performing the attack
+        if (action.source->GetType() == ActorType::ACTOR_HERO)
+            damage += static_cast<Hero*>(action.source)->level;
+    }
+    else
+    {
+        // Condition damage
+        damage = damageDie.Roll(&damageType);
+    }
 
-	// Keep track of damage before modifiers
-	m_damageOriginal = damage;
-	m_damageAttribute2 = ToAttribute(damageType);
+    // Keep track of damage before modifiers
+    m_damageOriginal = damage;
+    m_damageAttribute2 = ToAttribute(damageType);
 
-	bool isHealing = action.weapon->target == Target::ALLPLAYERSHP
-		|| action.weapon->target == Target::PLAYERHP_CONSUME
-		|| action.weapon->target == Target::PLAYERHP_REUSE;
-	bool isRestoring = action.weapon->target == Target::ALLPLAYERSMP
-		|| action.weapon->target == Target::PLAYERMP_CONSUME
-		|| action.weapon->target == Target::PLAYERMP_REUSE;
-	bool isDamaging = action.weapon->target == Target::ALLENEMIES
-		|| action.weapon->target == Target::ENEMY
-		|| action.weapon->target == Target::MONSTER_ALLENEMIES
-		|| !action.source;
+    bool isHealing = action.weapon->target == Target::ALLPLAYERSHP
+        || action.weapon->target == Target::PLAYERHP_CONSUME
+        || action.weapon->target == Target::PLAYERHP_REUSE;
+    bool isRestoring = action.weapon->target == Target::ALLPLAYERSMP
+        || action.weapon->target == Target::PLAYERMP_CONSUME
+        || action.weapon->target == Target::PLAYERMP_REUSE;
+    bool isDamaging = action.weapon->target == Target::ALLENEMIES
+        || action.weapon->target == Target::ENEMY
+        || action.weapon->target == Target::MONSTER_ALLENEMIES
+        || !action.source;
     bool isDraining = action.weapon->target == Target::MONSTER_DRAINMP;
 
     bool consumesWeapon = action.weapon->target == Target::PLAYERMP_CONSUME
         || action.weapon->target == Target::PLAYERHP_CONSUME;
 
     // Disable the animations
-	bool isWeakness = false;
+    bool isWeakness = false;
     if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
     {
         Hero* hero = static_cast<Hero*>(action.source);
@@ -1544,26 +1544,26 @@ void DungeonCrawl::UseWeapon(Action action)
     // Iterate over the targets and apply the result
     for (int index = 0; index < (int)action.targets.size(); index++)
     {
-		damage = m_damageOriginal;
+        damage = m_damageOriginal;
 
-		Actor* actor = action.targets[index];
+        Actor* actor = action.targets[index];
 
         // Handle special actions
         if (action.weapon->target == Target::MONSTER_CONDITION)
         {
-			if (action.weapon->die.type != DamageType::NORMAL)
-			{
-				Hero* hero = static_cast<Hero*>(actor);
-				hero->condition = action.weapon->die;
-				hero->conditionTurnsLeft = GetRandomValue(1, 3);
-			}
+            if (action.weapon->die.type != DamageType::NORMAL)
+            {
+                Hero* hero = static_cast<Hero*>(actor);
+                hero->condition = action.weapon->die;
+                hero->conditionTurnsLeft = GetRandomValue(1, 3);
+            }
             continue;
         }
 
         // Reduce or increase damage to if resistant or weak
         if (isDamaging || isDraining)
         {
-			bool hasWeakness = false;
+            bool hasWeakness = false;
             bool hasResistance = false;
             for (int res = 0; res < (int)actor->armor.resistances.size(); res++)
             {
@@ -1572,16 +1572,16 @@ void DungeonCrawl::UseWeapon(Action action)
                     hasResistance = true;
                     break;
                 }
-				if (actor->armor.resistances[res] == ToWeakness(damageType))
-				{
-					hasWeakness = true;
-					break;
-				}
+                if (actor->armor.resistances[res] == ToWeakness(damageType))
+                {
+                    hasWeakness = true;
+                    break;
+                }
             }
             if (hasResistance)
                 damage = int(damage / 2);
-			if (hasWeakness)
-				damage = int(damage * 2);
+            if (hasWeakness)
+                damage = int(damage * 2);
 
             // Subtract armor class
             damage -= actor->armor.armorClass;
@@ -1663,64 +1663,64 @@ void DungeonCrawl::AddFairy()
 
 void DungeonCrawl::ApplyCondition()
 {
-	m_condition1.die = Die(0, 0, 0, DamageType::NORMAL);
-	m_condition2.die = Die(0, 0, 0, DamageType::NORMAL);
-	m_condition3.die = Die(0, 0, 0, DamageType::NORMAL);
-	m_condition4.die = Die(0, 0, 0, DamageType::NORMAL);
+    m_condition1.die = Die(0, 0, 0, DamageType::NORMAL);
+    m_condition2.die = Die(0, 0, 0, DamageType::NORMAL);
+    m_condition3.die = Die(0, 0, 0, DamageType::NORMAL);
+    m_condition4.die = Die(0, 0, 0, DamageType::NORMAL);
 
-	// Deal condition damage
-	for (int index = 0; index < (int)m_heroes.size(); index++)
-	{
-		// Condition slowly goes away
-		if (m_heroes[index].conditionTurnsLeft != 0)
-			m_heroes[index].conditionTurnsLeft--;
-		if (m_heroes[index].conditionTurnsLeft == 0)
-		{
-			m_heroes[index].condition = Die(0, 0, 0, DamageType::NORMAL);
-			continue;
-		}
+    // Deal condition damage
+    for (int index = 0; index < (int)m_heroes.size(); index++)
+    {
+        // Condition slowly goes away
+        if (m_heroes[index].conditionTurnsLeft != 0)
+            m_heroes[index].conditionTurnsLeft--;
+        if (m_heroes[index].conditionTurnsLeft == 0)
+        {
+            m_heroes[index].condition = Die(0, 0, 0, DamageType::NORMAL);
+            continue;
+        }
 
-		Weapon* condition = nullptr;
-		if (index == 0)
-		{
-			m_condition1.die = m_heroes[index].condition;
-			condition = &m_condition1;
-		}
-		if (index == 1)
-		{
-			m_condition2.die = m_heroes[index].condition;
-			condition = &m_condition2;
-		}
-		if (index == 2)
-		{
-			m_condition3.die = m_heroes[index].condition;
-			condition = &m_condition3;
-		}
-		if (index == 3)
-		{
-			m_condition4.die = m_heroes[index].condition;
-			condition = &m_condition4;
-		}
+        Weapon* condition = nullptr;
+        if (index == 0)
+        {
+            m_condition1.die = m_heroes[index].condition;
+            condition = &m_condition1;
+        }
+        if (index == 1)
+        {
+            m_condition2.die = m_heroes[index].condition;
+            condition = &m_condition2;
+        }
+        if (index == 2)
+        {
+            m_condition3.die = m_heroes[index].condition;
+            condition = &m_condition3;
+        }
+        if (index == 3)
+        {
+            m_condition4.die = m_heroes[index].condition;
+            condition = &m_condition4;
+        }
 
-		Action action;
-		action.source = nullptr;
-		action.targets.push_back(&m_heroes[index]);
-		action.weapon = condition;
-		m_actions.push_back(action);
+        Action action;
+        action.source = nullptr;
+        action.targets.push_back(&m_heroes[index]);
+        action.weapon = condition;
+        m_actions.push_back(action);
 
-		//// Apply condition damage / healing
-		//if (m_heroes[index].condition.die != 0)
-		//{
-		//	int damage = m_heroes[index].condition.Roll();
-		//	if (m_heroes[index].condition.type == DamageType::HEALING)
-		//		damage *= -1;
-		//	m_heroes[index].currentHp -= damage;
-		//	if (m_heroes[index].currentHp > m_heroes[index].totalHp)
-		//		m_heroes[index].currentHp = m_heroes[index].totalHp;
-		//	if (m_heroes[index].currentHp < 0)
-		//		m_heroes[index].currentHp = 0;
-		//}
-	}
+        //// Apply condition damage / healing
+        //if (m_heroes[index].condition.die != 0)
+        //{
+        //	int damage = m_heroes[index].condition.Roll();
+        //	if (m_heroes[index].condition.type == DamageType::HEALING)
+        //		damage *= -1;
+        //	m_heroes[index].currentHp -= damage;
+        //	if (m_heroes[index].currentHp > m_heroes[index].totalHp)
+        //		m_heroes[index].currentHp = m_heroes[index].totalHp;
+        //	if (m_heroes[index].currentHp < 0)
+        //		m_heroes[index].currentHp = 0;
+        //}
+    }
 }
 
 void DungeonCrawl::SetState(State state)
@@ -1799,7 +1799,7 @@ void DungeonCrawl::SetState(State state)
             m_heroes[index].weapon4.selected = false;
         }
 
-		//ApplyCondition();
+        //ApplyCondition();
 
         //for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
         //{
@@ -1816,16 +1816,16 @@ void DungeonCrawl::SetState(State state)
     {
         PushMonsterActions();
         SortActions();
-		ApplyCondition();
+        ApplyCondition();
     }
     else if (state == State::STATE_TREASURE)
     {
-		// Remove lingering conditions
-		for (int index = 0; index < (int)m_heroes.size(); index++)
-		{
-			m_heroes[index].condition = Die(0, 0, 0, DamageType::NORMAL);
-			m_heroes[index].conditionTurnsLeft = 0;
-		}
+        // Remove lingering conditions
+        for (int index = 0; index < (int)m_heroes.size(); index++)
+        {
+            m_heroes[index].condition = Die(0, 0, 0, DamageType::NORMAL);
+            m_heroes[index].conditionTurnsLeft = 0;
+        }
 
         m_chestClosed = true;
         m_chest = ANIMATION("chest_closed");
@@ -1958,7 +1958,7 @@ void DungeonCrawl::UseSelectedItem()
         die.multiplier += 1;
 
     // Perform use of item, staff, or wand
-	context.weapon->selected = false;
+    context.weapon->selected = false;
     int amount = die.Roll();
 
     if (context.weapon->target == Target::ALLPLAYERSHP)
@@ -2026,11 +2026,11 @@ void DungeonCrawl::PurchaseItem()
         Hero* hero = static_cast<Hero*>(m_ui.GetContext().target);
         LevelUp(*hero);
     }
-	else if (m_ui.GetContext().weapon->target == Target::PLAYERLEVEL5)
-	{
-		Hero* hero = static_cast<Hero*>(m_ui.GetContext().target);
-		LevelUp(*hero); LevelUp(*hero); LevelUp(*hero); LevelUp(*hero); LevelUp(*hero);
-	}
+    else if (m_ui.GetContext().weapon->target == Target::PLAYERLEVEL5)
+    {
+        Hero* hero = static_cast<Hero*>(m_ui.GetContext().target);
+        LevelUp(*hero); LevelUp(*hero); LevelUp(*hero); LevelUp(*hero); LevelUp(*hero);
+    }
     else if (m_ui.GetContext().weapon->target == Target::PLAYERAC_SLOW
         || m_ui.GetContext().weapon->target == Target::PLAYERAC_SPEED
         || m_ui.GetContext().weapon->target == Target::PLAYERAC_SPELL)
@@ -2144,6 +2144,12 @@ void DungeonCrawl::PushTrapInitiated()
             m_heroes[index].currentMp -= damage;
             if (m_heroes[index].currentMp < 0)
                 m_heroes[index].currentMp = 0;
+
+            if (m_currentFloor->type != DamageType::NORMAL)
+            {
+                m_heroes[index].condition = Die((m_floor / 5) + 1, 2, (m_floor / 5), m_currentFloor->type);
+                m_heroes[index].conditionTurnsLeft = GetRandomValue(1, 2);
+            }
         }
     }
 
@@ -2320,7 +2326,7 @@ void DungeonCrawl::PushCombatSelection()
     {
         context.state = CursorState::COMBAT_HERO;
         context.cursor = ANIMATION("select_hero");
-		context.maxIndex = (int)m_heroes.size() - 1;
+        context.maxIndex = (int)m_heroes.size() - 1;
         for (int index = 0; index < (int)m_heroes.size(); index++)
         {
             if (m_heroes[index].currentHp == 0)
@@ -2392,7 +2398,7 @@ void DungeonCrawl::PushUseItem()
     // Staff doesn't require a target can go strait to using item
     if (currentWeapon->target == Target::ALLPLAYERSHP)
     {
-		m_ui.GetContext().weapon = currentWeapon;
+        m_ui.GetContext().weapon = currentWeapon;
         UseSelectedItem();
         return;
     }
@@ -2447,7 +2453,7 @@ void DungeonCrawl::PushShopItem()
 
     if (prevContext.weapon->target == Target::NEWHERO
         || prevContext.weapon->target == Target::PLAYERLEVEL
-		|| prevContext.weapon->target == Target::PLAYERLEVEL5
+        || prevContext.weapon->target == Target::PLAYERLEVEL5
         || prevContext.weapon->target == Target::NEWHERO
         || prevContext.weapon->target == Target::PLAYERAC_SLOW
         || prevContext.weapon->target == Target::PLAYERAC_SPEED

@@ -1664,18 +1664,18 @@ void Database::Initialize()
             "................",
             0, 0, 16, 10, 0x0007);
 
-		m_imageDb["level_up_5"] = Image(
-			"................" \
-			"................" \
-			"................" \
-			"... LEVEL UP...." \
-			"......    ......" \
-			"..... ,___ ....." \
-			"..... |__  ....." \
-			"..... ,__) ....." \
-			"......    ......" \
-			"................",
-			0, 0, 16, 10, 0x0005);
+        m_imageDb["level_up_5"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "... LEVEL UP...." \
+            "......    ......" \
+            "..... ,___ ....." \
+            "..... |__  ....." \
+            "..... ,__) ....." \
+            "......    ......" \
+            "................",
+            0, 0, 16, 10, 0x0005);
 
         m_imageDb["exit"] = Image(
             "................" \
@@ -3691,10 +3691,10 @@ void Database::Initialize()
 
         m_frameDb["new_hero"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["new_hero"] });
         m_frameDb["level_up"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up"] });
-		m_frameDb["level_up_5_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_1"] });
-		m_frameDb["level_up_5_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_2"] });
-		m_frameDb["level_up_5_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_3"] });
-		m_frameDb["level_up_5_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_4"] });
+        m_frameDb["level_up_5_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_1"] });
+        m_frameDb["level_up_5_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_2"] });
+        m_frameDb["level_up_5_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_3"] });
+        m_frameDb["level_up_5_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_4"] });
         m_frameDb["exit"] = Frame({ m_imageDb["weapon_border"], m_imageDb["exit"] });
     }
 
@@ -3978,9 +3978,9 @@ void Database::Initialize()
         m_animationDb["level_up"].SetData(
             { m_frameDb["level_up"] },
             200, false, true, false);
-		m_animationDb["level_up_5"].SetData(
-			{ m_frameDb["level_up_5_1"], m_frameDb["level_up_5_2"], m_frameDb["level_up_5_3"], m_frameDb["level_up_5_4"], },
-			200, false, true, true);
+        m_animationDb["level_up_5"].SetData(
+            { m_frameDb["level_up_5_1"], m_frameDb["level_up_5_2"], m_frameDb["level_up_5_3"], m_frameDb["level_up_5_4"], },
+            200, false, true, true);
 
         m_animationDb["exit"].SetData(
             { m_frameDb["exit"] },
@@ -4010,7 +4010,7 @@ void Database::Initialize()
 
         m_dieRangeDb["new_hero"]       = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(10, 10, 10));
         m_dieRangeDb["level_up"]       = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(10, 10, 10));
-		m_dieRangeDb["level_up_5"]     = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(50, 10, 10));
+        m_dieRangeDb["level_up_5"]     = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(50, 10, 10));
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -4076,7 +4076,7 @@ void Database::Initialize()
 
         m_weaponDb["New Hero"] = Weapon("New Hero", DamageType::NORMAL, m_dieRangeDb["new_hero"], Target::NEWHERO, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["new_hero"]);
         m_weaponDb["Level Up"] = Weapon("Level Up", DamageType::NORMAL, m_dieRangeDb["level_up"], Target::PLAYERLEVEL, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["level_up"]);
-		m_weaponDb["Level Up 5"] = Weapon("Level Up 5", DamageType::NORMAL, m_dieRangeDb["level_up_5"], Target::PLAYERLEVEL5, Rarity::EPIC, m_animationDb["fist_attack"], m_animationDb["level_up_5"]);
+        m_weaponDb["Level Up 5"] = Weapon("Level Up 5", DamageType::NORMAL, m_dieRangeDb["level_up_5"], Target::PLAYERLEVEL5, Rarity::EPIC, m_animationDb["fist_attack"], m_animationDb["level_up_5"]);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -4096,21 +4096,21 @@ void Database::Initialize()
         WEAPON_TABLE_HEALING("Wand", Rarity::COMMON)
         WEAPON_TABLE_HEALING("Staff", Rarity::COMMON)
 
-		m_weaponDb["Healing Potion"],
-		m_weaponDb["Magic Potion"],
+        m_weaponDb["Healing Potion"],
+        m_weaponDb["Magic Potion"],
 
         m_weaponDb["New Hero"],
         m_weaponDb["New Hero"],
         m_weaponDb["New Hero"],
         m_weaponDb["New Hero"],
-		m_weaponDb["New Hero"],
-		m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
         m_weaponDb["Level Up"],
         m_weaponDb["Level Up"],
         m_weaponDb["Level Up"],
         m_weaponDb["Level Up"],
-		m_weaponDb["Level Up"],
-		m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -4154,8 +4154,8 @@ void Database::Initialize()
         m_weaponDb["Greater Healing Potion"],
         m_weaponDb["Greater Magic Potion"],
 
-		m_weaponDb["Level Up 5"],
-		m_weaponDb["Level Up 5"],
+        m_weaponDb["Level Up 5"],
+        m_weaponDb["Level Up 5"],
     };
 
     // ----------------------------------------------------------------------------------------------------------------

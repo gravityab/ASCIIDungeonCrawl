@@ -19,17 +19,8 @@ struct Weapon
 public:
 	/// Constructor for a weapon
 	Weapon();
-	//Weapon(
-	//	std::string name_,
-	//	Die die_,
-	//	Target target_,
-	//	Rarity rarity_,
-	//	Animation attack_,
-	//	Animation idle_,
-	//	Die cost_,
-	//	int speed_,
-	//	int mpCost_);
 
+	/// Constructor for a weapon with predefined properties
 	Weapon(
 		std::string name_,
 		DamageType type_,
@@ -39,19 +30,16 @@ public:
 		Animation attack_,
 		Animation idle_);
 
-	/*Weapon(
-		std::string name_,
-		Target target_,
-		Rarity rarity_,
-		Animation idle_,
-		Die cost,
-		int armorClass,
-		DamageType resistance);*/
+	/// Destructor for a weapon
 	virtual ~Weapon();
 
+	/// Generate the weapons potential dies for specific statistics
 	void Randomize();
 
+	/// Convert the weapon to a different rarity and damage type
 	Weapon As(DamageType damage, Rarity rarity);
+
+	/// Generate a string name for the item based on specific categories
 	static std::string ToString(std::string name_, DamageType damage_, Rarity rarity_);
 	static std::string ToString(std::string name_, Rarity rarity_);
 	static std::string ToString(std::string name_, DamageType damage_);

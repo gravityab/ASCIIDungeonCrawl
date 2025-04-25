@@ -9,27 +9,6 @@
 Weapon::Weapon()
 {}
 
-//Weapon::Weapon(std::string name_,
-//	Die die_,
-//	Target target_,
-//	Rarity rarity_,
-//	Animation attack_,
-//	Animation idle_,
-//	Die cost_,
-//	int speed_,
-//	int mpCost_)
-//{
-//	name = name_;
-//	die = die_;
-//	target = target_;
-//	rarity = rarity_;
-//	attack = attack_;
-//	idle = idle_;
-//	goldCost = cost_;
-//	speed = speed_;
-//	mpCost = mpCost_;
-//}
-
 Weapon::Weapon(
 	std::string name_,
 	DamageType type_,
@@ -47,23 +26,6 @@ Weapon::Weapon(
 	attack = attack_;
 	idle = idle_;
 }
-
-//Weapon::Weapon(std::string name_,
-//	Target target_,
-//	Rarity rarity_,
-//	Animation idle_,
-//	Die cost_,
-//	int armorClass_,
-//	DamageType resistance_)
-//{
-//	name = name_;
-//	target = target_;
-//	rarity = rarity_;
-//	idle = idle_;
-//	goldCost = cost_;
-//	armorClass = armorClass_;
-//	resistances.push_back(resistance_);
-//}
 
 Weapon::~Weapon()
 {}
