@@ -1,0 +1,10 @@
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Sleep.h
+// Copyright (C) 2025 Andrew Bellinger (gravityab@gmail.com)
+
+#pragma once
+
+#include "Time.h"
+
+/// Sleep a specific amount of time
+void SleepTime(Time time);
