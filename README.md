@@ -4,10 +4,12 @@ Dungeon Crawl is a simple procedural commandline ASCII dungeon delving game that
 ![image](https://github.com/user-attachments/assets/fd0416d4-98e1-480c-acc5-10d303822b72)
 
 ### Buttons
+```
 UP, LEFT, RIGHT, DOWN - Movement
 ENTER - Select
 BACKSPACE - Back
 RSHIFT - Toggle Statistics
+```
 
 ## Doors
 Every floor the player is given a decision as to which door they wish to take. Doors come in various levels of rarity and look different based on the potential outcomes. Typically doors with higher quality have more or even higher level monsters, but give better rewards.
