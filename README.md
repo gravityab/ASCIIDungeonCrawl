@@ -38,7 +38,9 @@ Scattered throughout the dungeon there are Fountain rooms with fairies that will
 
 ## Bosses
 Bosses are lurking at the lower levels should the adventures delve deep enough
-![image](https://github.com/user-attachments/assets/50ba4c47-3ef8-4fae-97e1-a5c51235a741)
+![image](https://github.com/user-attachments/assets/6ebd1795-d279-4ded-a5e1-7831969efe86)
 
+# Credits
+This game is dedicated to both my 7 year old sons that I am teaching programming and simple game design to
 
-
+> NOTE: Once a week I sit down with my boys and go over how to program. I usually introduce them to a new concept or syntax then make a new game from scratch using whatever subject we are trying to learn. In the past we've made simple games like Simon Says, Calculators, Horse Racing, etc; each with their own challenges for the boys to learn. This is the first time I wanted to push the code to a public repo for everyone to enjoy my sons creation.
