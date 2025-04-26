@@ -161,6 +161,7 @@
     <ClInclude Include="State.h" />
     <ClInclude Include="Target.h" />
     <ClInclude Include="Time.h" />
+    <ClInclude Include="Traps.h" />
     <ClInclude Include="Weapon.h" />
   </ItemGroup>
   <ItemGroup>

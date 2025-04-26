@@ -19,6 +19,6 @@ enum class State : uint8_t
 	STATE_COMBAT_RESOLVE, ///< Resolve the combat turn
 	STATE_TREASURE,    ///< Display the treasure screen
 	STATE_FOUNTAIN,    ///< Display fairy room
-	STATE_TRAP_SPIKES, ///< Spike trap
+	STATE_TRAP,        ///< Display a room with a trap
 };
 

@@ -13,6 +13,7 @@
 #include "Rarity.h"
 #include "Reward.h"
 #include "State.h"
+#include "Traps.h"
 #include "Weapon.h"
 
 /// Standard Template Library Headers
@@ -70,8 +71,11 @@ struct Room
 	/// Whether this room is a boss or greater threat
 	bool boss = false;
 
-	/// The back
+	/// The back of room
 	DamageType roomAttribute;
+
+	/// The type of trap
+	TrapType trap = TrapType::INVALID;
 };
 
 /// Structore representing a floor in a dungeon

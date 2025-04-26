@@ -90,7 +90,7 @@ bool DungeonCrawl::RunLoop()
             case State::STATE_FOUNTAIN:
                 DrawFountain(delta);
                 break;
-            case State::STATE_TRAP_SPIKES:
+            case State::STATE_TRAP:
                 DrawTrapRoom(delta);
                 break;
         }
@@ -376,8 +376,16 @@ void DungeonCrawl::DrawTrap(Time delta, uint16_t attribute, bool showExit, bool 
     background.SetAttributes(1, attribute == 0x0007 ? 0x0008 : attribute);
     background.WriteData(m_console, delta, 0, 0, complete);
 
-    Animation& trap = !triggered ? ANIMATION("spikes_1") : ANIMATION("spikes_2");
-    trap.WriteData(m_console, delta, 0, 0, complete);
+	if (m_currentRoom->trap == TrapType::TRAP_SPIKES)
+	{
+		Animation& trap = !triggered ? ANIMATION("spikes_1") : ANIMATION("spikes_2");
+		trap.WriteData(m_console, delta, 0, 0, complete);
+	}
+	else if (m_currentRoom->trap == TrapType::TRAP_SWINGINGAXE)
+	{
+		Animation& trap = !triggered ? ANIMATION("swinging_axe_1") : ANIMATION("swinging_axe_2");
+		trap.WriteData(m_console, delta, 0, 0, complete);
+	}
 
     // Draw the floor and parties money
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
@@ -447,7 +455,7 @@ void DungeonCrawl::DrawDoors(Time delta)
                         m_console.WriteData(x + 14, 7, attribute, "Shop");
                     else if (room.door.state == State::STATE_FOUNTAIN)
                         m_console.WriteData(x + 14, 7, attribute, "Fountain");
-                    else if (room.door.state == State::STATE_TRAP_SPIKES)
+                    else if (room.door.state == State::STATE_TRAP)
                         m_console.WriteData(x + 14, 7, attribute, "Trap");
                     else if (room.monsters.size() == 1)
                         m_console.WriteData(x + 14, 7, attribute, "1 Monster");
@@ -1102,7 +1110,7 @@ void DungeonCrawl::ProcessInput()
         || (m_state == State::STATE_SHOP && m_ui.GetState() == CursorState::SHOP && m_input.Released(Button::BUTTON_DOWN))
         || (m_state == State::STATE_TREASURE && m_ui.GetState() == CursorState::REWARD && m_input.Released(Button::BUTTON_DOWN))
         || (m_state == State::STATE_FOUNTAIN && m_ui.GetState() == CursorState::FOUNTAIN && m_input.Released(Button::BUTTON_DOWN))
-        || (m_state == State::STATE_TRAP_SPIKES && m_ui.GetState() == CursorState::TRAP && m_input.Released(Button::BUTTON_DOWN)))
+        || (m_state == State::STATE_TRAP && m_ui.GetState() == CursorState::TRAP && m_input.Released(Button::BUTTON_DOWN)))
     {
         PushHero();
         return;
@@ -1859,7 +1867,7 @@ void DungeonCrawl::SetState(State state)
         }
         PushFountain();
     }
-    else if (state == State::STATE_TRAP_SPIKES)
+    else if (state == State::STATE_TRAP)
     {
         m_trapInitiated = false;
         m_trapTriggered = false;

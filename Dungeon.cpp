@@ -99,7 +99,7 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 	if (rarity >= Rarity::EPIC) { doorRarity.push_back(Rarity::COMMON); doorRarity.push_back(Rarity::COMMON); doorRarity.push_back(Rarity::RARE); doorRarity.push_back(Rarity::RARE); doorRarity.push_back(Rarity::EPIC); doorRarity.push_back(Rarity::EPIC); doorRarity.push_back(Rarity::LEGENDARY); }
 	if (rarity >= Rarity::RARE) { doorRarity.push_back(Rarity::COMMON); doorRarity.push_back(Rarity::COMMON); doorRarity.push_back(Rarity::RARE); doorRarity.push_back(Rarity::RARE); doorRarity.push_back(Rarity::EPIC); }
 
-	std::list<State> nextState = { State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_SHOP, State::STATE_TRAP_SPIKES };
+	std::list<State> nextState = { State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_SHOP, State::STATE_TRAP };
 	if (shop) nextState = { State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_COMBAT, State::STATE_SHOP, State::STATE_SHOP, State::STATE_SHOP, State::STATE_SHOP, State::STATE_SHOP, State::STATE_FOUNTAIN };
 	std::vector<uint16_t> attributes = { 0x0001, 0x0002, 0x0003, 0x0004, 0x0005, 0x0006, 0x0008, 0x0009, 0x000A, 0x000B, 0x000C, 0x000D, 0x000E, 0x000F };
 	std::vector<DamageType> damageTypes = { DamageType::COLD, DamageType::FIRE, DamageType::LIGHTNING, DamageType::NECROTIC, DamageType::NORMAL, DamageType::POISON, DamageType::PSYCHIC, DamageType::HOLY, DamageType::STEEL, DamageType::DARK, DamageType::WATER };
@@ -150,6 +150,15 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 		{
 			room.door.close.SetAttributes(2, ROLLTABLE(attributes));
 			room.door.close.SetAttributes(3, ROLLTABLE(doorOffColor));
+		}
+
+		room.trap = TrapType::INVALID;
+		if (room.door.state == State::STATE_TRAP)
+		{
+			room.trap = GetRandomValue(0, 1) == 0 ? TrapType::TRAP_SPIKES : TrapType::TRAP_SWINGINGAXE;
+
+			newFloor.rooms.push_back(room);
+			continue;
 		}
 
 		if (room.door.state == State::STATE_SHOP)
