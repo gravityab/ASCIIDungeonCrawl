@@ -53,6 +53,9 @@ public:
 	/// The dead animation
 	Animation dead;
 
+	/// THe level animation
+	Animation levelUp;
+
 	/// The selected animation
 	Animation selected;
 
@@ -70,4 +73,7 @@ public:
 
 	/// The armor the actor is wearing
 	Weapon armor;
+
+	/// Amount of time to display level up animation
+	Time levelUpTimeLeft = Time::Zero;
 };

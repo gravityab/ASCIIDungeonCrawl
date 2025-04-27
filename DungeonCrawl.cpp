@@ -315,9 +315,11 @@ void DungeonCrawl::AddHero()
     hero.weapon3 = WEAPON("Unarmed");
     hero.weapon4 = WEAPON("Unarmed");
     hero.dead = ANIMATION("hero_dead");
+    hero.levelUp = ANIMATION("hero_level");
     hero.idle = ANIMATION("hero_border");
     hero.isTurn = false;
     hero.condition = Die(0, 0, 0, DamageType::NORMAL);
+    hero.levelUpTimeLeft = Time::Zero;
 
     hero.x = (25 * ((int)m_heroes.size() + 1)) - 25;
     hero.y = 18;
@@ -516,15 +518,17 @@ void DungeonCrawl::DrawHero(Time delta)
         int x = (25 * (index + 1)) - 25;
         int y = hero.isTurn ? 17 : 18;
 
-        // Draw dead heroes
+        // Select border color
+        uint16_t borderColor = 0x0007;
+        if (hero.condition.die != 0)
+            borderColor = ToAttribute(hero.condition.type);
+        if (hero.levelUpTimeLeft > Time::Zero)
+            borderColor = 0x0006;
         if (hero.currentHp == 0)
-        {
-            hero.dead.WriteData(m_console, delta, x, y, complete);
-            continue;
-        }
+            borderColor = 0x0004;
 
         // Draw border and condition
-        hero.idle.SetAttributes(0, hero.condition.die != 0 ? ToAttribute(hero.condition.type) : 0x0007);
+        hero.idle.SetAttributes(0, borderColor);
         hero.idle.WriteData(m_console, delta, x, y, complete);
         if (hero.condition.die != 0)
             m_console.WriteData(x + 6, y, ToAttribute(hero.condition.type), " %s ", ToConditionString(hero.condition.type).c_str());
@@ -547,23 +551,6 @@ void DungeonCrawl::DrawHero(Time delta)
                 m_ui.GetAnimation().WriteData(m_console, delta, x, y, complete);
         }
 
-        // Animate selection
-        //if (m_cursorState == CursorState::HERO
-        //	|| m_cursorState == CursorState::USE_ITEM
-        //	|| m_cursorState == CursorState::ATTRIBUTES)
-        //{
-        //	if (index == m_cursorIndex)
-        //		m_cursor.WriteData(m_console, delta, x, y, complete);
-        //}
-        //if (m_state == State::STATE_COMBAT
-        //	&& (m_cursorState == CursorState::INVENTORY_1
-        //	|| m_cursorState == CursorState::INVENTORY_2))
-        //{
-        //	if (index == m_cursorIndex)
-        //		m_cursor.WriteData(m_console, delta, x, y, complete);
-        //}
-
-        //if (m_cursorState == CursorState::ATTRIBUTES
         if (m_ui.GetState() == CursorState::ATTRIBUTES
             || m_showAttributes)
         {
@@ -601,7 +588,11 @@ void DungeonCrawl::DrawHero(Time delta)
             m_console.WriteData("_________________", x + 6, y + 2, 17, 1, 0x0008);
             m_console.WriteData("#################", x + 6, y + 2, mp, 1, 0x0001);
 
-            Die buffDie = Die((hero.armor.target == Target::PLAYERAC_SPELL && hero.weapon1.mpCost) ? 1 : 0, 0, hero.level);
+			int levelMultiplier = (hero.level / 3);
+            Die buffDie = Die((hero.armor.target == Target::PLAYERAC_SPELL && hero.weapon1.mpCost) 
+				? 1 + levelMultiplier: 0 + levelMultiplier,
+				0,
+				hero.level);
 
             if (hero.currentMp >= hero.weapon1.mpCost)
             {
@@ -656,6 +647,28 @@ void DungeonCrawl::DrawHero(Time delta)
                     m_console.WriteData(x + 4 + len + 1, y + 6, 0x0008, "Base");
                 }
             }
+        }
+
+        // Draw level up animation
+        if (hero.levelUpTimeLeft > Time::Zero)
+        {
+            hero.levelUpTimeLeft -= delta;
+            if (hero.levelUpTimeLeft < Time::Zero)
+                hero.levelUpTimeLeft = Time::Zero;
+            hero.levelUp.WriteData(m_console, delta, x, y, complete);
+
+			if (hero.armor.target == Target::PLAYERAC_SLOW)
+				m_console.WriteData(x + 5, y + 5, 0x0004, "HP BOOST");
+			else if (hero.armor.target == Target::PLAYERAC_SPELL)
+				m_console.WriteData(x + 5, y + 5, 0x0001, "MP BOOST");
+			else if (hero.armor.target == Target::PLAYERAC_SPEED)
+				m_console.WriteData(x + 5, y + 5, 0x0006, "XP BOOST");
+        }
+
+        // Draw dead heroes
+        if (hero.currentHp == 0)
+        {
+            hero.dead.WriteData(m_console, delta, x, y, complete);
         }
     }
 }
@@ -1472,6 +1485,8 @@ void DungeonCrawl::LevelUp(Hero& hero)
         hero.totalMp += ROLL(1, 10, hero.level + 1);
     }
 
+    hero.levelUpTimeLeft = ToMilliseconds(1500);
+
     hero.currentHp = hero.totalHp;
     hero.currentMp = hero.totalMp;
 }
@@ -1500,15 +1515,17 @@ void DungeonCrawl::UseWeapon(Action action)
             }
         }
 
+		if (action.source->GetType() == ActorType::ACTOR_HERO)
+		{
+			damageDie.multiplier += (action.source->level / 3); // Every 3 levels we add 1 mult
+			damageDie.constant += action.source->level; // Ever level we add 1 const
+		}
+
         damage = damageDie.Roll(&damageType);
 
         action.source->currentMp -= action.weapon->mpCost;
         if (action.source->currentMp < 0)
             action.source->currentMp = 0; // It's possible some moves drain MP
-
-        // Add the level of the hero performing the attack
-        if (action.source->GetType() == ActorType::ACTOR_HERO)
-            damage += static_cast<Hero*>(action.source)->level;
     }
     else
     {
