@@ -1446,13 +1446,34 @@ void DungeonCrawl::LevelUp(Hero& hero)
     hero.level++;
     hero.experience = s_levels[hero.level];
 
-    int previousTotalHp = hero.totalHp;
-    int previousTotalMp = hero.totalMp;
-    hero.totalHp += ROLL(1, 10, 1);
-    hero.totalMp += ROLL(1, 10, 1);
+	if (hero.armor.target == Target::PLAYERAC_SLOW)
+	{
+		// If you equip PLATE you gain more HP during levels
+		hero.totalHp += ROLL(2, 10, hero.level + 1);
+		hero.totalMp += ROLL(1, 10, hero.level + 1);
+	}
+	else if (hero.armor.target == Target::PLAYERAC_SPELL)
+	{
+		// If you equip ROBES you gain more MP during levels
+		hero.totalHp += ROLL(1, 10, hero.level + 1);
+		hero.totalMp += ROLL(2, 10, hero.level + 1);
+	}
+	else if (hero.armor.target == Target::PLAYERAC_SPEED)
+	{
+		// If you equip LEATHER you lower the amount required for levels
+		hero.experience /= 2;
+		hero.totalHp += ROLL(1, 10, hero.level + 1);
+		hero.totalMp += ROLL(1, 10, hero.level + 1);
+	}
+	else
+	{
+		// Equiping no ARMOR makes you gain little HP / MP for levels
+		hero.totalHp += ROLL(1, 10, hero.level + 1);
+		hero.totalMp += ROLL(1, 10, hero.level + 1);
+	}
 
-    hero.currentHp += hero.totalHp - previousTotalHp;
-    hero.currentHp += hero.totalMp - previousTotalMp;
+	hero.currentHp = hero.totalHp;
+	hero.currentMp = hero.totalMp;
 }
 
 void DungeonCrawl::UseWeapon(Action action)

@@ -288,7 +288,7 @@ void Database::Initialize()
             "..........................................................oo........................................" \
             "............................................................o......................................." \
             ".............................................................oo.._-=^..............................." \
-            ".............................................................|.^-.| |..............................." \
+            ".............................................................| ^- | |..............................." \
             ".........................................................__--____^ /................................" \
             "...........................................................=_____=.................................." \
             "...................................................................................................." \
@@ -4265,6 +4265,39 @@ void Database::Initialize()
         m_weaponDb["New Hero"],
         m_weaponDb["New Hero"],
         m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["New Hero"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
+        m_weaponDb["Level Up"],
         m_weaponDb["Level Up"],
         m_weaponDb["Level Up"],
         m_weaponDb["Level Up"],
