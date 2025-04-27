@@ -376,16 +376,16 @@ void DungeonCrawl::DrawTrap(Time delta, uint16_t attribute, bool showExit, bool 
     background.SetAttributes(1, attribute == 0x0007 ? 0x0008 : attribute);
     background.WriteData(m_console, delta, 0, 0, complete);
 
-	if (m_currentRoom->trap == TrapType::TRAP_SPIKES)
-	{
-		Animation& trap = !triggered ? ANIMATION("spikes_1") : ANIMATION("spikes_2");
-		trap.WriteData(m_console, delta, 0, 0, complete);
-	}
-	else if (m_currentRoom->trap == TrapType::TRAP_SWINGINGAXE)
-	{
-		Animation& trap = !triggered ? ANIMATION("swinging_axe_1") : ANIMATION("swinging_axe_2");
-		trap.WriteData(m_console, delta, 0, 0, complete);
-	}
+    if (m_currentRoom->trap == TrapType::TRAP_SPIKES)
+    {
+        Animation& trap = !triggered ? ANIMATION("spikes_1") : ANIMATION("spikes_2");
+        trap.WriteData(m_console, delta, 0, 0, complete);
+    }
+    else if (m_currentRoom->trap == TrapType::TRAP_SWINGINGAXE)
+    {
+        Animation& trap = !triggered ? ANIMATION("swinging_axe_1") : ANIMATION("swinging_axe_2");
+        trap.WriteData(m_console, delta, 0, 0, complete);
+    }
 
     // Draw the floor and parties money
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
@@ -1446,34 +1446,34 @@ void DungeonCrawl::LevelUp(Hero& hero)
     hero.level++;
     hero.experience = s_levels[hero.level];
 
-	if (hero.armor.target == Target::PLAYERAC_SLOW)
-	{
-		// If you equip PLATE you gain more HP during levels
-		hero.totalHp += ROLL(2, 10, hero.level + 1);
-		hero.totalMp += ROLL(1, 10, hero.level + 1);
-	}
-	else if (hero.armor.target == Target::PLAYERAC_SPELL)
-	{
-		// If you equip ROBES you gain more MP during levels
-		hero.totalHp += ROLL(1, 10, hero.level + 1);
-		hero.totalMp += ROLL(2, 10, hero.level + 1);
-	}
-	else if (hero.armor.target == Target::PLAYERAC_SPEED)
-	{
-		// If you equip LEATHER you lower the amount required for levels
-		hero.experience /= 2;
-		hero.totalHp += ROLL(1, 10, hero.level + 1);
-		hero.totalMp += ROLL(1, 10, hero.level + 1);
-	}
-	else
-	{
-		// Equiping no ARMOR makes you gain little HP / MP for levels
-		hero.totalHp += ROLL(1, 10, hero.level + 1);
-		hero.totalMp += ROLL(1, 10, hero.level + 1);
-	}
+    if (hero.armor.target == Target::PLAYERAC_SLOW)
+    {
+        // If you equip PLATE you gain more HP during levels
+        hero.totalHp += ROLL(2, 10, hero.level + 1);
+        hero.totalMp += ROLL(1, 10, hero.level + 1);
+    }
+    else if (hero.armor.target == Target::PLAYERAC_SPELL)
+    {
+        // If you equip ROBES you gain more MP during levels
+        hero.totalHp += ROLL(1, 10, hero.level + 1);
+        hero.totalMp += ROLL(2, 10, hero.level + 1);
+    }
+    else if (hero.armor.target == Target::PLAYERAC_SPEED)
+    {
+        // If you equip LEATHER you lower the amount required for levels
+        hero.experience /= 2;
+        hero.totalHp += ROLL(1, 10, hero.level + 1);
+        hero.totalMp += ROLL(1, 10, hero.level + 1);
+    }
+    else
+    {
+        // Equiping no ARMOR makes you gain little HP / MP for levels
+        hero.totalHp += ROLL(1, 10, hero.level + 1);
+        hero.totalMp += ROLL(1, 10, hero.level + 1);
+    }
 
-	hero.currentHp = hero.totalHp;
-	hero.currentMp = hero.totalMp;
+    hero.currentHp = hero.totalHp;
+    hero.currentMp = hero.totalMp;
 }
 
 void DungeonCrawl::UseWeapon(Action action)
@@ -1767,7 +1767,7 @@ void DungeonCrawl::SetState(State state)
         m_dungeon.Reset();
         m_floor = 0;
 
-        m_gold = ROLL(50, 4, 100);
+        m_gold = GetRandomValue(250, 300);
         m_input.Initialize();
         m_dungeon.Initialize();
         m_dungeon.Generate();
@@ -1816,6 +1816,21 @@ void DungeonCrawl::SetState(State state)
     }
     else if (state == State::STATE_SHOP)
     {
+        // At max heroes, "New Hero" items are converted to "Level Up 5" items
+        if (m_heroes.size() == 4)
+        {
+            for (int index = 0; index < m_currentRoom->shop.size(); index++)
+            {
+                if (m_currentRoom->shop[index].target == Target::NEWHERO)
+                {
+                    m_currentRoom->shop[index] = WEAPON("Level Up 5");
+                    m_currentRoom->shop[index].Randomize(); // Give the item a price
+                    m_currentRoom->shop[index].attack.SetStrobe(0, true);
+                    m_currentRoom->shop[index].idle.SetStrobe(3, true);
+                }
+            }
+        }
+
         PushShop();
     }
     else if (state == State::STATE_COMBAT)
