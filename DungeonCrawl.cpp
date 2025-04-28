@@ -588,11 +588,11 @@ void DungeonCrawl::DrawHero(Time delta)
             m_console.WriteData("_________________", x + 6, y + 2, 17, 1, 0x0008);
             m_console.WriteData("#################", x + 6, y + 2, mp, 1, 0x0001);
 
-			int levelMultiplier = (hero.level / 3);
+            int levelMultiplier = (hero.level / 3);
             Die buffDie = Die((hero.armor.target == Target::PLAYERAC_SPELL && hero.weapon1.mpCost) 
-				? 1 + levelMultiplier: 0 + levelMultiplier,
-				0,
-				hero.level);
+                ? 1 + levelMultiplier: 0 + levelMultiplier,
+                0,
+                hero.level);
 
             if (hero.currentMp >= hero.weapon1.mpCost)
             {
@@ -657,12 +657,12 @@ void DungeonCrawl::DrawHero(Time delta)
                 hero.levelUpTimeLeft = Time::Zero;
             hero.levelUp.WriteData(m_console, delta, x, y, complete);
 
-			if (hero.armor.target == Target::PLAYERAC_SLOW)
-				m_console.WriteData(x + 5, y + 5, 0x0004, "HP BOOST");
-			else if (hero.armor.target == Target::PLAYERAC_SPELL)
-				m_console.WriteData(x + 5, y + 5, 0x0001, "MP BOOST");
-			else if (hero.armor.target == Target::PLAYERAC_SPEED)
-				m_console.WriteData(x + 5, y + 5, 0x0006, "XP BOOST");
+            if (hero.armor.target == Target::PLAYERAC_SLOW)
+                m_console.WriteData(x + 5, y + 5, 0x0004, "HP BOOST");
+            else if (hero.armor.target == Target::PLAYERAC_SPELL)
+                m_console.WriteData(x + 5, y + 5, 0x0001, "MP BOOST");
+            else if (hero.armor.target == Target::PLAYERAC_SPEED)
+                m_console.WriteData(x + 5, y + 5, 0x0006, "XP BOOST");
         }
 
         // Draw dead heroes
@@ -1515,11 +1515,11 @@ void DungeonCrawl::UseWeapon(Action action)
             }
         }
 
-		if (action.source->GetType() == ActorType::ACTOR_HERO)
-		{
-			damageDie.multiplier += (action.source->level / 3); // Every 3 levels we add 1 mult
-			damageDie.constant += action.source->level; // Ever level we add 1 const
-		}
+        if (action.source->GetType() == ActorType::ACTOR_HERO)
+        {
+            damageDie.multiplier += (action.source->level / 3); // Every 3 levels we add 1 mult
+            damageDie.constant += action.source->level; // Ever level we add 1 const
+        }
 
         damage = damageDie.Roll(&damageType);
 
@@ -1836,7 +1836,7 @@ void DungeonCrawl::SetState(State state)
         // At max heroes, "New Hero" items are converted to "Level Up 5" items
         if (m_heroes.size() == 4)
         {
-            for (int index = 0; index < m_currentRoom->shop.size(); index++)
+            for (int index = 0; index < (int)m_currentRoom->shop.size(); index++)
             {
                 if (m_currentRoom->shop[index].target == Target::NEWHERO)
                 {

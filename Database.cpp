@@ -3471,16 +3471,16 @@ void Database::Initialize()
             ".         -^-^-         ." \
             "..........#####..........",
             0, 0, 25, 8, 0x0004);
-		m_imageDb["hero_level"] = Image(
-			"........................." \
-			".                       ." \
-			".                       ." \
-			".    L E V E L  U P     ." \
-			".                       ." \
-			".                       ." \
-			".                       ." \
-			".........................",
-			0, 0, 25, 8, 0x0006);
+        m_imageDb["hero_level"] = Image(
+            "........................." \
+            ".                       ." \
+            ".                       ." \
+            ".    L E V E L  U P     ." \
+            ".                       ." \
+            ".                       ." \
+            ".                       ." \
+            ".........................",
+            0, 0, 25, 8, 0x0006);
 
         m_imageDb["chest_opened"] = Image(
             "... _______________ ..." \
@@ -3618,7 +3618,7 @@ void Database::Initialize()
         m_frameDb["select_hero_12"] = Frame({ m_imageDb["hero_border"], m_imageDb["select_hero_12"], });
 
         m_frameDb["hero_dead"] = Frame({ m_imageDb["hero_dead"] });
-		m_frameDb["hero_level"] = Frame({ m_imageDb["hero_level"] });
+        m_frameDb["hero_level"] = Frame({ m_imageDb["hero_level"] });
         m_frameDb["hero_border"] = Frame({ m_imageDb["hero_border"] });
 
         m_frameDb["chest_closed"] = Frame({ m_imageDb["chest_closed"], m_imageDb["chest_closed_gold"] });
@@ -3944,9 +3944,9 @@ void Database::Initialize()
         m_animationDb["hero_dead"].SetData(
             { m_frameDb["hero_dead"] },
             200, false, false, false);
-		m_animationDb["hero_level"].SetData(
-			{ m_frameDb["hero_level"] },
-			200, false, false, false);
+        m_animationDb["hero_level"].SetData(
+            { m_frameDb["hero_level"] },
+            200, false, false, false);
         m_animationDb["hero_border"].SetData(
             { m_frameDb["hero_border"] },
             200, false, false, false);
