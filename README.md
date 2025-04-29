@@ -47,7 +47,7 @@ Combat is turn based and purchased weapons can be used to battle.
 ![image](https://github.com/user-attachments/assets/dadcf582-2eff-41f0-a6b1-5435cdb9f934)
 ### Elemental Counters
 ```
-Cold ---> Lightning         Normal         Psychic       Holy        Hwaling
+Cold ---> Lightning         Normal         Psychic       Holy        Healing
   ^           |            ^      \           ^           ^
   |           V           /        v          v           v
 Fire <---- Water       Poison <-- Steel      Dark      Necrotic
