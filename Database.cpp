@@ -2544,7 +2544,7 @@ void Database::Initialize()
             ".................." \
             "..................",
             0, 0, 18, 15, 0x0007);
-        m_imageDb["alt_blob_attack_eyes_1"] = Image(
+        m_imageDb["alt_blob_eyes_attack_1"] = Image(
             ".................." \
             ".................." \
             ".................." \
@@ -2578,7 +2578,7 @@ void Database::Initialize()
             ".................." \
             "..................",
             0, 0, 18, 15, 0x0007);
-        m_imageDb["alt_blob_attack_eyes_2"] = Image(
+        m_imageDb["alt_blob_eyes_attack_2"] = Image(
             ".................." \
             ".................." \
             ".................." \
@@ -2612,7 +2612,7 @@ void Database::Initialize()
             ".................." \
             "..................",
             0, 0, 18, 15, 0x0007);
-        m_imageDb["alt_blob_attack_eyes_3"] = Image(
+        m_imageDb["alt_blob_eyes_attack_3"] = Image(
             ".................." \
             ".................." \
             ".................." \
@@ -2654,7 +2654,7 @@ void Database::Initialize()
             ".........|........" \
             ".........|........" \
             ".................." \
-            ".......o..o......." \
+            ".......oooo......." \
             "........vv........" \
             ".................." \
             ".................." \
@@ -2689,7 +2689,7 @@ void Database::Initialize()
             ".........|........" \
             ".........|........" \
             ".................." \
-            ".......o..o......." \
+            ".......oooo......." \
             "........vv........" \
             ".................." \
             ".................." \
@@ -2724,7 +2724,7 @@ void Database::Initialize()
             ".........|........" \
             ".........|........" \
             ".................." \
-            ".......o..o......." \
+            ".......oooo......." \
             "........vv........" \
             ".................." \
             ".................." \
@@ -2759,7 +2759,7 @@ void Database::Initialize()
             ".........|........" \
             ".........|........" \
             ".................." \
-            ".......o..o......." \
+            ".......oooo......." \
             "........vv........" \
             ".................." \
             ".................." \
@@ -2791,7 +2791,7 @@ void Database::Initialize()
             ".........|........" \
             ".........|........" \
             ".................." \
-            ".......o..o......." \
+            ".......oooo......." \
             "........##........" \
             "........##........" \
             ".................." \
@@ -2873,14 +2873,117 @@ void Database::Initialize()
             "..................",
             0, 0, 18, 15, 0x0007);
 
+        m_imageDb["alt_spider_attack_1"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".. /\\.. __ . /\\ .." \
+            ". / .\\/    \\/. \\ ." \
+            " \\ /.|      |.\\ / " \
+            ".. \\ .\\____/. / .." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["alt_spider_eyes_attack_1"] = Image(
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".................." \
+            ".......oooo......." \
+            "........vv........" \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["alt_spider_attack_2"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".. /\\.. __ . /\\ .." \
+            ". / .\\/    \\/. \\ ." \
+            ". \\ /|      |\\ / ." \
+            "... \\ \\____/ / ..." \
+            ".... \\ .... / ...." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["alt_spider_eyes_attack_2"] = Image(
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".......oooo......." \
+            "......./vv\\......." \
+            ".......|  |......." \
+            ".......\\__/......." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["alt_spider_attack_3"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".. /\\.. __ . /\\ .." \
+            ". / .\\/    \\/. \\ ." \
+            ". \\ /|      |\\ / ." \
+            "... \\ \\____/ / ..." \
+            ".... \\ .... / ...." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["alt_spider_eyes_attack_3"] = Image(
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".........|........" \
+            ".................." \
+            ".......oooo......." \
+            "........__........" \
+            "........vv........" \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+
         m_imageDb["bat_1"] = Image(
             ".................." \
             ".................." \
-            "........_..__....." \
-            ".......|(./_(....." \
-            ".......\\,,|\\(....." \
-            "........**`/......" \
-            "........;;........" \
+            "....... _  __ ...." \
+            "...... |( /_( ...." \
+            "...... \\,,|\\( ...." \
+            "....... **`/ ....." \
+            "....... ;; ......." \
             ".................." \
             ".................." \
             ".................." \
@@ -2911,10 +3014,10 @@ void Database::Initialize()
             ".................." \
             ".................." \
             ".................." \
-            "......_.....__...." \
-            ".....|(_,,_/_(...." \
-            ".....`-.**-``....." \
-            "........;;........" \
+            "..... _ ... __ ..." \
+            ".... |(_,,_/_( ..." \
+            ".... `-.**-`` ...." \
+            "....... ;; ......." \
             ".................." \
             ".................." \
             ".................." \
@@ -2946,9 +3049,9 @@ void Database::Initialize()
             ".................." \
             ".................." \
             ".................." \
-            "......._,,__......" \
-            "....../,**-,\\....." \
-            "......\\(;;.)/....." \
+            "...... _,,__ ....." \
+            "..... /,**-,\\ ...." \
+            "..... \\(;; )/ ...." \
             ".................." \
             ".................." \
             ".................." \
@@ -2980,10 +3083,10 @@ void Database::Initialize()
             ".................." \
             ".................." \
             ".................." \
-            "........,,_......." \
-            ".......|**,\\ ....." \
-            ".......\\;;|(......" \
-            "........\\(\\(......" \
+            "....... ,,_ ......" \
+            "...... |**,\\ ....." \
+            "...... \\;;|( ....." \
+            "....... \\(\\( ....." \
             ".................." \
             ".................." \
             ".................." \
@@ -3013,11 +3116,11 @@ void Database::Initialize()
         m_imageDb["bat_attack_1"] = Image(
             ".................." \
             ".................." \
-            "........_..__....." \
-            ".......|(./_(....." \
-            ".......\\,,|\\(....." \
-            "........**`/......" \
-            "........;;........" \
+            "....... _..__ ...." \
+            "...... |(./_( ...." \
+            "...... \\,,|\\( ...." \
+            "....... **`/ ....." \
+            "....... ;; ......." \
             ".................." \
             ".................." \
             ".................." \
@@ -3048,10 +3151,10 @@ void Database::Initialize()
             ".................." \
             ".................." \
             ".................." \
-            "......_.....__...." \
-            ".....|(_,,_/_(...." \
-            ".....`-.**-``....." \
-            "........;;........" \
+            "..... _.... __ ..." \
+            ".... |(_,,_/_( ..." \
+            ".... `-.**-`` ...." \
+            "....... ;; ......." \
             ".................." \
             ".................." \
             ".................." \
@@ -3083,9 +3186,9 @@ void Database::Initialize()
             ".................." \
             ".................." \
             ".................." \
-            "......._,,__......" \
-            "....../,**-,\\....." \
-            "......\\(;;.)/....." \
+            "...... _,,__ ....." \
+            "..... /,**-,\\ ...." \
+            "..... \\(;;.)/ ...." \
             ".................." \
             ".................." \
             ".................." \
@@ -3117,10 +3220,10 @@ void Database::Initialize()
             ".................." \
             ".................." \
             ".................." \
-            "........,,_......." \
-            ".......|**,\\ ....." \
-            ".......\\;;|(......" \
-            "........\\(\\(......" \
+            "........,,_ ......" \
+            "...... |**,\\ ....." \
+            "...... \\;;|( ....." \
+            "....... \\(\\( ....." \
             ".................." \
             ".................." \
             ".................." \
@@ -3141,6 +3244,110 @@ void Database::Initialize()
             "...(..........)..." \
             "....(........)...." \
             ".....{......)....." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0004);
+
+        m_imageDb["alt_bat_attack_1"] = Image(
+            ".................." \
+            "....... _..__ ...." \
+            "...... |(./_( ...." \
+            "...... \\,,|\\( ...." \
+            "....... **`/ ....." \
+            "....... ;; ......." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["alt_bat_attack_eyes_1"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "........**........" \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0004);
+
+        m_imageDb["alt_bat_attack_2"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "... _............." \
+            ". /_/ ............" \
+            ". ) \\ ............" \
+            "{  ; |} .........." \
+            ". )_/ ............" \
+            ". \\_\\ ............" \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["alt_bat_attack_eyes_2"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "-................." \
+            "-................." \
+            "-................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0004);
+        m_imageDb["alt_bat_attack_3"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".............. _.." \
+            "............ /_/ ." \
+            "............ ) \\ ." \
+            "...........{  ; |}" \
+            "............ )_/ ." \
+            "............ \\_\\ ." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["alt_bat_attack_eyes_2"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "---............---" \
+            "---\\........../---" \
+            "---\\----------/---" \
+            "...\\----------/..." \
+            ".................." \
             ".................." \
             ".................." \
             ".................." \
@@ -3945,6 +4152,11 @@ void Database::Initialize()
         m_frameDb["spider_attack_2"] = Frame({ m_imageDb["spider_attack_2"], m_imageDb["spider_eyes_attack_2"] });
         m_frameDb["spider_attack_3"] = Frame({ m_imageDb["spider_attack_3"], m_imageDb["spider_eyes_attack_3"] });
         m_frameDb["spider_attack_4"] = Frame({ m_imageDb["spider_attack_3"], m_imageDb["spider_eyes_attack_3"] });
+        m_frameDb["alt_spider_attack_1"] = Frame({ m_imageDb["alt_spider_attack_1"], m_imageDb["alt_spider_eyes_attack_1"] });
+        m_frameDb["alt_spider_attack_2"] = Frame({ m_imageDb["alt_spider_attack_2"], m_imageDb["alt_spider_eyes_attack_2"] });
+        m_frameDb["alt_spider_attack_3"] = Frame({ m_imageDb["alt_spider_attack_2"], m_imageDb["alt_spider_eyes_attack_3"] });
+        m_frameDb["alt_spider_attack_4"] = Frame({ m_imageDb["alt_spider_attack_3"], m_imageDb["alt_spider_eyes_attack_3"] });
+        m_frameDb["alt_spider_attack_5"] = Frame({ m_imageDb["alt_spider_attack_1"], m_imageDb["alt_spider_eyes_attack_1"] });
 
         m_frameDb["bat_1"] = Frame({ m_imageDb["bat_1"], m_imageDb["bat_eyes_1"] });
         m_frameDb["bat_2"] = Frame({ m_imageDb["bat_2"], m_imageDb["bat_eyes_2"] });
@@ -3954,6 +4166,9 @@ void Database::Initialize()
         m_frameDb["bat_attack_2"] = Frame({ m_imageDb["bat_attack_2"], m_imageDb["bat_attack_eyes_2"] });
         m_frameDb["bat_attack_3"] = Frame({ m_imageDb["bat_attack_3"], m_imageDb["bat_attack_eyes_3"] });
         m_frameDb["bat_attack_4"] = Frame({ m_imageDb["bat_attack_4"], m_imageDb["bat_attack_eyes_4"] });
+        m_frameDb["alt_bat_attack_1"] = Frame({ m_imageDb["alt_bat_attack_1"], m_imageDb["alt_bat_attack_eyes_1"] });
+        m_frameDb["alt_bat_attack_2"] = Frame({ m_imageDb["alt_bat_attack_2"], m_imageDb["alt_bat_attack_eyes_2"] });
+        m_frameDb["alt_bat_attack_3"] = Frame({ m_imageDb["alt_bat_attack_3"], m_imageDb["alt_bat_attack_eyes_3"] });
 
         m_frameDb["skeleton_1"] = Frame({ m_imageDb["skeleton_1"], m_imageDb["skeleton_eyes_1"] });
         m_frameDb["skeleton_2"] = Frame({ m_imageDb["skeleton_2"], m_imageDb["skeleton_eyes_2"] });
@@ -4237,9 +4452,9 @@ void Database::Initialize()
         m_animationDb["blob_attack"].SetData(
             { m_frameDb["blob_attack_1"], m_frameDb["blob_attack_2"], m_frameDb["blob_attack_3"], m_frameDb["blob_attack_4"], m_frameDb["blob_attack_5"], m_frameDb["blob_attack_6"], m_frameDb["blob_attack_7"], m_frameDb["blob_attack_8"], m_frameDb["blob_attack_9"], m_frameDb["blob_attack_10"], m_frameDb["blob_attack_11"], m_frameDb["blob_attack_12"] },
             120, false, true, false);
-		m_animationDb["alt_blob_attack"].SetData(
-			{ m_frameDb["alt_blob_attack_1"], m_frameDb["alt_blob_attack_2"], m_frameDb["alt_blob_attack_3"], m_frameDb["alt_blob_attack_4"], m_frameDb["alt_blob_attack_5"], },
-			120, false, true, false);
+        m_animationDb["alt_blob_attack"].SetData(
+            { m_frameDb["alt_blob_attack_1"], m_frameDb["alt_blob_attack_2"], m_frameDb["alt_blob_attack_3"], m_frameDb["alt_blob_attack_4"], m_frameDb["alt_blob_attack_5"], },
+            120, false, true, false);
 
         m_animationDb["skeleton"].SetData(
             { m_frameDb["skeleton_1"], m_frameDb["skeleton_2"], },
@@ -4257,12 +4472,18 @@ void Database::Initialize()
         m_animationDb["spider_attack"].SetData(
             { m_frameDb["spider_attack_1"], m_frameDb["spider_attack_2"], m_frameDb["spider_attack_3"], m_frameDb["spider_attack_4"] },
             200, false, true, false);
+        m_animationDb["alt_spider_attack"].SetData(
+            { m_frameDb["alt_spider_attack_1"], m_frameDb["alt_spider_attack_2"], m_frameDb["alt_spider_attack_3"], m_frameDb["alt_spider_attack_4"], m_frameDb["alt_spider_attack_5"] },
+            200, false, true, false);
 
         m_animationDb["bat"].SetData(
             { m_frameDb["bat_1"], m_frameDb["bat_2"], m_frameDb["bat_3"], m_frameDb["bat_4"] },
             120, 220, true, true, false);
         m_animationDb["bat_attack"].SetData(
             { m_frameDb["bat_attack_1"], m_frameDb["bat_attack_2"], m_frameDb["bat_attack_3"], m_frameDb["bat_attack_4"] },
+            150, false, true, false);
+        m_animationDb["alt_bat_attack"].SetData(
+            { m_frameDb["alt_bat_attack_1"], m_frameDb["alt_bat_attack_2"], m_frameDb["alt_bat_attack_3"] },
             150, false, true, false);
 
         m_animationDb["dragon"].SetData(
@@ -4442,7 +4663,7 @@ void Database::Initialize()
 
         m_dieRangeDb["new_hero"]       = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(10, 10, 10));
         m_dieRangeDb["level_up"]       = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(10, 10, 10));
-        m_dieRangeDb["level_up_5"]     = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(50, 10, 10));
+        m_dieRangeDb["level_up_5"]     = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(45, 10, 10));
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -4504,7 +4725,7 @@ void Database::Initialize()
         m_weaponDb["Healing Potion"] = Weapon("Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["healing_potion"]);
         m_weaponDb["Magic Potion"] = Weapon("Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["magic_potion"]);
         m_weaponDb["Greater Healing Potion"] = Weapon("Greater Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_healing_potion"]);
-        m_weaponDb["Greater Magic Potion"] = Weapon("Greater Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_healing_potion"]);
+        m_weaponDb["Greater Magic Potion"] = Weapon("Greater Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_magic_potion"]);
 
         m_weaponDb["New Hero"] = Weapon("New Hero", DamageType::NORMAL, m_dieRangeDb["new_hero"], Target::NEWHERO, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["new_hero"]);
         m_weaponDb["Level Up"] = Weapon("Level Up", DamageType::NORMAL, m_dieRangeDb["level_up"], Target::PLAYERLEVEL, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["level_up"]);
@@ -4528,6 +4749,8 @@ void Database::Initialize()
         WEAPON_TABLE_HEALING("Wand", Rarity::COMMON)
         WEAPON_TABLE_HEALING("Staff", Rarity::COMMON)
 
+        m_weaponDb["Lesser Healing Potion"],
+        m_weaponDb["Lesser Magic Potion"],
         m_weaponDb["Healing Potion"],
         m_weaponDb["Magic Potion"],
 
@@ -4657,9 +4880,9 @@ void Database::Initialize()
     m_monsterDb.clear();
     {
         m_monsterDb["Blob"] = Monster("Blob", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["blob_attack"], m_animationDb["alt_blob_attack"], m_animationDb["blob"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
-        m_monsterDb["Bat"] = Monster("Bat", Die(1, 4, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["bat_attack"], m_animationDb["bat_attack"], m_animationDb["bat"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
+        m_monsterDb["Bat"] = Monster("Bat", Die(1, 4, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["alt_bat_attack"], m_animationDb["alt_bat_attack"], m_animationDb["bat"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
         m_monsterDb["Skeleton"] = Monster("Skeleton", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["skeleton_attack"], m_animationDb["alt_skeleton_attack"], m_animationDb["skeleton"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
-        m_monsterDb["Spider"] = Monster("Spider", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["spider_attack"], m_animationDb["spider_attack"], m_animationDb["spider"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
+        m_monsterDb["Spider"] = Monster("Spider", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["alt_spider_attack"], m_animationDb["spider_attack"], m_animationDb["spider"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
         m_monsterDb["Dragon"] = Monster("Dragon", Die(2, 20, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["dragon_attack"], m_animationDb["dragon_attack"], m_animationDb["dragon"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
     }
 

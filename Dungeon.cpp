@@ -301,9 +301,9 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 				newMonster.idle.SetAttributes(0, ToAttribute(element));
 				newMonster.idle.SetAttributes(1, eyeColor);
 				newMonster.attack1.SetAttributes(0, ToAttribute(element));
-				newMonster.attack1.SetAttributes(0, eyeColor);
+				newMonster.attack1.SetAttributes(1, eyeColor);
 				newMonster.attack2.SetAttributes(0, ToAttribute(element));
-				newMonster.attack2.SetAttributes(0, eyeColor);
+				newMonster.attack2.SetAttributes(1, eyeColor);
 				newMonster.weakness = ToWeakness(element);
 				newMonster.weapon1 = weapon;
 				newMonster.weapon2 = weapon;
