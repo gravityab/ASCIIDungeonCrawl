@@ -296,9 +296,14 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 				newMonster.totalMp = newMonster.rollMaxMp.Roll();
 				newMonster.currentHp = dead ? 0 : newMonster.totalHp;
 				newMonster.currentMp = newMonster.totalMp;
+				std::vector<uint16_t> hiltColor = { 0x0006, 0x0008, 0x000E, 0x000F };
+				uint16_t eyeColor = ROLLTABLE(hiltColor); //ROLLTABLE(attributes);
 				newMonster.idle.SetAttributes(0, ToAttribute(element));
+				newMonster.idle.SetAttributes(1, eyeColor);
 				newMonster.attack1.SetAttributes(0, ToAttribute(element));
+				newMonster.attack1.SetAttributes(0, eyeColor);
 				newMonster.attack2.SetAttributes(0, ToAttribute(element));
+				newMonster.attack2.SetAttributes(0, eyeColor);
 				newMonster.weakness = ToWeakness(element);
 				newMonster.weapon1 = weapon;
 				newMonster.weapon2 = weapon;
