@@ -462,7 +462,15 @@ void DungeonCrawl::DrawDoors(Time delta)
                     else if (room.monsters.size() == 1)
                         m_console.WriteData(x + 14, 7, attribute, "1 Monster");
                     else if (room.monsters.size() > 1)
-                        m_console.WriteData(x + 14, 7, attribute, "%d Monster", room.monsters.size());
+                    {
+                        int count = 0;
+                        for (int index = 0; index < (int)room.monsters.size(); index++)
+                        {
+                            if (room.monsters[index].currentHp > 0)
+                                count++;
+                        }
+                        m_console.WriteData(x + 14, 7, attribute, "%d Monster", count);
+                    }
                     break;
                 }
             }
@@ -707,8 +715,13 @@ void DungeonCrawl::DrawMonsters(Time delta)
 
         m_console.WriteData(x + 3, y, ToAttribute(monster.rarity), monster.name.c_str());
 
-        if (monster.attacking)
-            monster.attack.WriteData(m_console, delta, x, y, complete);
+        if (monster.attacking1 || monster.attacking2)
+        {
+            if (monster.attacking1)
+                monster.attack1.WriteData(m_console, delta, x, y, complete);
+            else if (monster.attacking2)
+                monster.attack2.WriteData(m_console, delta, x, y, complete);
+        }
         else
             monster.idle.WriteData(m_console, delta, x, y, complete);
 
@@ -977,7 +990,10 @@ void DungeonCrawl::DrawAction(Time delta)
             {
                 // TODO: Animate hero getting hit
                 Monster* monster = static_cast<Monster*>(action.source);
-                monster->attacking = true;
+                if (action.weapon->altAnimation)
+                    monster->attacking2 = true;
+                else
+                    monster->attacking1 = true;
             }
 
             for (int index = 0; index < (int)m_heroes.size(); index++)
@@ -1000,9 +1016,12 @@ void DungeonCrawl::DrawAction(Time delta)
             if (action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
             {
                 Monster* monster = static_cast<Monster*>(action.source);
-                monster->attacking = false;
-                monster->attack.Reset();
-                monster->attack.SetAnimating(true);
+                monster->attacking1 = false;
+                monster->attacking2 = false;
+                monster->attack1.Reset();
+                monster->attack1.SetAnimating(true);
+                monster->attack2.Reset();
+                monster->attack2.SetAnimating(true);
             }
             else if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
             {
@@ -1038,9 +1057,12 @@ void DungeonCrawl::DrawAction(Time delta)
                 if (action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
                 {
                     Monster* monster = static_cast<Monster*>(action.source);
-                    monster->attacking = false;
-                    monster->attack.Reset();
-                    monster->attack.SetAnimating(true);
+                    monster->attacking1 = false;
+                    monster->attacking2 = false;
+                    monster->attack1.Reset();
+                    monster->attack1.SetAnimating(true);
+                    monster->attack2.Reset();
+                    monster->attack2.SetAnimating(true);
                 }
                 else if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
                 {
@@ -1562,7 +1584,8 @@ void DungeonCrawl::UseWeapon(Action action)
     if (action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
     {
         Monster* monster = static_cast<Monster*>(action.source);
-        monster->attacking = false;
+        monster->attacking1 = false;
+        monster->attacking2 = false;
     }
 
     // Switch positions
@@ -1577,15 +1600,21 @@ void DungeonCrawl::UseWeapon(Action action)
     //	return;
     //}
 
-    //if (action.weapon->target == Target::MONSTER_RECRUIT
-    //	|| action.weapon->target == Target::MONSTER_SWITCH)
-    //{
-    //	Monster* monster = static_cast<Monster*>(action.source);
-    //	Monster copy = *monster;
-    //	if (m_currentRoom->monsters.size() != 4)
-    //		m_currentRoom->monsters.push_back(copy);
-    //	return;
-    //}
+    if (action.weapon->target == Target::MONSTER_RECRUIT)
+        //|| action.weapon->target == Target::MONSTER_SWITCH)
+    {
+        Monster* monster = static_cast<Monster*>(action.source);
+        for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
+        {
+            // Resurrect all dead common monsters to 10% HP
+            if (m_currentRoom->monsters[index].currentHp == 0
+                && m_currentRoom->monsters[index].rarity == Rarity::COMMON)
+            {
+                m_currentRoom->monsters[index].currentHp = (int)(m_currentRoom->monsters[index].totalHp * 0.1) + 1;
+            }
+        }
+        return;
+    }
 
     // Iterate over the targets and apply the result
     for (int index = 0; index < (int)action.targets.size(); index++)

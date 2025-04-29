@@ -229,24 +229,27 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 
 		room.monsters.reserve(4);
 		int count = boss ? 1 : doorNumMonsters;
+		int recruitCount = family == MonsterFamily::UNDEAD ? 4 - count : 0;
 		while (count-- > 0)
 		{
-			auto createMonster = [&](DamageType element, Rarity monRar, int buff)->Monster {
+			auto createMonster = [&](DamageType element, Rarity monRar, int buff, bool dead)->Monster {
 				const int constant = (int)std::pow(2, (floor / 5) + 1 + buff);
 				Weapon weapon;
 				weapon.die = Die(int((floor / 5) + 1 + buff), 4, constant, element);
 				weapon.speed = 8;
 				weapon.target = Target::ENEMY;
 
-				//Weapon recruit;
-				//recruit.die = Die(0, 0, 0);
-				//recruit.speed = 4;
-				//recruit.target = Target::MONSTER_RECRUIT;
+				Weapon recruit;
+				recruit.die = Die(0, 0, 0);
+				recruit.speed = 4;
+				recruit.target = Target::MONSTER_RECRUIT;
+				recruit.altAnimation = true;
 
 				Weapon condition;
 				condition.die = Die(int((floor / 5) + 1 + buff), 2, constant, element);
 				condition.speed = 2;
 				condition.target = Target::MONSTER_CONDITION;
+				condition.altAnimation = true;
 
 				//Weapon split;
 				//split.die = Die(0, 0, 0);
@@ -257,11 +260,13 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 				allEnemies.die = Die(int((floor / 5) + 1 + buff), 2, constant, element);
 				allEnemies.speed = 2;
 				allEnemies.target = Target::MONSTER_ALLENEMIES;
+				allEnemies.altAnimation = true;
 
 				Weapon drain;
 				drain.die = Die(int((floor / 5) + 1 + buff), 2, constant, element);
 				drain.speed = 2;
 				drain.target = Target::MONSTER_DRAINMP;
+				drain.altAnimation = true;
 
 				//Weapon swap;
 				//swap.die = Die(0, 0, 0);
@@ -289,10 +294,11 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 				newMonster.rollMaxMp = Die((floor / 5) + buff, 6, (int)std::pow(2, floor / 5));
 				newMonster.totalHp = newMonster.rollMaxHp.Roll();
 				newMonster.totalMp = newMonster.rollMaxMp.Roll();
-				newMonster.currentHp = newMonster.totalHp;
+				newMonster.currentHp = dead ? 0 : newMonster.totalHp;
 				newMonster.currentMp = newMonster.totalMp;
 				newMonster.idle.SetAttributes(0, ToAttribute(element));
-				newMonster.attack.SetAttributes(0, ToAttribute(element));
+				newMonster.attack1.SetAttributes(0, ToAttribute(element));
+				newMonster.attack2.SetAttributes(0, ToAttribute(element));
 				newMonster.weakness = ToWeakness(element);
 				newMonster.weapon1 = weapon;
 				newMonster.weapon2 = weapon;
@@ -318,8 +324,8 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 				}
 				else if (family == MonsterFamily::UNDEAD)
 				{
-					newMonster.weapon3 = drain;
-					newMonster.weapon4 = drain;
+					newMonster.weapon3 = recruit;
+					newMonster.weapon4 = recruit;
 				}
 				newMonster.armor.armorClass = buff > 0 ? (floor / 5) + buff : (floor / 5);
 				newMonster.armor.speed = 0;
@@ -336,6 +342,11 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 			Rarity monRarity = *monsterRarityIter;
 			monsterRarity.erase(monsterRarityIter); // Remove the monster rarity from the list
 
+			if (recruitCount != 0 && recruitCount-- > 0)
+			{
+				room.monsters.push_back(createMonster(attribute, Rarity::COMMON, 0, true));
+			}
+
 			int select = GetRandomValue(0, 3);
 			if (select == 0 && !boss)
 			{
@@ -345,7 +356,7 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 				if (monRarity >= Rarity::RARE && GetRandomValue(0, 4) == 0)
 					selected = ROLLTABLE(damageTypes);
 
-				room.monsters.push_back(createMonster(selected, monRarity, ((int)monRarity) - 1));
+				room.monsters.push_back(createMonster(selected, monRarity, ((int)monRarity) - 1, false));
 			}
 			else
 			{
@@ -353,7 +364,7 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 				if (monRarity >= Rarity::RARE && GetRandomValue(0, 4) == 0)
 					selected = ROLLTABLE(damageTypes);
 
-				room.monsters.push_back(createMonster(selected, monRarity, ((int)monRarity) - 1));
+				room.monsters.push_back(createMonster(selected, monRarity, ((int)monRarity) - 1, false));
 			}
 		}
 

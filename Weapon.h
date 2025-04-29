@@ -92,4 +92,7 @@ public:
 
 	/// Whether the item was selected to be used on a target
 	bool selected = false;
+
+	/// Whether the monster animation of this item uses the alternate animation
+	bool altAnimation = false;
 };

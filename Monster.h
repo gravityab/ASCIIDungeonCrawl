@@ -29,7 +29,7 @@ public:
 	Monster();
 
 	/// Constructor for a monster with predefined settings
-	Monster(std::string name, Die maxHp, Die maxMp, DamageType weakness, int experience, int level, Animation attack, Animation idle, Weapon weapon1, Weapon weapon2, Weapon weapon3, Weapon weapon4);
+	Monster(std::string name, Die maxHp, Die maxMp, DamageType weakness, int experience, int level, Animation attack, Animation attack2, Animation idle, Weapon weapon1, Weapon weapon2, Weapon weapon3, Weapon weapon4);
 
 	/// Get the type of actor
 	ActorType GetType() override;
@@ -45,7 +45,10 @@ public:
 	int experience = 0;
 
 	/// The monster attack animation
-	Animation attack;
+	Animation attack1;
+
+	/// The monster secondary attack
+	Animation attack2;
 
 	/// The random maximum hp
 	Die rollMaxHp;
@@ -60,5 +63,8 @@ public:
 	DamageType weakness;
 
 	/// Monster is currently attacking
-	bool attacking = false;
+	bool attacking1 = false;
+
+	/// Monster is currently using alt attack
+	bool attacking2 = false;
 };

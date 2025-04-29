@@ -16,6 +16,7 @@ Monster::Monster(
 	int experience_,
 	int level_,
 	Animation attack_,
+	Animation attack2_,
 	Animation idle_,
 	Weapon weapon1_,
 	Weapon weapon2_,
@@ -28,7 +29,8 @@ Monster::Monster(
 	weakness = weakness_;
 	experience = experience_;
 	level = level_;
-	attack = attack_;
+	attack1 = attack_;
+	attack2 = attack2_;
 	idle = idle_;
 	weapon1 = weapon1_;
 	weapon2 = weapon2_;
