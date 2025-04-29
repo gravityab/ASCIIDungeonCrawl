@@ -413,11 +413,9 @@ void DungeonCrawl::DrawTrap(Time delta, uint16_t attribute, bool showExit, bool 
         ANIMATION("exit").WriteData(m_console, delta, 2, 3, complete);
         if (m_ui.GetCursorIndex() == 0)
             m_ui.GetAnimation().WriteData(m_console, delta, 2, 3, complete);
-        //if (m_cursorIndex == 0)
-        //	m_cursor.WriteData(m_console, delta, 2, 3, complete);
 
-        m_console.WriteData(4, 4, 0x0007, "CHALANGE: %d", m_trapDC);
-        m_console.WriteData(4, 5, m_trapRoll > m_trapDC ? 0x0004 : 0x0002, "ROLL: %d", m_trapRoll);
+        m_console.WriteData(3, 4, 0x0007, "CHALLENGE: %d", m_trapDC);
+        m_console.WriteData(3, 5, m_trapRoll > m_trapDC ? 0x0004 : 0x0002, "ROLL: %d", m_trapRoll);
     }
 }
 
