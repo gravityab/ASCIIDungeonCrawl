@@ -533,11 +533,36 @@ void DungeonCrawl::DrawHero(Time delta)
         if (hero.currentHp == 0)
             borderColor = 0x0004;
 
+        bool hasResist = false;
+        bool hasWeakness = false;
+        if (m_ui.GetState() == CursorState::COMBAT_MONSTERS)
+        {
+            Monster* monster = &m_currentRoom->monsters[m_ui.GetCursorIndex()];
+            DamageType type = monster->element;
+            for (int res = 0; res < (int)hero.armor.resistances.size(); res++)
+            {
+                if (hero.armor.resistances[res] == type)
+                {
+                    hasResist = true;
+                    borderColor = ToAttribute(type);
+                }
+                if (hero.armor.resistances[res] == ToWeakness(type))
+                {
+                    hasWeakness = true;
+                    borderColor = ToAttribute(ToWeakness(type));
+                }
+            }
+        }
+
         // Draw border and condition
         hero.idle.SetAttributes(0, borderColor);
         hero.idle.WriteData(m_console, delta, x, y, complete);
         if (hero.condition.die != 0)
             m_console.WriteData(x + 6, y, ToAttribute(hero.condition.type), " %s ", ToConditionString(hero.condition.type).c_str());
+        if (hasResist)
+            m_console.WriteData(x + 2, y + 7, borderColor, " RESIST ");
+        if (hasWeakness)
+            m_console.WriteData(x + 13, y + 7, borderColor, " WEAKNESS ");
 
         // Animate selection
         if (m_ui.GetState() == CursorState::HERO
@@ -705,11 +730,26 @@ void DungeonCrawl::DrawMonsters(Time delta)
         if (monster.currentHp == 0)
             continue;
 
-        //if (index == m_cursorMonsterIndex && m_cursorState == CursorState::MONSTERS)
-        //	m_cursor.WriteData(m_console, delta, x + 2, y - 1, complete);
-
         if (index == m_ui.GetCursorIndex() && m_ui.GetState() == CursorState::COMBAT_MONSTERS)
+        {
+            DamageType type = m_ui.GetContext().weapon->type;
+
+            for (int res = 0; res < (int)monster.armor.resistances.size(); res++)
+            {
+                if (monster.armor.resistances[res] == type)
+                {
+                    m_ui.GetAnimation().SetAttributes(0, ToAttribute(ToWeakness(type)));
+                    m_ui.GetAnimation().SetAttributes(1, SOLID(ToAttribute(ToWeakness(type))));
+                }
+                if (monster.armor.resistances[res] == ToWeakness(type))
+                {
+                    m_ui.GetAnimation().SetAttributes(0, ToAttribute(type));
+                    m_ui.GetAnimation().SetAttributes(1, SOLID(ToAttribute(type)));
+                }
+            }
+
             m_ui.GetAnimation().WriteData(m_console, delta, x + 2, y - 1, complete);
+        }
 
         m_console.WriteData(x + 3, y, ToAttribute(monster.rarity), monster.name.c_str());
 
@@ -2151,6 +2191,8 @@ void DungeonCrawl::PushDoors()
     CursorContext context;
     context.state = CursorState::DOOR;
     context.cursor = ANIMATION("select_door");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.maxIndex = (int)m_currentFloor->rooms.size() - 1;
     m_ui.PushBack(context);
 }
@@ -2160,6 +2202,8 @@ void DungeonCrawl::PushShop()
     CursorContext context;
     context.state = CursorState::SHOP;
     context.cursor = ANIMATION("select_weapon");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 4; // Start at the exit
     context.maxIndex = (int)m_currentRoom->shop.size();
     context.direction = CursorIndexDirection::HORIZONTAL;
@@ -2171,6 +2215,8 @@ void DungeonCrawl::PushFountain()
     CursorContext context;
     context.state = CursorState::FOUNTAIN;
     context.cursor = ANIMATION("select_weapon");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0; // Start at the exit
     context.maxIndex = 0;
     context.direction = CursorIndexDirection::HORIZONTAL;
@@ -2182,6 +2228,8 @@ void DungeonCrawl::PushTrap()
     CursorContext context;
     context.state = CursorState::TRAP;
     context.cursor = ANIMATION("select_weapon");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0; // Start at the exit
     context.maxIndex = 0;
     context.direction = CursorIndexDirection::HORIZONTAL;
@@ -2246,6 +2294,8 @@ void DungeonCrawl::PushTrapInitiated()
     CursorContext context;
     context.state = CursorState::TRAP_INITIATED;
     context.cursor = ANIMATION("select_weapon");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0; // Start at the exit
     context.maxIndex = 0;
     context.direction = CursorIndexDirection::HORIZONTAL;
@@ -2257,6 +2307,8 @@ void DungeonCrawl::PushTreasure()
     CursorContext context;
     context.state = CursorState::CHEST;
     context.cursor = ANIMATION("select_weapon");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0; // Start at the exit
     context.maxIndex = 0;
     context.direction = CursorIndexDirection::HORIZONTAL;
@@ -2268,6 +2320,8 @@ void DungeonCrawl::PushReward()
     CursorContext context;
     context.state = CursorState::REWARD;
     context.cursor = ANIMATION("select_weapon");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0; // Start at the exit
 
     if (m_currentRoom->reward == Reward::MONEY
@@ -2286,6 +2340,8 @@ void DungeonCrawl::PushRewardHero()
 {
     CursorContext context;
     context.cursor = ANIMATION("select_hero");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0;
     context.maxIndex = (int)m_heroes.size() - 1;
     context.minIndex = 0;
@@ -2321,6 +2377,8 @@ void DungeonCrawl::PushRewardHeroItem()
 
     CursorContext context;
     context.cursor = ANIMATION("select_nothing");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0;
     context.maxIndex = 1;
     context.minIndex = 0;
@@ -2343,6 +2401,8 @@ void DungeonCrawl::PushCombat(Actor* hero)
     context.minIndex = 0;
     context.maxIndex = 1;
     context.cursor = ANIMATION("select_nothing");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0;
     context.direction = CursorIndexDirection::VERTICAL;
     context.source = hero;
@@ -2402,7 +2462,9 @@ void DungeonCrawl::PushCombatSelection()
     if (weapon->target == Target::ENEMY)
     {
         context.state = CursorState::COMBAT_MONSTERS;
-        context.cursor = ANIMATION("select_door");	
+        context.cursor = ANIMATION("select_door");
+        context.cursor.SetAttributes(0, 0x0007);
+        context.cursor.SetAttributes(1, 0x0008);
         context.maxIndex = (int)m_currentRoom->monsters.size() - 1;
         for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
         {
@@ -2414,6 +2476,8 @@ void DungeonCrawl::PushCombatSelection()
     {
         context.state = CursorState::COMBAT_HERO;
         context.cursor = ANIMATION("select_hero");
+        context.cursor.SetAttributes(0, 0x0007);
+        context.cursor.SetAttributes(1, 0x0008);
         context.maxIndex = (int)m_heroes.size() - 1;
         for (int index = 0; index < (int)m_heroes.size(); index++)
         {
@@ -2429,6 +2493,8 @@ void DungeonCrawl::PushHero()
 {
     CursorContext context;
     context.cursor = ANIMATION("select_hero");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0;
     context.maxIndex = (int)m_heroes.size() - 1;
     context.minIndex = 0;
@@ -2453,6 +2519,8 @@ void DungeonCrawl::PushHeroItem()
 
     CursorContext context;
     context.cursor = ANIMATION("select_nothing");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0;
     context.maxIndex = 1;
     context.minIndex = 0;
@@ -2493,6 +2561,8 @@ void DungeonCrawl::PushUseItem()
 
     CursorContext context;
     context.cursor = ANIMATION("select_hero");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0;
     context.maxIndex = (int)m_heroes.size() - 1;
     context.minIndex = 0;
@@ -2517,6 +2587,8 @@ void DungeonCrawl::PushShopHero()
 
     CursorContext context;
     context.cursor = ANIMATION("select_hero");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0;
     context.maxIndex = (int)m_heroes.size() - 1;
     context.minIndex = 0;
@@ -2556,6 +2628,8 @@ void DungeonCrawl::PushShopItem()
 
     CursorContext context;
     context.cursor = ANIMATION("select_nothing");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
     context.index = 0;
     context.maxIndex = 1;
     context.minIndex = 0;

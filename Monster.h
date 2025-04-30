@@ -59,6 +59,9 @@ public:
 	/// Monster family
 	MonsterFamily family;
 
+	/// The element type of the monster
+	DamageType element;
+
 	/// The weakness of the monster
 	DamageType weakness;
 

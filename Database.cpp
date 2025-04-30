@@ -4032,7 +4032,7 @@ void Database::Initialize()
         m_frameDb["legendary_door_closed_2"] = Frame({ m_imageDb["legendary_door_closed"], m_imageDb["legendary_door_details_closed"], m_imageDb["legendary_door_spike_closed"], m_imageDb["legendary_door_smoke_2"] });
         m_frameDb["legendary_door_closed_3"] = Frame({ m_imageDb["legendary_door_closed"], m_imageDb["legendary_door_details_closed"], m_imageDb["legendary_door_spike_closed"], m_imageDb["legendary_door_smoke_3"] });
 
-        m_frameDb["select_nothing"] = Frame({ m_imageDb["select_nothing"] });
+        m_frameDb["select_nothing"] = Frame({ m_imageDb["select_nothing"], m_imageDb["select_nothing"] });
 
         m_frameDb["select_door_1"] = Frame({ m_imageDb["select_door"], m_imageDb["select_door_1"], });
         m_frameDb["select_door_2"] = Frame({ m_imageDb["select_door"], m_imageDb["select_door_2"], });
@@ -4400,13 +4400,13 @@ void Database::Initialize()
             200, false, false, false);		
         m_animationDb["select_door"].SetData(
             { m_frameDb["select_door_1"], m_frameDb["select_door_2"], m_frameDb["select_door_3"], m_frameDb["select_door_4"], m_frameDb["select_door_5"], m_frameDb["select_door_6"], m_frameDb["select_door_7"], m_frameDb["select_door_8"] },
-            40, true, true, false);
+            80, true, true, false);
         m_animationDb["select_weapon"].SetData(
             { m_frameDb["select_weapon_1"], m_frameDb["select_weapon_2"], m_frameDb["select_weapon_3"], m_frameDb["select_weapon_4"], m_frameDb["select_weapon_5"], m_frameDb["select_weapon_6"], m_frameDb["select_weapon_7"], m_frameDb["select_weapon_8"], m_frameDb["select_weapon_9"], m_frameDb["select_weapon_10"] },
-            40, true, true, false);
+            80, true, true, false);
         m_animationDb["select_hero"].SetData(
             { m_frameDb["select_hero_1"], m_frameDb["select_hero_2"], m_frameDb["select_hero_3"], m_frameDb["select_hero_4"], m_frameDb["select_hero_5"], m_frameDb["select_hero_6"], m_frameDb["select_hero_7"], m_frameDb["select_hero_8"], m_frameDb["select_hero_9"], m_frameDb["select_hero_10"], m_frameDb["select_hero_11"], m_frameDb["select_hero_12"] },
-            40, true, true, false);
+            80, true, true, false);
 
         m_animationDb["hero_dead"].SetData(
             { m_frameDb["hero_dead"] },
