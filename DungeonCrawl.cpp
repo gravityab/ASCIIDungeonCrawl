@@ -620,8 +620,9 @@ void DungeonCrawl::DrawHero(Time delta)
             m_console.WriteData("#################", x + 6, y + 2, mp, 1, 0x0001);
 
             int levelMultiplier = (hero.level / 3);
+            int spellMultiplier = (hero.level / (5 - (int)hero.armor.rarity)) + 1;
             Die buffDie = Die((hero.armor.target == Target::PLAYERAC_SPELL && hero.weapon1.mpCost) 
-                ? 1 + levelMultiplier: 0 + levelMultiplier,
+                ? spellMultiplier + levelMultiplier : 0 + levelMultiplier,
                 0,
                 hero.level);
 
@@ -1519,30 +1520,33 @@ void DungeonCrawl::LevelUp(Hero& hero)
     hero.level++;
     hero.experience = s_levels[hero.level];
 
+    int multLow = (hero.level / 3) + 1;
+    int multHigh = (hero.level / 3) + 2;
+
     if (hero.armor.target == Target::PLAYERAC_SLOW)
     {
         // If you equip PLATE you gain more HP during levels
-        hero.totalHp += ROLL(2, 10, hero.level + 1);
-        hero.totalMp += ROLL(1, 10, hero.level + 1);
+        hero.totalHp += ROLL(multHigh, 10, hero.level + 1);
+        hero.totalMp += ROLL(multLow, 10, hero.level + 1);
     }
     else if (hero.armor.target == Target::PLAYERAC_SPELL)
     {
         // If you equip ROBES you gain more MP during levels
-        hero.totalHp += ROLL(1, 10, hero.level + 1);
-        hero.totalMp += ROLL(2, 10, hero.level + 1);
+        hero.totalHp += ROLL(multLow, 10, hero.level + 1);
+        hero.totalMp += ROLL(multHigh, 10, hero.level + 1);
     }
     else if (hero.armor.target == Target::PLAYERAC_SPEED)
     {
         // If you equip LEATHER you lower the amount required for levels
         hero.experience /= 2;
-        hero.totalHp += ROLL(1, 10, hero.level + 1);
-        hero.totalMp += ROLL(1, 10, hero.level + 1);
+        hero.totalHp += ROLL(multLow, 10, hero.level + 1);
+        hero.totalMp += ROLL(multLow, 10, hero.level + 1);
     }
     else
     {
         // Equiping no ARMOR makes you gain little HP / MP for levels
-        hero.totalHp += ROLL(1, 10, hero.level + 1);
-        hero.totalMp += ROLL(1, 10, hero.level + 1);
+        hero.totalHp += ROLL(multLow, 10, hero.level + 1);
+        hero.totalMp += ROLL(multLow, 10, hero.level + 1);
     }
 
     hero.levelUpTimeLeft = ToMilliseconds(1500);
@@ -1570,7 +1574,7 @@ void DungeonCrawl::UseWeapon(Action action)
             Hero* hero = static_cast<Hero*>(action.source);
             if (hero->armor.target == Target::PLAYERAC_SPELL)
             {
-                damageDie.multiplier += 1;
+                damageDie.multiplier += 1 + (action.source->level / (5 - (int)hero->armor.rarity));
                 m_damageAttribute = 0x0006; // Gold
             }
         }
