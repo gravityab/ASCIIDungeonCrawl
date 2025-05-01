@@ -37,4 +37,7 @@ public:
 
 	/// Disabled animation
 	Animation disabled;
+
+	/// The natural AC gained from bonuses
+	int bonusAC = 0;
 };

@@ -341,17 +341,17 @@ void DungeonCrawl::DrawStairs(Time delta, uint16_t attribute)
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
 
-	m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
-	int x = 24;
-	int count = 0;
-	for (int index = m_floor; index < m_dungeon.Size(); index += 5)
-	{
-		DamageType type = m_dungeon.GetFloor(index).type;
-		m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
-		x += 11;
-		if (count++ > 2)
-			break;
-	}
+    m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
+    int x = 24;
+    int count = 0;
+    for (int index = m_floor; index < m_dungeon.Size(); index += 5)
+    {
+        DamageType type = m_dungeon.GetFloor(index).type;
+        m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
+        x += 11;
+        if (count++ > 2)
+            break;
+    }
 }
 
 void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
@@ -369,17 +369,17 @@ void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
 
-	m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
-	int x = 24;
-	int count = 0;
-	for (int index = m_floor; index < m_dungeon.Size(); index += 5)
-	{
-		DamageType type = m_dungeon.GetFloor(index).type;
-		m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
-		x += 11;
-		if (count++ > 2)
-			break;
-	}
+    m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
+    int x = 24;
+    int count = 0;
+    for (int index = m_floor; index < m_dungeon.Size(); index += 5)
+    {
+        DamageType type = m_dungeon.GetFloor(index).type;
+        m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
+        x += 11;
+        if (count++ > 2)
+            break;
+    }
 
     // Draw torches
     static Animation torches[4] = { ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch") };
@@ -418,17 +418,17 @@ void DungeonCrawl::DrawTrap(Time delta, uint16_t attribute, bool showExit, bool 
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
 
-	m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
-	int x = 24;
-	int count = 0;
-	for (int index = m_floor; index < m_dungeon.Size(); index += 5)
-	{
-		DamageType type = m_dungeon.GetFloor(index).type;
-		m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
-		x += 11;
-		if (count++ > 2)
-			break;
-	}
+    m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
+    int x = 24;
+    int count = 0;
+    for (int index = m_floor; index < m_dungeon.Size(); index += 5)
+    {
+        DamageType type = m_dungeon.GetFloor(index).type;
+        m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
+        x += 11;
+        if (count++ > 2)
+            break;
+    }
 
     // Draw torches
     static Animation torches[4] = { ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch") };
@@ -626,7 +626,7 @@ void DungeonCrawl::DrawHero(Time delta)
             m_console.WriteData(x + 2, y + 3, 0x0007, "LV: %d", hero.level);
             m_console.WriteData(x + 2, y + 4, 0x0007, "XP: %d", hero.experience);
             if (m_ui.GetState() != CursorState::SHOP && m_ui.GetState() != CursorState::REWARD)
-                m_console.WriteData(x + 4, y + 5, ToAttribute(hero.armor.rarity), "(AC %d) %s", hero.armor.armorClass + hero.level, hero.armor.name.c_str());
+                m_console.WriteData(x + 4, y + 5, ToAttribute(hero.armor.rarity), "(AC %d) %s", hero.armor.armorClass + hero.level + hero.bonusAC, hero.armor.name.c_str());
             else
             {
                 int len = m_console.WriteData(x + 4, y + 5, ToAttribute(hero.armor.rarity), "(AC %d) %s", hero.armor.armorClass, hero.armor.name.c_str());
@@ -856,6 +856,22 @@ void DungeonCrawl::DrawReward(Time delta)
             int x = 62;
             int y = 4;
 
+            int extraGold = 0;
+            for (int index = 0; index < (int)m_heroes.size(); index++)
+            {
+                if (m_heroes[index].armor.target == Target::PLAYERAC_SPEED)
+                {
+                    if (m_heroes[index].armor.rarity >= Rarity::COMMON)
+                        extraGold += m_currentRoom->monsters.size();
+                    if (m_heroes[index].armor.rarity >= Rarity::RARE)
+                        extraGold += m_currentRoom->monsters.size();
+                    if (m_heroes[index].armor.rarity >= Rarity::EPIC)
+                        extraGold += m_currentRoom->monsters.size();
+                    if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
+                        extraGold += m_currentRoom->monsters.size();
+                }
+            }
+
             int exitIndex = (m_currentRoom->reward == Reward::MONEY
                 || m_currentRoom->reward == Reward::RARE_MONEY
                 || m_currentRoom->reward == Reward::EPIC_WEAPON
@@ -864,6 +880,11 @@ void DungeonCrawl::DrawReward(Time delta)
             ANIMATION("exit").WriteData(m_console, delta, x, y, complete);
             m_console.WriteData(x + 8, y + 8, 0x0006, "+o   ");
             m_console.WriteData(x + 11, y + 8, 0x0007, "%d", m_currentRoom->gold);
+            if (extraGold > 0)
+            {
+                m_console.WriteData(x + 8, y + 7, 0x0006, "+o   ");
+                m_console.WriteData(x + 11, y + 7, 0x0002, "%d", extraGold);
+            }
 
             if (m_ui.GetState() == CursorState::REWARD && m_ui.GetCursorIndex() == exitIndex)
                 m_ui.GetAnimation().WriteData(m_console, delta, x, y, complete);
@@ -1453,9 +1474,25 @@ void DungeonCrawl::ProcessInput()
 
         if (m_ui.GetState() == CursorState::REWARD && m_input.Released(Button::BUTTON_SELECT))
         {
+            int extraGold = 0;
+            for (int index = 0; index < (int)m_heroes.size(); index++)
+            {
+                if (m_heroes[index].armor.target == Target::PLAYERAC_SPEED)
+                {
+                    if (m_heroes[index].armor.rarity >= Rarity::COMMON)
+                        extraGold += m_currentRoom->monsters.size();
+                    if (m_heroes[index].armor.rarity >= Rarity::RARE)
+                        extraGold += m_currentRoom->monsters.size();
+                    if (m_heroes[index].armor.rarity >= Rarity::EPIC)
+                        extraGold += m_currentRoom->monsters.size();
+                    if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
+                        extraGold += m_currentRoom->monsters.size();
+                }
+            }
+
             if (m_ui.GetCursorIndex() == 1)
             {
-                m_gold += m_currentRoom->gold;
+                m_gold += m_currentRoom->gold + extraGold;
                 SetState(State::STATE_NEXT_FLOOR);
                 return;
             }
@@ -1466,7 +1503,7 @@ void DungeonCrawl::ProcessInput()
                 || m_currentRoom->reward == Reward::LEGENDARY_MONEY)
                 && m_ui.GetCursorIndex() == 0)
             {
-                m_gold += m_currentRoom->gold;
+                m_gold += m_currentRoom->gold + extraGold;
                 SetState(State::STATE_NEXT_FLOOR);
                 return;
             }
@@ -1577,6 +1614,7 @@ void DungeonCrawl::LevelUp(Hero& hero)
         // If you equip PLATE you gain more HP during levels
         hero.totalHp += ROLL(multHigh, 10, hero.level + 1);
         hero.totalMp += ROLL(multLow, 10, hero.level + 1);
+        hero.bonusAC += (int)hero.armor.rarity + (hero.level / 2) + 1;
     }
     else if (hero.armor.target == Target::PLAYERAC_SPELL)
     {
@@ -1590,6 +1628,7 @@ void DungeonCrawl::LevelUp(Hero& hero)
         hero.experience /= 2;
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
         hero.totalMp += ROLL(multLow, 10, hero.level + 1);
+        hero.bonusAC += (int)hero.armor.rarity;
     }
     else
     {
@@ -1758,6 +1797,7 @@ void DungeonCrawl::UseWeapon(Action action)
             {
                 Hero* hero = static_cast<Hero*>(actor);
                 damage -= hero->level;
+                damage -= hero->bonusAC;
             }
 
             if (damage <= 0)
@@ -2091,6 +2131,23 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
         || weapon->target == Target::MONSTER_CONDITION
         || weapon->target == Target::MONSTER_DRAINMP)
     {
+        // If we are selecting 1 target, weight it by who has Plate (tank)
+        for (int index = 0; index < (int)m_heroes.size(); index++)
+        {
+            if (m_heroes[index].armor.target == Target::PLAYERAC_SLOW)
+            {
+                // Higher quality armor have stronger weights
+                if (m_heroes[index].armor.rarity >= Rarity::COMMON)
+                    targets.push_back(&m_heroes[index]);
+                if (m_heroes[index].armor.rarity >= Rarity::RARE)
+                    targets.push_back(&m_heroes[index]);
+                if (m_heroes[index].armor.rarity >= Rarity::EPIC)
+                    targets.push_back(&m_heroes[index]);
+                if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
+                    targets.push_back(&m_heroes[index]);
+            }
+        }
+
         Actor* target = ROLLTABLE(targets);
         targets.clear();
         targets.push_back(target);
