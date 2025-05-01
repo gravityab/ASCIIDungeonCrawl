@@ -2006,6 +2006,143 @@ void Database::Initialize()
             "..................",
             0, 0, 18, 15, 0x000B);
 
+        m_imageDb["spawn_skeleton_1"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "......... \\/ ....." \
+            "....... -  \\\\ ...." \
+            "..... (o,o)// ...." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["spawn_skeleton_eyes_1"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".......o,o........" \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0008);
+        m_imageDb["spawn_skeleton_2"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "........ - ......." \
+            "...... (o,o) ....." \
+            ".... --_|=|_ ....." \
+            "... //.:=|() \\\\ .." \
+            "... \\\\.(_=|| // .." \
+            "... /\\# ..'==/\\ .." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["spawn_skeleton_eyes_2"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "........o,o......." \
+            ".........=........" \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0008);
+        m_imageDb["spawn_skeleton_3"] = Image(
+            ".................." \
+            ".................." \
+            "........ - ......." \
+            "...... (o,o)......" \
+            ".... -__|=|__- ..." \
+            "... //.:=|=: \\\\ .." \
+            "... \\\\..\\|/ .// .." \
+            "... /\\.:=|=: /\\ .." \
+            "...... //.\\\\ ....." \
+            "..... ()...() ...." \
+            "...... \\\\.// ....." \
+            "..... =='.'== ...." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["spawn_skeleton_eyes_3"] = Image(
+            ".................." \
+            ".................." \
+            ".................." \
+            "........o,o......." \
+            ".........=........" \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0008);
+        m_imageDb["spawn_skeleton_4"] = Image(
+            "........ - ......." \
+            "...... (o,o) ....." \
+            "....... |=| ......" \
+            "...... __|__ ....." \
+            ".... //:=|=:\\\\ ..." \
+            "... //.:=|=:.\\\\ .." \
+            "... \\\\.:=|=:.// .." \
+            "... /\\.(_=_)./\\ .." \
+            "...... :|.|: ....." \
+            "...... ().() ....." \
+            "...... ||.|| ....." \
+            "..... =='.'== ...." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0007);
+        m_imageDb["spawn_skeleton_eyes_4"] = Image(
+            ".................." \
+            "........o,o......." \
+            ".........-........" \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            ".................." \
+            "..................",
+            0, 0, 18, 15, 0x0008);
+
         m_imageDb["skeleton_1"] = Image(
             "........ - ......." \
             "...... (o,o) ....." \
@@ -4180,6 +4317,10 @@ void Database::Initialize()
         m_frameDb["alt_skeleton_attack_2"] = Frame({ m_imageDb["alt_skeleton_attack_2"], m_imageDb["alt_skeleton_eyes_attack_2"] });
         m_frameDb["alt_skeleton_attack_3"] = Frame({ m_imageDb["alt_skeleton_attack_3"], m_imageDb["alt_skeleton_eyes_attack_3"] });
         m_frameDb["alt_skeleton_attack_4"] = Frame({ m_imageDb["alt_skeleton_attack_4"], m_imageDb["alt_skeleton_eyes_attack_4"] });
+        m_frameDb["spawn_skeleton_1"] = Frame({ m_imageDb["spawn_skeleton_1"], m_imageDb["spawn_skeleton_eyes_1"] });
+        m_frameDb["spawn_skeleton_2"] = Frame({ m_imageDb["spawn_skeleton_2"], m_imageDb["spawn_skeleton_eyes_2"] });
+        m_frameDb["spawn_skeleton_3"] = Frame({ m_imageDb["spawn_skeleton_3"], m_imageDb["spawn_skeleton_eyes_3"] });
+        m_frameDb["spawn_skeleton_4"] = Frame({ m_imageDb["spawn_skeleton_4"], m_imageDb["spawn_skeleton_eyes_4"] });
 
         m_frameDb["dragon_1"] = Frame({ m_imageDb["dragon_1"], m_imageDb["dragon_eyes_1"] });
         m_frameDb["dragon_2"] = Frame({ m_imageDb["dragon_2"], m_imageDb["dragon_eyes_2"] });
@@ -4464,6 +4605,9 @@ void Database::Initialize()
             200, false, true, false);
         m_animationDb["alt_skeleton_attack"].SetData(
             { m_frameDb["alt_skeleton_attack_1"], m_frameDb["alt_skeleton_attack_2"], m_frameDb["alt_skeleton_attack_3"], m_frameDb["alt_skeleton_attack_4"], },
+            200, false, true, false);
+        m_animationDb["spawn_skeleton"].SetData(
+            { m_frameDb["spawn_skeleton_1"], m_frameDb["spawn_skeleton_2"], m_frameDb["spawn_skeleton_3"], m_frameDb["spawn_skeleton_4"], },
             200, false, true, false);
 
         m_animationDb["spider"].SetData(
@@ -4879,11 +5023,11 @@ void Database::Initialize()
 
     m_monsterDb.clear();
     {
-        m_monsterDb["Blob"] = Monster("Blob", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["blob_attack"], m_animationDb["alt_blob_attack"], m_animationDb["blob"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
-        m_monsterDb["Bat"] = Monster("Bat", Die(1, 4, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["alt_bat_attack"], m_animationDb["alt_bat_attack"], m_animationDb["bat"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
-        m_monsterDb["Skeleton"] = Monster("Skeleton", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["skeleton_attack"], m_animationDb["alt_skeleton_attack"], m_animationDb["skeleton"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
-        m_monsterDb["Spider"] = Monster("Spider", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["alt_spider_attack"], m_animationDb["spider_attack"], m_animationDb["spider"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
-        m_monsterDb["Dragon"] = Monster("Dragon", Die(2, 20, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["dragon_attack"], m_animationDb["dragon_attack"], m_animationDb["dragon"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
+        m_monsterDb["Blob"] = Monster("Blob", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["blob_attack"], m_animationDb["alt_blob_attack"], m_animationDb["blob"], m_animationDb["blob"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
+        m_monsterDb["Bat"] = Monster("Bat", Die(1, 4, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["alt_bat_attack"], m_animationDb["alt_bat_attack"], m_animationDb["bat"], m_animationDb["bat"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
+        m_monsterDb["Skeleton"] = Monster("Skeleton", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["skeleton_attack"], m_animationDb["alt_skeleton_attack"], m_animationDb["skeleton"], m_animationDb["spawn_skeleton"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
+        m_monsterDb["Spider"] = Monster("Spider", Die(1, 6, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["alt_spider_attack"], m_animationDb["spider_attack"], m_animationDb["spider"], m_animationDb["spider"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
+        m_monsterDb["Dragon"] = Monster("Dragon", Die(2, 20, 2), Die(0, 0, 0), DamageType::NORMAL, 5, 1, m_animationDb["dragon_attack"], m_animationDb["dragon_attack"], m_animationDb["dragon"], m_animationDb["dragon"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"], m_weaponDb["Empty"]);
     }
 
     //-----------------------------------------------------------------------------------------------------------------

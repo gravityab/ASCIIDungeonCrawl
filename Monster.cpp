@@ -18,6 +18,7 @@ Monster::Monster(
 	Animation attack_,
 	Animation attack2_,
 	Animation idle_,
+	Animation spawn_,
 	Weapon weapon1_,
 	Weapon weapon2_,
 	Weapon weapon3_,
@@ -32,10 +33,12 @@ Monster::Monster(
 	attack1 = attack_;
 	attack2 = attack2_;
 	idle = idle_;
+	spawn = spawn_;
 	weapon1 = weapon1_;
 	weapon2 = weapon2_;
 	weapon3 = weapon3_;
 	weapon4 = weapon4_;
+	spawning = ToMilliseconds(GetRandomValue(1000, 1800));
 }
 
 ActorType Monster::GetType()

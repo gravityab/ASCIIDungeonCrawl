@@ -340,6 +340,18 @@ void DungeonCrawl::DrawStairs(Time delta, uint16_t attribute)
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
+
+	m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
+	int x = 24;
+	int count = 0;
+	for (int index = m_floor; index < m_dungeon.Size(); index += 5)
+	{
+		DamageType type = m_dungeon.GetFloor(index).type;
+		m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
+		x += 11;
+		if (count++ > 2)
+			break;
+	}
 }
 
 void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
@@ -356,6 +368,18 @@ void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
+
+	m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
+	int x = 24;
+	int count = 0;
+	for (int index = m_floor; index < m_dungeon.Size(); index += 5)
+	{
+		DamageType type = m_dungeon.GetFloor(index).type;
+		m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
+		x += 11;
+		if (count++ > 2)
+			break;
+	}
 
     // Draw torches
     static Animation torches[4] = { ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch") };
@@ -393,6 +417,18 @@ void DungeonCrawl::DrawTrap(Time delta, uint16_t attribute, bool showExit, bool 
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
+
+	m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
+	int x = 24;
+	int count = 0;
+	for (int index = m_floor; index < m_dungeon.Size(); index += 5)
+	{
+		DamageType type = m_dungeon.GetFloor(index).type;
+		m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
+		x += 11;
+		if (count++ > 2)
+			break;
+	}
 
     // Draw torches
     static Animation torches[4] = { ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch") };
@@ -762,7 +798,20 @@ void DungeonCrawl::DrawMonsters(Time delta)
                 monster.attack2.WriteData(m_console, delta, x, y, complete);
         }
         else
-            monster.idle.WriteData(m_console, delta, x, y, complete);
+        {
+            if (monster.spawning > Time::Zero)
+            {
+                monster.spawning -= delta;
+                if (monster.spawning < Time::Zero)
+                    monster.spawning = Time::Zero;
+
+                monster.spawn.WriteData(m_console, delta, x, y, complete);
+            }
+            else
+            {
+                monster.idle.WriteData(m_console, delta, x, y, complete);
+            }
+        }
 
         if (monster.totalHp != monster.currentHp)
         {
@@ -1653,6 +1702,7 @@ void DungeonCrawl::UseWeapon(Action action)
                 && m_currentRoom->monsters[index].rarity == Rarity::COMMON)
             {
                 m_currentRoom->monsters[index].currentHp = (int)(m_currentRoom->monsters[index].totalHp * 0.1) + 1;
+                m_currentRoom->monsters[index].spawning = ToMilliseconds(1600);
             }
         }
         return;

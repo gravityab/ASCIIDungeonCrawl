@@ -72,6 +72,11 @@ void Dungeon::Reset()
 	m_db.Reset();
 }
 
+int Dungeon::Size()
+{
+	return m_dungeon.size();
+}
+
 Floor& Dungeon::GetFloor(int floor)
 {
 	return m_dungeon[floor];
@@ -304,6 +309,8 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 				newMonster.attack1.SetAttributes(1, eyeColor);
 				newMonster.attack2.SetAttributes(0, ToAttribute(element));
 				newMonster.attack2.SetAttributes(1, eyeColor);
+				newMonster.spawn.SetAttributes(0, ToAttribute(element));
+				newMonster.spawn.SetAttributes(1, eyeColor);
 				newMonster.element = element;
 				newMonster.weakness = ToWeakness(element);
 				newMonster.weapon1 = weapon;

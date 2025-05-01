@@ -122,6 +122,9 @@ public:
 	/// Reset the dungeon and the database
 	void Reset();
 
+	/// The size of the dungeon
+	int Size();
+
 	/// Get a floor within a dungeon
 	Floor& GetFloor(int floor);
 
