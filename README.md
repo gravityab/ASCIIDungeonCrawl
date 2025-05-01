@@ -22,25 +22,36 @@ Throughout the dungeon there are shops. Here you can make decisions as to what w
 ## Weapons
 |Gloves|Dagger|Sword|Great Sword|
 |---|---|---|---|
+|Damage: {1,2}d4 + {1,3}<br>Speed: 0<br>Cost: 2d4 + 4|Damage: {1,3}d4 + {1, 10}<br>Speed: {1,4}<br>Cost:2d4 + 4|Damage: {1,4}d6 + {1,6}<br>Speed: {3,6}<br>Cost: 2d6 + 6|Damage: {1,4}d10 + {1,10}<br>Speed: {8,15}<br>Cost: 2d10 + 10|
 |![Knuckles](https://github.com/user-attachments/assets/1094d21a-a65f-439e-9c89-f0f549d46a2d)|![Dagger](https://github.com/user-attachments/assets/55750dee-7a86-4167-983e-77cb1372841a)|![Sword](https://github.com/user-attachments/assets/969d0b16-02d6-445a-870b-1fe6436ebd3d)|![Great Sword](https://github.com/user-attachments/assets/daa5d220-485d-492f-8e1c-4d573f3e28af)
 
 |Wand|Staff|
 |---|---|
+|Damage: {2,4}d4 + {1,5}<br>Speed: {2,5}<br>MP: {4,5}<br>Cost: 2d4 + 4|Damage: {3,5}d8 + {1,10}<br>Speed: {8,10}<br>MP: {8,15}<br>Cost: 2d8 + 8<br>Properties: Multi Target|
 |![Wand](https://github.com/user-attachments/assets/c150a96b-6068-4863-8049-1bf59bf239cc)|![Staff](https://github.com/user-attachments/assets/e684ad1b-fe32-4f02-b53d-baed0c892461)|
 
 ## Armor
 |Robe|Leather|Plate|
 |---|---|---|
+|AC: {1,2}<br>Cost: 4d4 + 4<br>Property: Magic Boost, Magic Damage|AC: {2,3}<br>Cost: 4d8 + 4<br>Property: XP Boost|AC: {3,4}<br>Cost: 4d10 + 4<br>Property: HP Boost|
 |![Robe](https://github.com/user-attachments/assets/1a62fc60-e865-42f7-9abf-4c960b1e7713)|![Leather](https://github.com/user-attachments/assets/30a1872a-76d9-460f-92c5-2231e936f0da)|![Plate](https://github.com/user-attachments/assets/07e325ea-8366-45af-8e16-ed75eec6105a)|
 
 ## Potions
 |Lesser Health Potion|Health Potion|Greater Health Potion|
 |---|---|---|
+|Heal: 2d8 + {1,4}<br>Cost: 1d8 + 8|Heal: 4d8 + {4,8}<br>Cost: 2d8 + 8|Heal: 8d8 + {8,12}<br>Cost: 3d8 + 8|
 |![Lesser Healing Potion](https://github.com/user-attachments/assets/8a6137ea-bd12-4034-a334-baf2688f4ad6)|![Healing Potion](https://github.com/user-attachments/assets/21267813-9704-4a85-ac30-ee1ef4bb56bd)|![Greater Healing Potion](https://github.com/user-attachments/assets/30f4aaa5-176c-4606-86e3-0947bebef1b8)|
 
 |Lesser Magic Potion|Magic Potion|Greater Magic Potion|
 |---|---|---|
+|Restore: 2d8 + {1,4}<br>Cost: 1d8 + 8|Restore: 4d8 + {4,8}<br>Cost: 2d8 + 8|Restore: 8d8 + {8,12}<br>Cost: 3d8 + 8|
 |![Lesser Magic Potion](https://github.com/user-attachments/assets/10552c47-a10d-4b2a-8211-1f68405862d7)|![Game Potion](https://github.com/user-attachments/assets/ce557771-ce12-442d-a64e-eae412f419f7)|![Greater Magic Potion](https://github.com/user-attachments/assets/df5d1512-230c-4bcd-92aa-4db4a6d99f47)|
+
+## Other
+|New Hero|Level Up|Level Up 5|
+|---|---|---|
+|Cost: 10d10 + 10<br>Property: New Hero|Cost: 10d10 + 10<br>Property: Level + 1|Cost: 45d10 + 10<br>Property: Level + 5|
+|![New Hero](https://github.com/user-attachments/assets/5f9b4b1d-3914-446a-9ede-a66db847536e)|![Level Up](https://github.com/user-attachments/assets/8f10774f-f84d-4b75-b2ba-17566c459860)|![Level Up 5](https://github.com/user-attachments/assets/7cb74cad-38bb-4e20-8b8e-183c48041878)
 
 ## Combat
 Combat is turn based and purchased weapons can be used to battle.
