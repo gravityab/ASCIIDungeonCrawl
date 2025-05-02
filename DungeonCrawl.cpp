@@ -510,6 +510,22 @@ void DungeonCrawl::DrawDoors(Time delta)
                 }
             }
         }
+        else
+        {
+            // Display a preview of the other doors contents
+            uint16_t attribute = ToAttribute(m_currentFloor->rarity);
+            for (int rm = 0; rm < (int)m_currentFloor->rooms.size(); rm++)
+            {
+                m_currentFloor->rooms[rm].shop.size();
+
+                Room& room = m_currentFloor->rooms[rm];
+                if (rm == index)
+                {
+                    if (m_currentFloor->rooms[rm].shop.size() > 0)
+                        m_console.WriteData(x + 14, 7, attribute, "Shop");
+                }
+            }
+        }
 
         // Draw the label
         m_console.WriteData(x + 11, 1, ToAttribute(door.rarity), "%s", door.label.c_str());
