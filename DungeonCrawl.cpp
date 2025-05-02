@@ -311,6 +311,7 @@ void DungeonCrawl::AddHero()
     hero.level = 1;
     hero.weapon1 = WEAPON("Unarmed");
     hero.weapon2 = WEAPON("Lesser Healing Potion");
+    //hero.weapon2 = WEAPON("Lesser Resurrect Potion");
     hero.weapon2.Randomize();
     hero.weapon3 = WEAPON("Unarmed");
     hero.weapon4 = WEAPON("Unarmed");
@@ -859,7 +860,8 @@ void DungeonCrawl::DrawReward(Time delta)
             int extraGold = 0;
             for (int index = 0; index < (int)m_heroes.size(); index++)
             {
-                if (m_heroes[index].armor.target == Target::PLAYERAC_SPEED)
+                if (m_heroes[index].currentHp > 0
+                    && m_heroes[index].armor.target == Target::PLAYERAC_SPEED)
                 {
                     if (m_heroes[index].armor.rarity >= Rarity::COMMON)
                         extraGold += m_currentRoom->monsters.size();
@@ -1477,7 +1479,8 @@ void DungeonCrawl::ProcessInput()
             int extraGold = 0;
             for (int index = 0; index < (int)m_heroes.size(); index++)
             {
-                if (m_heroes[index].armor.target == Target::PLAYERAC_SPEED)
+                if (m_heroes[index].currentHp > 0
+                    && m_heroes[index].armor.target == Target::PLAYERAC_SPEED)
                 {
                     if (m_heroes[index].armor.rarity >= Rarity::COMMON)
                         extraGold += m_currentRoom->monsters.size();
@@ -1691,7 +1694,8 @@ void DungeonCrawl::UseWeapon(Action action)
 
     bool isHealing = action.weapon->target == Target::ALLPLAYERSHP
         || action.weapon->target == Target::PLAYERHP_CONSUME
-        || action.weapon->target == Target::PLAYERHP_REUSE;
+        || action.weapon->target == Target::PLAYERHP_REUSE
+        || action.weapon->target == Target::PLAYERHP_REVIVE_CONSUME;
     bool isRestoring = action.weapon->target == Target::ALLPLAYERSMP
         || action.weapon->target == Target::PLAYERMP_CONSUME
         || action.weapon->target == Target::PLAYERMP_REUSE;
@@ -1702,7 +1706,8 @@ void DungeonCrawl::UseWeapon(Action action)
     bool isDraining = action.weapon->target == Target::MONSTER_DRAINMP;
 
     bool consumesWeapon = action.weapon->target == Target::PLAYERMP_CONSUME
-        || action.weapon->target == Target::PLAYERHP_CONSUME;
+        || action.weapon->target == Target::PLAYERHP_CONSUME
+        || action.weapon->target == Target::PLAYERHP_REVIVE_CONSUME;
 
     // Disable the animations
     bool isWeakness = false;
@@ -2134,7 +2139,8 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
         // If we are selecting 1 target, weight it by who has Plate (tank)
         for (int index = 0; index < (int)m_heroes.size(); index++)
         {
-            if (m_heroes[index].armor.target == Target::PLAYERAC_SLOW)
+            if (m_heroes[index].currentHp > 0
+                && m_heroes[index].armor.target == Target::PLAYERAC_SLOW)
             {
                 // Higher quality armor have stronger weights
                 if (m_heroes[index].armor.rarity >= Rarity::COMMON)
@@ -2221,6 +2227,12 @@ void DungeonCrawl::UseSelectedItem()
     else if (context.weapon->target == Target::PLAYERHP_CONSUME)
     {
         context.target->currentHp += amount;
+        *context.weapon = WEAPON("Unarmed");
+    }
+    else if (context.weapon->target == Target::PLAYERHP_REVIVE_CONSUME)
+    {
+        context.target->currentHp += amount;
+        context.target->currentMp += amount;
         *context.weapon = WEAPON("Unarmed");
     }
     else if (context.weapon->target == Target::PLAYERHP_REUSE)
@@ -2683,10 +2695,14 @@ void DungeonCrawl::PushUseItem()
     context.weapon = currentWeapon;
     context.direction = CursorIndexDirection::HORIZONTAL;
 
-    for (int index = 0; index < (int)m_heroes.size(); index++)
+    // Unless its a resurrection potion exclude dead heroes
+    if (currentWeapon->target != Target::PLAYERHP_REVIVE_CONSUME)
     {
-        if (m_heroes[index].currentHp == 0)
-            context.excludeIndexes.push_back(index);
+        for (int index = 0; index < (int)m_heroes.size(); index++)
+        {
+            if (m_heroes[index].currentHp == 0)
+                context.excludeIndexes.push_back(index);
+        }
     }
 
     m_ui.PushBack(context);

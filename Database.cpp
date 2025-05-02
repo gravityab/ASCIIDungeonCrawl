@@ -1699,6 +1699,18 @@ void Database::Initialize()
             ".              ." \
             "................",
             0, 0, 16, 10, 0x0001);
+        m_imageDb["lesser_resurrect_potion"] = Image(
+            "................" \
+            ".              ." \
+            ".              ." \
+            ".      ...     ." \
+            ".      . .     ." \
+            ".     .^^^.    ." \
+            ".    .#####.   ." \
+            ".     .....    ." \
+            ".              ." \
+            "................",
+            0, 0, 16, 10, 0x000F);
         m_imageDb["potion_bottle"] = Image(
             "................" \
             ".       _      ." \
@@ -1735,6 +1747,18 @@ void Database::Initialize()
             ".              ." \
             "................",
             0, 0, 16, 10, 0x0001);
+        m_imageDb["resurrect_potion"] = Image(
+            "................" \
+            ".       .      ." \
+            ".      . .     ." \
+            ".      . .     ." \
+            ".     .^^^.    ." \
+            ".    .#####.   ." \
+            ".   .#######.  ." \
+            ".    .......   ." \
+            ".              ." \
+            "................",
+            0, 0, 16, 10, 0x000F);
         m_imageDb["greater_potion_bottle"] = Image(
             "................" \
             ".      |-|     ." \
@@ -1771,6 +1795,18 @@ void Database::Initialize()
             ".  ........... ." \
             "................",
             0, 0, 16, 10, 0x0001);
+        m_imageDb["greater_resurrect_potion"] = Image(
+            "................" \
+            ".      ...     ." \
+            ".      . .     ." \
+            ".      . .     ." \
+            ".     .   .    ." \
+            ".    .^^^^^.   ." \
+            ".   .#######.  ." \
+            ".  .#########. ." \
+            ".  ........... ." \
+            "................",
+            0, 0, 16, 10, 0x000F);
         m_imageDb["hero_card"] = Image(
             "................" \
             ".# # # # # # # ." \
@@ -4457,10 +4493,13 @@ void Database::Initialize()
 
         m_frameDb["lesser_healing_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["lesser_potion_bottle"], m_imageDb["lesser_healing_potion"] });
         m_frameDb["lesser_magic_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["lesser_potion_bottle"], m_imageDb["lesser_magic_potion"] });
+        m_frameDb["lesser_resurrect_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["lesser_potion_bottle"], m_imageDb["lesser_resurrect_potion"] });
         m_frameDb["healing_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["potion_bottle"], m_imageDb["healing_potion"] });
         m_frameDb["magic_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["potion_bottle"], m_imageDb["magic_potion"] });
+        m_frameDb["resurrect_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["potion_bottle"], m_imageDb["resurrect_potion"] });
         m_frameDb["greater_healing_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["greater_potion_bottle"], m_imageDb["greater_healing_potion"] });
         m_frameDb["greater_magic_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["greater_potion_bottle"], m_imageDb["greater_magic_potion"] });
+        m_frameDb["greater_resurrect_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["greater_potion_bottle"], m_imageDb["greater_resurrect_potion"] });
 
         m_frameDb["new_hero"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["new_hero"] });
         m_frameDb["level_up"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up"] });
@@ -4756,17 +4795,26 @@ void Database::Initialize()
         m_animationDb["lesser_magic_potion"].SetData(
             { m_frameDb["lesser_magic_potion"] },
             200, false, true, false);
+        m_animationDb["lesser_resurrect_potion"].SetData(
+            { m_frameDb["lesser_resurrect_potion"] },
+            200, false, true, false);
         m_animationDb["healing_potion"].SetData(
             { m_frameDb["healing_potion"] },
             200, false, true, false);
         m_animationDb["magic_potion"].SetData(
             { m_frameDb["magic_potion"] },
             200, false, true, false);
+        m_animationDb["resurrect_potion"].SetData(
+            { m_frameDb["resurrect_potion"] },
+            200, false, true, false);
         m_animationDb["greater_healing_potion"].SetData(
             { m_frameDb["greater_healing_potion"] },
             200, false, true, false);
         m_animationDb["greater_magic_potion"].SetData(
             { m_frameDb["greater_magic_potion"] },
+            200, false, true, false);
+        m_animationDb["greater_resurrect_potion"].SetData(
+            { m_frameDb["greater_resurrect_potion"] },
             200, false, true, false);
 
         m_animationDb["new_hero"].SetData(
@@ -4804,6 +4852,10 @@ void Database::Initialize()
         m_dieRangeDb["potion_lesser"]  = DieRange(2, 2, 8, 8, 1, 4, 1, 1, 0, 0, 0, 0, Die(1, 8, 8));
         m_dieRangeDb["potion"]         = DieRange(4, 4, 8, 8, 4, 8, 1, 1, 0, 0, 0, 0, Die(2, 8, 8));
         m_dieRangeDb["potion_greater"] = DieRange(8, 8, 8, 8, 8, 12, 1, 1, 0, 0, 0, 0, Die(3, 8, 8));
+
+        m_dieRangeDb["resurrect_lesser"]  = DieRange(2, 2, 8, 8, 1, 4, 1, 1, 0, 0, 0, 0, Die(10, 8, 8));
+        m_dieRangeDb["resurrect"]         = DieRange(4, 4, 8, 8, 4, 8, 1, 1, 0, 0, 0, 0, Die(12, 8, 8));
+        m_dieRangeDb["resurrect_greater"] = DieRange(8, 8, 8, 8, 8, 12, 1, 1, 0, 0, 0, 0, Die(14, 8, 8));
 
         m_dieRangeDb["new_hero"]       = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(10, 10, 10));
         m_dieRangeDb["level_up"]       = DieRange(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Die(10, 10, 10));
@@ -4866,11 +4918,14 @@ void Database::Initialize()
 
         m_weaponDb["Lesser Healing Potion"] = Weapon("Lesser Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion_lesser"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_healing_potion"]);
         m_weaponDb["Lesser Magic Potion"] = Weapon("Lesser Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_lesser"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_magic_potion"]);
+        m_weaponDb["Lesser Resurrect Potion"] = Weapon("Lesser Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect_lesser"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_resurrect_potion"]);
         m_weaponDb["Healing Potion"] = Weapon("Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["healing_potion"]);
         m_weaponDb["Magic Potion"] = Weapon("Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["magic_potion"]);
+        m_weaponDb["Resurrect Potion"] = Weapon("Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["resurrect_potion"]);
         m_weaponDb["Greater Healing Potion"] = Weapon("Greater Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_healing_potion"]);
         m_weaponDb["Greater Magic Potion"] = Weapon("Greater Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_magic_potion"]);
-
+        m_weaponDb["Greater Resurrect Potion"] = Weapon("Greater Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect_greater"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_resurrect_potion"]);
+        
         m_weaponDb["New Hero"] = Weapon("New Hero", DamageType::NORMAL, m_dieRangeDb["new_hero"], Target::NEWHERO, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["new_hero"]);
         m_weaponDb["Level Up"] = Weapon("Level Up", DamageType::NORMAL, m_dieRangeDb["level_up"], Target::PLAYERLEVEL, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["level_up"]);
         m_weaponDb["Level Up 5"] = Weapon("Level Up 5", DamageType::NORMAL, m_dieRangeDb["level_up_5"], Target::PLAYERLEVEL5, Rarity::EPIC, m_animationDb["fist_attack"], m_animationDb["level_up_5"]);
@@ -4964,6 +5019,8 @@ void Database::Initialize()
 
         m_weaponDb["Greater Healing Potion"],
         m_weaponDb["Greater Magic Potion"],
+        m_weaponDb["Lesser Resurrect Potion"],
+        m_weaponDb["Resurrect Potion"],
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -4988,6 +5045,8 @@ void Database::Initialize()
 
         m_weaponDb["Level Up 5"],
         m_weaponDb["Level Up 5"],
+
+        m_weaponDb["Greater Resurrect Potion"],
     };
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -5014,10 +5073,15 @@ void Database::Initialize()
     {
         m_weaponDb["Lesser Healing Potion"],
         m_weaponDb["Lesser Healing Potion"],
+        m_weaponDb["Lesser Healing Potion"],
+        m_weaponDb["Lesser Magic Potion"],
         m_weaponDb["Lesser Magic Potion"],
         m_weaponDb["Lesser Magic Potion"],
         m_weaponDb["Healing Potion"],
+        m_weaponDb["Healing Potion"],
         m_weaponDb["Magic Potion"],
+        m_weaponDb["Magic Potion"],
+        m_weaponDb["Lesser Resurrect Potion"],
     };
     // ----------------------------------------------------------------------------------------------------------------
 
