@@ -47,6 +47,11 @@ Throughout the dungeon there are shops. Here you can make decisions as to what w
 |Restore: 2d8 + {1,4}<br>Cost: 1d8 + 8|Restore: 4d8 + {4,8}<br>Cost: 2d8 + 8|Restore: 8d8 + {8,12}<br>Cost: 3d8 + 8|
 |![Lesser Magic Potion](https://github.com/user-attachments/assets/10552c47-a10d-4b2a-8211-1f68405862d7)|![Game Potion](https://github.com/user-attachments/assets/ce557771-ce12-442d-a64e-eae412f419f7)|![Greater Magic Potion](https://github.com/user-attachments/assets/df5d1512-230c-4bcd-92aa-4db4a6d99f47)|
 
+|Lesser Resurrect Potion|Resurrect Potion|Greater Resurrect Potion|
+|---|---|---|
+|Heal: 2d8 + {1,4}<br>Restore: 2d8 + {1,4}<br>Cost: 10d8 + 8<br>Property: Revive Hero|Heal: 4d8 + {4,8}<br>Restore: 4d8 + {4,8}<br>Cost: 12d8 + 8<br>Property: Revive Hero|Heal: 8d8 + {8,12}<br>Restore: 8d8 + {8,12}<br>Cost: 14d8 + 8<br>Property: Revive Hero|
+|![Lesser Resurrect Potion](https://github.com/user-attachments/assets/3185fc71-224e-457f-ae69-d80137a43c63)|![Resurrect Potion](https://github.com/user-attachments/assets/f639a7b0-bb3e-42f5-9d31-675e0fe140c7)|![Greater Resurrect Potion](https://github.com/user-attachments/assets/48ad9735-1ab8-4c01-8f99-27b6363328e5)|
+
 ## Other
 |New Hero|Level Up|Level Up 5|
 |---|---|---|
