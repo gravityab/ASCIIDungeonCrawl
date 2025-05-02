@@ -33,7 +33,7 @@ Throughout the dungeon there are shops. Here you can make decisions as to what w
 ## Armor
 |Robe|Leather|Plate|
 |---|---|---|
-|AC: {1,2}<br>Cost: 4d4 + 4<br>Property: Magic Boost, Magic Damage|AC: {2,3}<br>Cost: 4d8 + 4<br>Property: XP Boost|AC: {3,4}<br>Cost: 4d10 + 4<br>Property: HP Boost|
+|AC: {1,2}<br>Cost: 4d4 + 4<br>Property: Magic Boost, Magic Damage|AC: {2,3}<br>Cost: 4d8 + 4<br>Property: XP Boost, Detection|AC: {3,4}<br>Cost: 4d10 + 4<br>Property: HP Boost|
 |![Robe](https://github.com/user-attachments/assets/1a62fc60-e865-42f7-9abf-4c960b1e7713)|![Leather](https://github.com/user-attachments/assets/30a1872a-76d9-460f-92c5-2231e936f0da)|![Plate](https://github.com/user-attachments/assets/07e325ea-8366-45af-8e16-ed75eec6105a)|
 
 ## Potions
@@ -61,13 +61,18 @@ Throughout the dungeon there are shops. Here you can make decisions as to what w
 ## Combat
 Combat is turn based and purchased weapons can be used to battle.
 ![image](https://github.com/user-attachments/assets/dadcf582-2eff-41f0-a6b1-5435cdb9f934)
+
 ### Elemental Counters
+Every element has resistance from and a weakness.
 ```
 Cold ---> Lightning         Normal         Psychic       Holy        Healing
   ^           |            ^      \           ^           ^
   |           V           /        v          v           v
-Fire <---- Water       Poison <-- Steel      Dark      Necrotic
+Fire <---- Water       Poison <-- Steel      Dark      Necrotic     Protection
 ```
+If weak towards an element, that target takes 2x more damage rolled.
+If resistant towards an element, that target takes 2x less damage rolled.
+Elemental Armor give the wearer resistances and weaknesses. Be mindful of the elements coming up in the lower floors of the dungeon.
 
 ## Traps
 Throughout the dungeon there are trap rooms. These rooms require less faster more mobile equipment to not run the risk of falling prey to traps.
@@ -81,7 +86,33 @@ Scattered throughout the dungeon there are Fountain rooms with fairies that will
 Bosses are lurking at the lower levels should the adventures delve deep enough
 ![image](https://github.com/user-attachments/assets/6ebd1795-d279-4ded-a5e1-7831969efe86)
 
+## Tips
+1) Elemental weaknesses and resistances can make or break a run. Keep track of which elements are coming up next at the bottom of the screen. Every dungeon element represents the next 5 floors.
+2) Bosses appear every 10 floors.
+3) All monsters' regular attacks have a base speed of 8. Epic and Legendary monsters have a secondary attack to watch out for.
+4) It is sometimes better to have multiple weapons for elemental damage counters over keeping Healing Potions.
+5) Resurrection potions can also be used on heroes who are alive for both HP and MP restoration
+6) Press RShift to see additional attributes and armor of Heroes
+7) XP from the attributes panel represents XP LEFT to level, not total XP.
+8) You can use wands, staffs, and potions out of combat by pressing Down and selecting a hero.
+9) It is better to buy armor first before buying a Level Up from the shop.
+10) Elemental conditions go away after enough rounds of combat or at the end of combat.
+11) Plate Armor have several additional benifits.
+    Levels gained while wearing Plate armor will double HP boosts.
+    Levels gained while wearing Plate armor will boost the wearers natural AC by the Plate Armor's rarity.
+    Depending on the Plate Armor's rarity, enemies will be more likely to target that Hero.
+    Plate Armor makes the Hero slower in combat and more susceptible to triggering traps
+13) Leather Armor have several additional benifits.
+    Levels gained while wearing Leather will 1/2 the amount of XP required to reach the next level.
+    Levels gained while wearing Leather armor will boost the wearers natural AC slightly.
+    Chests contain additional gold per monster depending on the Rarity of the Leather Armor equipped.
+    The more heroes with Leather Armor equipped, the more information will be conveyed behind closed doors. Having at least 1 Leather Armor wearer will tell you where all Shops are.
+    Leather will boost the wearers speed in combat and make it more likely to succeed DC checks when encountering traps
+14) Robes have several additional benifits
+    Levels gained while wearing Robes will double MP boosts.
+    Spells casted through Wands and Staffs have significantly incrased damage based on the level of the caster and the Rarity of the Robe
+15) The amount of XP to level increases and can be used to fully heal and restore heroes HP and MP. Sometimes it might be better NOT to buy a level up from a shop to heal your Heroes to full later easier.
+16) Level ups incrase your natural damage and AC over time. When at a Shop or Reward screen, highlighting over items will allow you to see your Base item statistics to better allow you to make a determination of if you want to swap.
+   
 # Credits
 This game is dedicated to both my 7 year old sons. I am using this simple game to teach my kids programming and game design.
-
-> NOTE: Once a week I sit down with my boys and go over how to program. I usually introduce them to a new concept or syntax then make a new game from scratch using whatever subject we are trying to learn. In the past we've made simple games like Simon Says, Calculators, Horse Racing, etc; each with their own challenges for the boys to learn. This is the first time I wanted to push the code to a public repo for everyone to enjoy my sons creation.
