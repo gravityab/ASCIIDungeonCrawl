@@ -28,6 +28,8 @@ enum class Target : uint8_t
 	PLAYERHP_REUSE,   ///< Targets hero hp
 	PLAYERHP_CONSUME, ///< Targets hero hp and is consumed on use
 	PLAYERHP_REVIVE_CONSUME, ///< Targets dead heroes
+	PLAYER_PROTECT,
+	PLAYER_PROTECTALL,
 	ALLPLAYERSHP,     ///< Targets all heroes hp
 	PLAYERMP_REUSE,   ///< Targets hero mp
 	PLAYERMP_CONSUME, ///< Targets hero mp and is consumed on use

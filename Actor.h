@@ -76,4 +76,7 @@ public:
 
 	/// Amount of time to display level up animation
 	Time levelUpTimeLeft = Time::Zero;
+
+	/// Whether a protection spell is applied
+	bool protect = false;
 };

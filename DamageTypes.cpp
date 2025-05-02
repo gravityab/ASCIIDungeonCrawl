@@ -17,7 +17,7 @@ uint16_t ToAttribute(DamageType type)
 		case DamageType::POISON:    attribute = 0x0002; break;
 		case DamageType::PSYCHIC:   attribute = 0x000D; break;
 		case DamageType::HEALING:   attribute = 0x0004; break;
-
+		case DamageType::PROTECT:   attribute = 0x000C; break;
 		case DamageType::HOLY:      attribute = 0x000E; break;
 		case DamageType::STEEL:     attribute = 0x000F; break;
 		case DamageType::DARK:      attribute = 0x0008; break;
@@ -40,7 +40,7 @@ DamageType ToWeakness(DamageType type)
 		case DamageType::POISON:    return DamageType::STEEL;
 		case DamageType::PSYCHIC:   return DamageType::DARK;
 		case DamageType::HEALING:   return DamageType::HEALING;
-
+		case DamageType::PROTECT:   return DamageType::PROTECT;
 		case DamageType::HOLY:      return DamageType::NECROTIC;
 		case DamageType::STEEL:     return DamageType::NORMAL;
 		case DamageType::DARK:      return DamageType::PSYCHIC;
@@ -61,7 +61,7 @@ std::string ToConditionString(DamageType type)
 		case DamageType::POISON:    return "POISONED";
 		case DamageType::PSYCHIC:   return "CONFUSED";
 		case DamageType::HEALING:   return "HEALING";
-
+		case DamageType::PROTECT:   return "PROTECT";
 		case DamageType::HOLY:      return "SMITTEN";
 		case DamageType::STEEL:     return "BLEEDING";
 		case DamageType::DARK:      return "CORRUPTED";
@@ -82,7 +82,7 @@ std::string ToString(DamageType type)
 		case DamageType::POISON:    return "Poison";
 		case DamageType::PSYCHIC:   return "Psychic";
 		case DamageType::HEALING:   return "Healing";
-
+		case DamageType::PROTECT:   return "Protect";
 		case DamageType::HOLY:      return "Holy";
 		case DamageType::STEEL:     return "Steel";
 		case DamageType::DARK:      return "Dark";

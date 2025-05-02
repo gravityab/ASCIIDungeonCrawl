@@ -102,19 +102,35 @@
 
 #define WEAPON_DB_COMMON_HEALING(a, e, b, c, d) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::COMMON)] \
-        = Weapon(a, DamageType::HEALING, b, e, Rarity::COMMON, c, d).As(DamageType::HEALING, Rarity::COMMON);
+        = Weapon(a, DamageType::HEALING, b, e, Rarity::COMMON, c, d).As(DamageType::HEALING, Rarity::COMMON); \
+
+#define WEAPON_DB_COMMON_PROTECT(a, e, b, c, d) \
+    m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, Rarity::COMMON)] \
+        = Weapon(a, DamageType::PROTECT, b, e, Rarity::COMMON, c, d).As(DamageType::PROTECT, Rarity::COMMON);
 
 #define WEAPON_DB_RARE_HEALING(a, e, b, c, d) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::RARE)] \
         = Weapon(Weapon::ToString(a, Rarity::RARE), DamageType::HEALING, b, e, Rarity::RARE, c, d).As(DamageType::HEALING, Rarity::RARE);
 
+#define WEAPON_DB_RARE_PROTECT(a, e, b, c, d) \
+    m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, Rarity::RARE)] \
+        = Weapon(Weapon::ToString(a, Rarity::RARE), DamageType::PROTECT, b, e, Rarity::RARE, c, d).As(DamageType::PROTECT, Rarity::RARE);
+
 #define WEAPON_DB_EPIC_HEALING(a, e, b, c, d) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::EPIC)] \
         = Weapon(Weapon::ToString(a, Rarity::EPIC), DamageType::HEALING, b, e, Rarity::EPIC, c, d).As(DamageType::HEALING, Rarity::EPIC);
 
+#define WEAPON_DB_EPIC_PROTECT(a, e, b, c, d) \
+    m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, Rarity::EPIC)] \
+        = Weapon(Weapon::ToString(a, Rarity::EPIC), DamageType::PROTECT, b, e, Rarity::EPIC, c, d).As(DamageType::PROTECT, Rarity::EPIC);
+
 #define WEAPON_DB_LEGENDARY_HEALING(a, e, b, c, d) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::LEGENDARY)] \
         = Weapon(Weapon::ToString(a, Rarity::LEGENDARY), DamageType::HEALING, b, e, Rarity::LEGENDARY, c, d).As(DamageType::HEALING, Rarity::LEGENDARY);
+
+#define WEAPON_DB_LEGENDARY_PROTECT(a, e, b, c, d) \
+    m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, Rarity::LEGENDARY)] \
+        = Weapon(Weapon::ToString(a, Rarity::LEGENDARY), DamageType::PROTECT, b, e, Rarity::LEGENDARY, c, d).As(DamageType::PROTECT, Rarity::LEGENDARY);
 
 #define WEAPON_TABLE(a, b) \
     m_weaponDb[Weapon::ToString(a, DamageType::NORMAL, b)], \
@@ -131,6 +147,9 @@
 
 #define WEAPON_TABLE_HEALING(a, b) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, b)],
+
+#define WEAPON_TABLE_PROTECT(a, b) \
+    m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, b)],
 
 // --------------------------------------------------------------------------------------------------------------------
 void Database::Initialize()
@@ -3963,6 +3982,16 @@ void Database::Initialize()
             "|                       |" \
             "\\-----------------------/",
             0, 0, 25, 8, 0x0007);
+        m_imageDb["hero_protect"] = Image(
+            "/-+-+-+-+-+-+-+-+-+-+-+-\\" \
+            "+                       +" \
+            "|                       |" \
+            "+                       +" \
+            "|                       |" \
+            "+                       +" \
+            "|                       |" \
+            "\\-+-+-+-+-+-+-+-+-+-+-+-/",
+            0, 0, 25, 8, 0x000C);
         m_imageDb["select_hero_1"] = Image(
             "/----...................." \
             "|........................" \
@@ -4243,6 +4272,7 @@ void Database::Initialize()
         m_frameDb["hero_dead"] = Frame({ m_imageDb["hero_dead"] });
         m_frameDb["hero_level"] = Frame({ m_imageDb["hero_level"] });
         m_frameDb["hero_border"] = Frame({ m_imageDb["hero_border"] });
+        m_frameDb["hero_protect"] = Frame({ m_imageDb["hero_protect"] });
 
         m_frameDb["chest_closed"] = Frame({ m_imageDb["chest_closed"], m_imageDb["chest_closed_gold"] });
         m_frameDb["chest_opened"] = Frame({ m_imageDb["chest_opened"], m_imageDb["chest_opened_gold"] });
@@ -4597,6 +4627,9 @@ void Database::Initialize()
         m_animationDb["hero_border"].SetData(
             { m_frameDb["hero_border"] },
             200, false, false, false);
+        m_animationDb["hero_protect"].SetData(
+            { m_frameDb["hero_protect"] },
+            200, false, false, false);
 
         m_animationDb["chest_closed"].SetData(
             { m_frameDb["chest_closed"] },
@@ -4871,8 +4904,10 @@ void Database::Initialize()
         WEAPON_DB_COMMON("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"], m_animationDb["fist_attack"], m_animationDb["weapon_gloves"]);
         WEAPON_DB_COMMON("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"]);
         WEAPON_DB_COMMON_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"]);
+        WEAPON_DB_COMMON_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"]);
         WEAPON_DB_COMMON("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"]);
         WEAPON_DB_COMMON_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"]);
+        WEAPON_DB_COMMON_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"]);
         WEAPON_DB_COMMON("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"], m_animationDb["slash_attack"], m_animationDb["weapon_dagger"]);
         WEAPON_DB_COMMON("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"], m_animationDb["slash_attack"], m_animationDb["weapon_sword"]);
         WEAPON_DB_COMMON("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"], m_animationDb["slash_attack"], m_animationDb["weapon_great_sword"]);
@@ -4883,8 +4918,10 @@ void Database::Initialize()
         WEAPON_DB_RARE("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["weapon_rare_gloves"]);
         WEAPON_DB_RARE("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"]);
         WEAPON_DB_RARE_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"]);
+        WEAPON_DB_RARE_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"]);
         WEAPON_DB_RARE("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"]);
         WEAPON_DB_RARE_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"]);
+        WEAPON_DB_RARE_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"]);
         WEAPON_DB_RARE("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_dagger"]);
         WEAPON_DB_RARE("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_sword"]);
         WEAPON_DB_RARE("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_great_sword"]);
@@ -4895,8 +4932,10 @@ void Database::Initialize()
         WEAPON_DB_EPIC("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["weapon_epic_gloves"]);
         WEAPON_DB_EPIC("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"]);
         WEAPON_DB_EPIC_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"]);
+        WEAPON_DB_EPIC_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"]);
         WEAPON_DB_EPIC("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"]);
         WEAPON_DB_EPIC_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"]);
+        WEAPON_DB_EPIC_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"]);
         WEAPON_DB_EPIC("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_dagger"]);
         WEAPON_DB_EPIC("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_sword"]);
         WEAPON_DB_EPIC("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_great_sword"]);
@@ -4907,8 +4946,10 @@ void Database::Initialize()
         WEAPON_DB_LEGENDARY("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["weapon_legendary_gloves"]);
         WEAPON_DB_LEGENDARY("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"]);
         WEAPON_DB_LEGENDARY_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"]);
+        WEAPON_DB_LEGENDARY_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"]);
         WEAPON_DB_LEGENDARY("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"]);
         WEAPON_DB_LEGENDARY_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"]);
+        WEAPON_DB_LEGENDARY_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"]);
         WEAPON_DB_LEGENDARY("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_dagger"]);
         WEAPON_DB_LEGENDARY("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_sword"]);
         WEAPON_DB_LEGENDARY("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_great_sword"]);
@@ -4947,6 +4988,8 @@ void Database::Initialize()
         WEAPON_TABLE("Gloves", Rarity::COMMON)
         WEAPON_TABLE_HEALING("Wand", Rarity::COMMON)
         WEAPON_TABLE_HEALING("Staff", Rarity::COMMON)
+        WEAPON_TABLE_PROTECT("Wand", Rarity::COMMON)
+        WEAPON_TABLE_PROTECT("Staff", Rarity::COMMON)
 
         m_weaponDb["Lesser Healing Potion"],
         m_weaponDb["Lesser Magic Potion"],
@@ -5016,6 +5059,8 @@ void Database::Initialize()
         WEAPON_TABLE("Gloves", Rarity::RARE)
         WEAPON_TABLE_HEALING("Wand", Rarity::RARE)
         WEAPON_TABLE_HEALING("Staff", Rarity::RARE)
+        WEAPON_TABLE_PROTECT("Wand", Rarity::RARE)
+        WEAPON_TABLE_PROTECT("Staff", Rarity::RARE)
 
         m_weaponDb["Greater Healing Potion"],
         m_weaponDb["Greater Magic Potion"],
@@ -5039,6 +5084,8 @@ void Database::Initialize()
         WEAPON_TABLE("Gloves", Rarity::EPIC)
         WEAPON_TABLE_HEALING("Wand", Rarity::EPIC)
         WEAPON_TABLE_HEALING("Staff", Rarity::EPIC)
+        WEAPON_TABLE_PROTECT("Wand", Rarity::EPIC)
+        WEAPON_TABLE_PROTECT("Staff", Rarity::EPIC)
 
         m_weaponDb["Greater Healing Potion"],
         m_weaponDb["Greater Magic Potion"],
@@ -5065,6 +5112,8 @@ void Database::Initialize()
         WEAPON_TABLE("Gloves", Rarity::LEGENDARY)
         WEAPON_TABLE_HEALING("Wand", Rarity::LEGENDARY)
         WEAPON_TABLE_HEALING("Staff", Rarity::LEGENDARY)
+        WEAPON_TABLE_PROTECT("Wand", Rarity::LEGENDARY)
+        WEAPON_TABLE_PROTECT("Staff", Rarity::LEGENDARY)
     };
 
     // ----------------------------------------------------------------------------------------------------------------

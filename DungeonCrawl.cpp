@@ -512,17 +512,44 @@ void DungeonCrawl::DrawDoors(Time delta)
         }
         else
         {
+            // Calculate sight count
+            int sightCount = 0;
+            for (int heroIndex = 0; heroIndex < (int)m_heroes.size(); heroIndex++)
+            {
+                if (m_heroes[heroIndex].armor.target == Target::PLAYERAC_SPEED
+                    && m_heroes[heroIndex].armor.rarity >= Rarity::COMMON
+                    && m_heroes[heroIndex].currentHp > 0)
+                {
+                    sightCount++;
+                }
+            }
+
             // Display a preview of the other doors contents
             uint16_t attribute = ToAttribute(m_currentFloor->rarity);
             for (int rm = 0; rm < (int)m_currentFloor->rooms.size(); rm++)
             {
-                m_currentFloor->rooms[rm].shop.size();
-
                 Room& room = m_currentFloor->rooms[rm];
                 if (rm == index)
                 {
-                    if (m_currentFloor->rooms[rm].shop.size() > 0)
+                    if (room.shop.size() > 0 && sightCount > 0)
                         m_console.WriteData(x + 14, 7, attribute, "Shop");
+                    else if (room.door.state == State::STATE_FOUNTAIN && sightCount == 4)
+                        m_console.WriteData(x + 14, 7, attribute, "Fountain");
+                    else if (room.door.state == State::STATE_TRAP && sightCount > 1)
+                        m_console.WriteData(x + 14, 7, attribute, "Trap");
+                    else if (room.monsters.size() == 1 && sightCount == 4)
+                        m_console.WriteData(x + 14, 7, attribute, "1 Monster");
+                    else if (room.monsters.size() > 1 && sightCount == 4)
+                    {
+                        int count = 0;
+                        for (int index = 0; index < (int)room.monsters.size(); index++)
+                        {
+                            if (room.monsters[index].currentHp > 0)
+                                count++;
+                        }
+                        m_console.WriteData(x + 14, 7, attribute, "%d Monster", count);
+                    }
+                    break;
                 }
             }
         }
@@ -610,6 +637,9 @@ void DungeonCrawl::DrawHero(Time delta)
         // Draw border and condition
         hero.idle.SetAttributes(0, borderColor);
         hero.idle.WriteData(m_console, delta, x, y, complete);
+        if (hero.protect)
+            ANIMATION("hero_protect").WriteData(m_console, delta, x, y, complete);
+
         if (hero.condition.die != 0)
             m_console.WriteData(x + 6, y, ToAttribute(hero.condition.type), " %s ", ToConditionString(hero.condition.type).c_str());
         if (hasResist)
@@ -1787,6 +1817,18 @@ void DungeonCrawl::UseWeapon(Action action)
             continue;
         }
 
+        // Handle protection spell
+        if (action.weapon->target == Target::PLAYER_PROTECT
+            || action.weapon->target == Target::PLAYER_PROTECTALL)
+        {
+            if (actor->currentHp > 0)
+            {
+                actor->protect = true;
+            }
+            continue;
+        }
+
+
         // Reduce or increase damage to if resistant or weak
         if (isDamaging || isDraining)
         {
@@ -1823,6 +1865,13 @@ void DungeonCrawl::UseWeapon(Action action)
 
             if (damage <= 0)
                 damage = 1;
+
+            // Remove protection spell and reduce damage to 0
+            if (actor->protect)
+            {
+                actor->protect = false;
+                damage = 0;
+            }
         }
 
         // The final damage
@@ -2240,6 +2289,15 @@ void DungeonCrawl::UseSelectedItem()
                 m_heroes[index].currentMp += amount;
         }
     }
+    else if (context.weapon->target == Target::PLAYER_PROTECTALL)
+    {
+        // Protect all
+        for (int index = 0; index < (int)m_heroes.size(); index++)
+        {
+            if (m_heroes[index].currentHp > 0)
+                m_heroes[index].protect = true;
+        }
+    }
     else if (context.weapon->target == Target::PLAYERHP_CONSUME)
     {
         context.target->currentHp += amount;
@@ -2254,6 +2312,10 @@ void DungeonCrawl::UseSelectedItem()
     else if (context.weapon->target == Target::PLAYERHP_REUSE)
     {
         context.target->currentHp += amount;
+    }
+    else if (context.weapon->target == Target::PLAYER_PROTECT)
+    {
+        context.target->protect = true;
     }
     else if (context.weapon->target == Target::PLAYERMP_CONSUME)
     {
@@ -2591,6 +2653,19 @@ void DungeonCrawl::PushCombatSelection()
         NextHero();
         return;
     }
+    if (weapon->target == Target::PLAYER_PROTECTALL)
+    {
+        Action action;
+        action.source = &m_heroes[m_heroIndex];
+        action.weapon = weapon;
+        for (int index = 0; index < (int)m_heroes.size(); index++)
+            action.targets.push_back(&m_heroes[index]);
+        m_actions.push_back(action);
+
+        m_ui.PopBackTo(2);
+        NextHero();
+        return;
+    }
 
     CursorContext context;
     context.direction = CursorIndexDirection::HORIZONTAL;
@@ -2691,7 +2766,8 @@ void DungeonCrawl::PushUseItem()
         return;
 
     // Staff doesn't require a target can go strait to using item
-    if (currentWeapon->target == Target::ALLPLAYERSHP)
+    if (currentWeapon->target == Target::ALLPLAYERSHP
+        || currentWeapon->target == Target::PLAYER_PROTECTALL)
     {
         m_ui.GetContext().weapon = currentWeapon;
         UseSelectedItem();

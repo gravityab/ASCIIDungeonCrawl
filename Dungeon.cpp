@@ -172,8 +172,8 @@ Floor Dungeon::GenerateFloor(int floor, DamageType attribute, MonsterFamily fami
 			int allWeapons = GetRandomValue(0, 1);
 
 			std::vector<std::vector<Weapon>> weaponTable = { m_db.m_commonTable };
-			if (room.door.rarity >= Rarity::LEGENDARY) { weaponTable.push_back(m_db.m_legendaryTable); weaponTable.push_back(m_db.m_epicTable); weaponTable.push_back(m_db.m_rareTable); weaponTable.push_back(m_db.m_commonTable); }
-			if (room.door.rarity >= Rarity::EPIC) { weaponTable.push_back(m_db.m_epicTable); weaponTable.push_back(m_db.m_rareTable); weaponTable.push_back(m_db.m_commonTable); }
+			if (room.door.rarity >= Rarity::LEGENDARY) { weaponTable.push_back(m_db.m_legendaryTable); weaponTable.push_back(m_db.m_legendaryTable); weaponTable.push_back(m_db.m_legendaryTable); weaponTable.push_back(m_db.m_epicTable); }
+			if (room.door.rarity >= Rarity::EPIC) { weaponTable.push_back(m_db.m_epicTable); weaponTable.push_back(m_db.m_epicTable); weaponTable.push_back(m_db.m_rareTable); weaponTable.push_back(m_db.m_commonTable); }
 			if (room.door.rarity >= Rarity::RARE) { weaponTable.push_back(m_db.m_rareTable); weaponTable.push_back(m_db.m_commonTable); }
 			std::vector<uint16_t> hiltColor = { 0x0006, 0x0008, 0x000E, 0x000F };
 

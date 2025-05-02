@@ -23,7 +23,8 @@ enum class DamageType : uint8_t
 	POISON,    ///< Poison damage        MORE damage tp NORMAL        | <-|
 	STEEL,     ///< Steel damage         MORE damage to POISON        | <-|
 	HOLY,      ///< Holy damage          MORE damage to NECROTIC    <-|
-	HEALING,   ///< healing 
+	HEALING,   ///< Healing
+	PROTECT,   ///< Protection
 };
 
 /// Convert a damage type to an attribute color
