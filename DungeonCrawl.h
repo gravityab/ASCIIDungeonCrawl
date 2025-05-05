@@ -69,6 +69,9 @@ private:
 	/// Add a new hero to the party
 	void AddHero();
 
+	/// Draw tiny side view of dungeon
+	void DrawDungeon(Time delta);
+
 	/// Draw the stairs background
 	void DrawStairs(Time delta, uint16_t attribute);
 
@@ -307,10 +310,20 @@ private:
 	/// The current hero index
 	int m_heroIndex = 0;
 
+	/// Condition on player 1
 	Weapon m_condition1;
+
+	/// Condition on player 2
 	Weapon m_condition2;
+
+	/// Condition on player 3
 	Weapon m_condition3;
+
+	/// Condition on player 4
 	Weapon m_condition4;
+
+	/// The tiles for the dungeon map
+	std::vector<Animation> m_tiles;
 
 	/// List of fairies
 	struct Fairy { Animation fairy; Animation dust; int dir; int x; int y; int x_dust; int y_dust; Time timeLeft; };

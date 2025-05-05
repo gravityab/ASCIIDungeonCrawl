@@ -157,6 +157,254 @@ void Database::Initialize()
     // ----------------------------------------------------------------------------------------------------------------
     m_imageDb.clear();
     {
+        m_imageDb["side_tile_background_1"] = Image(
+            "####################" \
+            "####################" \
+            "####################" \
+            "####################",
+            0, 0, 20, 4, 0x000B);
+        m_imageDb["side_tile_background_2"] = Image(
+            "####################" \
+            "####################" \
+            "####################" \
+            "####################",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_background_3"] = Image(
+            "####################" \
+            "####################" \
+            "####################" \
+            "####################",
+            0, 0, 20, 4, 0x0008);
+        m_imageDb["side_tile_background_4"] = Image(
+            "####################" \
+            "####################" \
+            "####################" \
+            "####################",
+            0, 0, 20, 4, 0x000C);
+        m_imageDb["side_tile_background_4_right"] = Image(
+            "# # # # # # \\\\# # ##" \
+            "## # # # # # # # # #",
+            0, 0, 20, 2, 0x0008);
+        m_imageDb["side_tile_background_4_left"] = Image(
+            "# # # //# # # # # ##" \
+            "## # # # # # # # # #",
+            0, 0, 20, 2, 0x0008);
+        m_imageDb["side_tile_mountains"] = Image(
+            "...../\\....../\\....." \
+            "...-/##\\./\\-/##/\\..." \
+            ".-/#####\\##/#/-##/\\." \
+            "/#########/########\\",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_1"] = Image(
+            ".((oo))ooo)...((ooo)" \
+            "....(ooo)......((o)." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_2"] = Image(
+            ").((oo))ooo)...((ooo" \
+            ".....(ooo)......((o)" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_3"] = Image(
+            "o).((oo))ooo)...((oo" \
+            ").....(ooo)......((o" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_4"] = Image(
+            "oo).((oo))ooo)...((o" \
+            "o).....(ooo)......((" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_5"] = Image(
+            "ooo).((oo))ooo)...((" \
+            "(o).....(ooo)......(" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_6"] = Image(
+            "(ooo).((oo))ooo)...(" \
+            "((o).....(ooo)......" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_7"] = Image(
+            "((ooo).((oo))ooo)..." \
+            ".((o).....(ooo)....." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_8"] = Image(
+            ".((ooo).((oo))ooo).." \
+            "..((o).....(ooo)...." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_9"] = Image(
+            "..((ooo).((oo))ooo)." \
+            "...((o).....(ooo)..." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_10"] = Image(
+            "...((ooo).((oo))ooo)" \
+            "....((o).....(ooo).." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_11"] = Image(
+            ")...((ooo).((oo))ooo" \
+            ".....((o).....(ooo)." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_12"] = Image(
+            "o)...((ooo).((oo))oo" \
+            "......((o).....(ooo)" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_13"] = Image(
+            "oo)...((ooo).((oo))o" \
+            ")......((o).....(ooo" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_14"] = Image(
+            "ooo)...((ooo).((oo))" \
+            "o)......((o).....(oo" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_15"] = Image(
+            ")ooo)...((ooo).((oo)" \
+            "oo)......((o).....(o" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_16"] = Image(
+            "))ooo)...((ooo).((oo" \
+            "ooo)......((o).....(" \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_17"] = Image(
+            "o))ooo)...((ooo).((o" \
+            "(ooo)......((o)....." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_18"] = Image(
+            "oo))ooo)...((ooo).((" \
+            ".(ooo)......((o)...." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_19"] = Image(
+            "(oo))ooo)...((ooo).(" \
+            "..(ooo)......((o)..." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_tile_cloud_20"] = Image(
+            "((oo))ooo)...((ooo)." \
+            "...(ooo)......((o).." \
+            "...................." \
+            "....................",
+            0, 0, 20, 4, 0x0007);
+        m_imageDb["side_bird_1"] = Image(
+            "-",
+            0, 0, 1, 1, 0x0008);
+        m_imageDb["side_bird_2"] = Image(
+            "^",
+            0, 0, 1, 1, 0x0008);
+        m_imageDb["side_tile_tree_top_1"] = Image(
+            "...................." \
+            "...................." \
+            "...................." \
+            "....^........^.....^",
+            0, 0, 20, 4, 0x0002);
+        m_imageDb["side_tile_tree_top_2"] = Image(
+            "...................." \
+            "...................." \
+            "...................." \
+            ".^......^......^....",
+            0, 0, 20, 4, 0x000A);
+        m_imageDb["side_tile_tree_body_1"] = Image(
+            "....^^......^^....^^" \
+            "...^^^^....^^^...^^^" \
+            "...^..^...^^..^..^.." \
+            "....................",
+            0, 0, 20, 4, 0x0002);
+        m_imageDb["side_tile_tree_body_2"] = Image(
+            "...................." \
+            "...................." \
+            "....||......||....||" \
+            "....||......||....||",
+            0, 0, 20, 4, 0x000C);
+        m_imageDb["side_tile_tree_body_3"] = Image(
+            ".^^.....^^.....^^..." \
+            "^^^^...^^^.....^^..." \
+            "^..^..^...^...^..^.." \
+            "....................",
+            0, 0, 20, 4, 0x000A);
+        m_imageDb["side_tile_tree_body_4"] = Image(
+            "...................." \
+            "...................." \
+            ".||.....||.....||..." \
+            ".||.....||.....||...",
+            0, 0, 20, 4, 0x0006);
+        m_imageDb["side_tile_dungeon_right"] = Image(
+            "............\\\\......" \
+            "..../--------\\\\-\\..." \
+            "....|           |..." \
+            "....\\-----------/...",
+            0, 0, 20, 4, 0x000C);
+        m_imageDb["side_tile_dungeon_left"] = Image(
+            "......//............" \
+            ".../-//--------\\...." \
+            "...|           |...." \
+            "...\\-----------/....",
+            0, 0, 20, 4, 0x000C);
+
+
+        m_imageDb["main"] = Image(
+            "##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@%%%%%%%%%%%%%%%%%%%%%%@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#####%@@%##########" \
+            "%@@@@%%%%%%%%%%%%%%%%%%%%%%%%%@@@%%%%%%%%%%%%%%%%%%%%%%@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@@%%%%%%%%%%%%@%%%%%%%%%%%%" \
+            "##%%#******#%%#**************#*******#%%%%#************************##%@%%%###############%%%##*******************##%%###" \
+            "**##***#######****###**###############**%#**##########################%%#***###############%#***#####**#*********##%%***" \
+            "###%########%%##########################%%###########################%@%###################%#####################*#%%###" \
+            "##%%%#######%%#########################%%%############################%%###################%#######################%%###" \
+            "##%%%######%%%#########################%%%############################%%###################%#######################%@%##" \
+            "##%%%######%@%#########################%%%############################%%##################%%%######################%%%##" \
+            "##%%%######%@%#########################%%%###########################%%%##################%%#######################%@%##" \
+            "##%%%%%%###%@%%%%%%%%###############%%%%@%%%%##################%%%%%%%@@%################%%%%%%%%%%%%%%%%%%%%%%%%%%@@%%%" \
+            "+++*##**++**%@%#*++*******+++******+*%###*++++++++++++++*%@@@%%%%%#+++++++*##%%%%%%@@%*+++++++++++**%@%%%%%%%%%%#*++++++" \
+            "##*##########%#+**###################%*+******++*######**+%%*+****+*##*****####**++%%*################++****#########***" \
+            "############%%######################%%###################*#+*#############%########%#*##############%*++*###############" \
+            "############%%%#####################%%###################*%########################%%##############%%%##################" \
+            "############%%%######################%####################%########################%%##############%%%##################" \
+            "############%@%######################%%%#################%%########################%%##############%%%##################" \
+            "############%@%%##########%#########%@@%###############%%%@%######################%@@%#############%%%##################" \
+            "###%########%@%#######%%%%%%##%#####%@%%%%%%%%%%%%%%%%%%%%@@%#######%%###########%%@@%%%%%########%%%%############%%%###" \
+            "%%%%%%%%%%%%%@@%%%%%%%%%%%%%%%%%%%%%#############%%%#################%@@@@%#****#########@@@%%%%%%%%%%%#######%%%%%%%%%%" \
+            "**%##******#######***#####*****#%%#**************+*#*+++++++*#*****###%@%****************#%*+++++++******+++++++++#%%***" \
+            "**%#*#%%%%%%%%%%%%%%%%%%%%%%#**#%%#####################################%%#################%*+*##################*++#*+**" \
+            "##%%%%%%%%%%%%%%%%%%%%%%%%%%%##%%%####################################*%%################%%**#####################**####" \
+            "##%@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%################%####################%%################%%*#######################*%###" \
+            "##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%###############%####################%%################%%########################*%###" \
+            "#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%###############%%##################%%%################%%#########################%###" \
+            "#%%@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##############%%%###############%%%%%####%%%%%%######%%%##########%%###########%%%%%" \
+            "%%%@@%%%%%%%%@%@@%%%%%%%%%%%%%%@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@%%%%%%%%%%%%%%%%%@@%%%%%%%%%%%%%%%%%%%%%%%%@@%%%" \
+            "%%%%%%%%%%%%%%###################%%%%%@@@@%%%%%%###############%%@@%%%%%%%%%%%#####%%%#%@@%%%%%%%%%%%%%%%%%%%%@%%%######" \
+            "****########%#*********###%#####***#%%%#%%%##################****%%**###%%%%###########*#@%%%%%###############%#######**" \
+            "%%%%%%%%%%%%%##%%%%%%%%%%%%%############%%###%%%%%%%%%%%%%%%%%%%#%%##%%%%%%%%%%%%%%%%%%#%@%%%%%%%%%%%%%%%%%%%%%%%%%#####" \
+            "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%###%%%%#%%%%#%%%%%%%%%%##%%%%%%%%%%%@%%%%%%%%%%%%%%%%%%%%%%@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%",
+            0, 0, 120, 30, 0x0008);
+        
         m_imageDb["background"] = Image(
             "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --" \
             "|..................................................................................................|" \
@@ -653,8 +901,9 @@ void Database::Initialize()
         m_imageDb["background_footer"] = Image(
             "-/--------\\-/--------\\-/--------\\-/--------\\-/--------\\-/--------\\-/--------\\-/--------\\-/--------\\-" \
             "X                                                                                                  X" \
+            "X                                                                                                  X" \
             "-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-",
-            0, 26, 100, 3, 0x0008);
+            0, 26, 100, 4, 0x0008);
 
         m_imageDb["common_door_closed"] = Image(
             "..................................." \
@@ -4195,6 +4444,60 @@ void Database::Initialize()
         m_frameDb["background_1"] = Frame({ m_imageDb["background"], m_imageDb["background_1"], m_imageDb["background_panel"], m_imageDb["background_footer"], });
         m_frameDb["background_2"] = Frame({ m_imageDb["background"], m_imageDb["background_2"], m_imageDb["background_panel"], m_imageDb["background_footer"], });
 
+        m_frameDb["side_tile_0_1"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_1"] });
+        m_frameDb["side_tile_0_2"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_2"] });
+        m_frameDb["side_tile_0_3"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_3"] });
+        m_frameDb["side_tile_0_4"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_4"] });
+        m_frameDb["side_tile_0_5"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_5"] });
+        m_frameDb["side_tile_0_6"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_6"] });
+        m_frameDb["side_tile_0_7"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_7"] });
+        m_frameDb["side_tile_0_8"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_8"] });
+        m_frameDb["side_tile_0_9"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_9"] });
+        m_frameDb["side_tile_0_10"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_10"] });
+        m_frameDb["side_tile_0_11"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_11"] });
+        m_frameDb["side_tile_0_12"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_12"] });
+        m_frameDb["side_tile_0_13"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_13"] });
+        m_frameDb["side_tile_0_14"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_14"] });
+        m_frameDb["side_tile_0_15"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_15"] });
+        m_frameDb["side_tile_0_16"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_16"] });
+        m_frameDb["side_tile_0_17"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_17"] });
+        m_frameDb["side_tile_0_18"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_18"] });
+        m_frameDb["side_tile_0_19"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_19"] });
+        m_frameDb["side_tile_0_20"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_20"] });
+        m_frameDb["side_tile_0_20"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_cloud_20"] });
+        m_frameDb["side_tile_1"] = Frame({ m_imageDb["side_tile_background_1"], m_imageDb["side_tile_mountains"], m_imageDb["side_tile_tree_top_1"], m_imageDb["side_tile_tree_top_2"] });
+        m_frameDb["side_tile_2"] = Frame({ m_imageDb["side_tile_background_2"], m_imageDb["side_tile_tree_body_1"], m_imageDb["side_tile_tree_body_2"], m_imageDb["side_tile_tree_body_3"], m_imageDb["side_tile_tree_body_4"] });
+        m_frameDb["side_tile_3_right"] = Frame({ m_imageDb["side_tile_background_3"], m_imageDb["side_tile_dungeon_right"] });
+        m_frameDb["side_tile_3_left"] = Frame({ m_imageDb["side_tile_background_3"], m_imageDb["side_tile_dungeon_left"] });
+        m_frameDb["side_bird_1"] = Frame({ m_imageDb["side_bird_1"], });
+        m_frameDb["side_bird_2"] = Frame({ m_imageDb["side_bird_2"], });
+
+
+        /*
+        m_frameDb["side_tree_1"] = Frame({ m_imageDb["side_tree_leaves_1"], m_imageDb["side_tree_tree_1"], });
+        m_frameDb["side_tree_2"] = Frame({ m_imageDb["side_tree_leaves_2"], m_imageDb["side_tree_tree_2"], });
+        m_frameDb["side_cloud_1"] = Frame({ m_imageDb["side_cloud_1"], });
+        m_frameDb["side_cloud_2"] = Frame({ m_imageDb["side_cloud_2"], });
+        m_frameDb["side_cloud_3"] = Frame({ m_imageDb["side_cloud_3"], });
+        m_frameDb["side_cloud_4"] = Frame({ m_imageDb["side_cloud_4"], });
+        m_frameDb["side_cloud_5"] = Frame({ m_imageDb["side_cloud_5"], });
+        m_frameDb["side_cloud_6"] = Frame({ m_imageDb["side_cloud_6"], });
+        m_frameDb["side_cloud_7"] = Frame({ m_imageDb["side_cloud_7"], });
+        m_frameDb["side_cloud_8"] = Frame({ m_imageDb["side_cloud_8"], });
+        m_frameDb["side_cloud_9"] = Frame({ m_imageDb["side_cloud_9"], });
+        m_frameDb["side_cloud_10"] = Frame({ m_imageDb["side_cloud_10"], });
+        m_frameDb["side_cloud_11"] = Frame({ m_imageDb["side_cloud_11"], });
+        m_frameDb["side_cloud_12"] = Frame({ m_imageDb["side_cloud_12"], });
+        m_frameDb["side_cloud_13"] = Frame({ m_imageDb["side_cloud_13"], });
+        m_frameDb["side_cloud_14"] = Frame({ m_imageDb["side_cloud_14"], });
+        m_frameDb["side_cloud_15"] = Frame({ m_imageDb["side_cloud_15"], });
+        m_frameDb["side_cloud_16"] = Frame({ m_imageDb["side_cloud_16"], });
+        m_frameDb["side_cloud_17"] = Frame({ m_imageDb["side_cloud_17"], });
+        m_frameDb["side_cloud_18"] = Frame({ m_imageDb["side_cloud_18"], });
+        m_frameDb["side_cloud_19"] = Frame({ m_imageDb["side_cloud_19"], });
+        m_frameDb["side_cloud_20"] = Frame({ m_imageDb["side_cloud_20"], });
+        */
+
         m_frameDb["trap"] = Frame({ m_imageDb["background"], m_imageDb["trap"], m_imageDb["background_panel"], m_imageDb["background_footer"], });
         m_frameDb["spikes_1"] = Frame({ m_imageDb["background"], m_imageDb["spikes_1"], m_imageDb["background_panel"], m_imageDb["background_footer"], });
         m_frameDb["spikes_2"] = Frame({ m_imageDb["background"], m_imageDb["spikes_2"], m_imageDb["background_panel"], m_imageDb["background_footer"], });
@@ -4549,6 +4852,26 @@ void Database::Initialize()
         m_animationDb["background_2"].SetData(
             { m_frameDb["background_2"] },
             200, false, false, false);
+
+        m_animationDb["side_bird"].SetData(
+            { m_frameDb["side_bird_1"], m_frameDb["side_bird_2"] },
+            100, 200, true, true, true);
+        m_animationDb["side_tile_0"].SetData(
+            { m_frameDb["side_tile_0_1"], m_frameDb["side_tile_0_2"], m_frameDb["side_tile_0_3"], m_frameDb["side_tile_0_4"], m_frameDb["side_tile_0_5"], m_frameDb["side_tile_0_6"], m_frameDb["side_tile_0_7"], m_frameDb["side_tile_0_8"], m_frameDb["side_tile_0_9"], m_frameDb["side_tile_0_10"], m_frameDb["side_tile_0_11"], m_frameDb["side_tile_0_12"], m_frameDb["side_tile_0_13"], m_frameDb["side_tile_0_14"], m_frameDb["side_tile_0_15"], m_frameDb["side_tile_0_16"], m_frameDb["side_tile_0_17"], m_frameDb["side_tile_0_18"], m_frameDb["side_tile_0_19"], m_frameDb["side_tile_0_20"], },
+            1200, true, true, false);
+        m_animationDb["side_tile_1"].SetData(
+            { m_frameDb["side_tile_1"] },
+            200, false, false, false);
+        m_animationDb["side_tile_2"].SetData(
+            { m_frameDb["side_tile_2"] },
+            200, false, false, false);
+        m_animationDb["side_tile_3_right"].SetData(
+            { m_frameDb["side_tile_3_right"] },
+            200, false, false, false);
+        m_animationDb["side_tile_3_left"].SetData(
+            { m_frameDb["side_tile_3_left"] },
+            200, false, false, false);
+
         m_animationDb["trap"].SetData(
             { m_frameDb["trap"] },
             200, false, false, false);
@@ -4607,7 +4930,7 @@ void Database::Initialize()
 
         m_animationDb["select_nothing"].SetData(
             { m_frameDb["select_nothing"] },
-            200, false, false, false);		
+            200, false, false, false);        
         m_animationDb["select_door"].SetData(
             { m_frameDb["select_door_1"], m_frameDb["select_door_2"], m_frameDb["select_door_3"], m_frameDb["select_door_4"], m_frameDb["select_door_5"], m_frameDb["select_door_6"], m_frameDb["select_door_7"], m_frameDb["select_door_8"] },
             80, true, true, false);

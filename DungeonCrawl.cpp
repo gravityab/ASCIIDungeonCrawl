@@ -64,7 +64,7 @@ bool DungeonCrawl::RunLoop()
         }
 
         m_input.Poll();
-        m_console.SetData(' ', 0, 0, 100, 30, 0x0007);
+        m_console.SetData(' ', 0, 0, 120, 30, 0x0007);
 
         switch (m_state)
         {
@@ -95,6 +95,8 @@ bool DungeonCrawl::RunLoop()
                 break;
         }
 
+        DrawDungeon(delta);
+
         m_console.Draw(m_handle);
     }
 
@@ -104,36 +106,6 @@ bool DungeonCrawl::RunLoop()
 // --------------------------------------------------------------------------------------------------------------------
 void DungeonCrawl::DrawMainScreen(Time delta)
 {
-    std::string mainMenu =
-        "XXXXXXXX$$xxXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&&XXXXXXXXXXXXXX$$$XXXXXXX&$XXXXXXXXXXXXxXXXXXXXXxxXXX" \
-        "XXXXXXX$&$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$&&&XXXX$XXXXXXXXX$$XXXXXXXX&XXXXXXXXXXXXXXXXXXXXXXXxXXX" \
-        "XXXXXXX$&$XXXXXXXXXXXXXXXXXXXXXXXX$$XXXXXXXXX$&&$XXX$XXXXXXXXXXXXXXXXXXX&$XXXXXXXXXXXXXXXXXXXXXXXXX$" \
-        "XXXXXXX$&$XXXXXXXXXXXXXXXXXXXXXXXX$$XXXXXXXXXX&&$XXXXXXXXXXXXXXXXXXXXXXX&$XXXXXXXXXXXXXXXXXXXXXXXXXX" \
-        "XXXXXXX$&$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$&&$XXXXXXXXXXXXXXXXXXXXXXX&$XXXXXXX$$XXXXXXXXXXXXXXXXX" \
-        "XXXXXXX$&$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$$&&$XXXXXXXXXXXXXXXXXXXXXX$&$$XXXXXXXXXXXXXXXXXXXXXXXXX" \
-        "XXXXXX$$&$XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$$&&$XXXXXXXXXXXXXXXXXXXXXX$&$XXXXXXXXXXXXXXXXXXXXXXXXXX" \
-        "XXXX$$$&&&$$XXXXXXXXXXXXXXXXXXXXXXXXXXX$$$$$$$&&$XXXXXXXXXXXXXXXXXXXXXX$&$$$$$$$$$$$$$$$$$$$$$$$$$$$" \
-        "$$$$&&&&&&$$$$$$$$$$$$$$$$$$$&&$$$$$$$&&&&$$$$$$$$$$$$&&&&&&&&&&&&$$$$$$$$$$$$$$$$$&&&&&&&&&&&&&&&&&" \
-        "XXx+$$Xx+++++++++++++++++++++x&&&&$X++++x++++++++++++++++++xX$$&&$x++++++++++++++xx+$&$XXXxxxxxxxxx+" \
-        "XXXX$$+xxXXXXXXx+xXXXXXXXXXXXx+&$x+xXXXXxxXXXXXXXXXXXXXXXXXx++X&$xXXXXXXXXXXXXXXXX$X$$x+xXXXXXXXXXXX" \
-        "XXX$&XXXXXXXXXXXXXXXXXXXXXXXXX+$x+XXXXXXXXXXXXXXXXX$XXXXXXXXXxX&xxXXXXXXXXXXXXXXXXXX$x+xxxXXXXXXXXXX" \
-        "XXX&&$XXXXXXXXXXXXXXXXXXXXXXXX+$XXXXXXXXXXXXXX$XXXX$XXXXXXXXXX$&$XXXXXXXXXXXXXXXXXX$&XXXxXXXXXXXXXXX" \
-        "XXX$&$XXXXXXXXXXXXX$$$XXXXXXXXX&XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$&$XXXXXXXXXXXXXXXXXX$&$XXXXXXXXXXXXXX" \
-        "XXXX$$XXXXXXXXXXXXXX$$XXXXXXXX$&XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$&$XXXXX$XXXXXXXXXXXX$&$XXXXXXXXXXXXXX" \
-        "XXXX$$$$$XXXXXXXXXXXXXXXXXXXX$$&XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$&$$XXXXXXXXXXXXXXXXX$&$XXXXXXXXXXXXXX" \
-        "XXX$&&&$XXXXXXXXXXXXXXXXXXX$$$$&XXXXXXXXXXXXXXXXXXXXXXXXXXXXX$&&&$XXXXXXXXXXXXXXXXX$&$XXXXXXXXXXXXXX" \
-        "XXX$&&$$$$$$$$$$$$$$$X$$$$$$$$$&&$XXXXXXXXXXXXXXXXXXXXXXXXXXX$&&&$$$$$XXXXXXXXXXXX$$&$XXXXXXXXXX$XXX" \
-        "$$$&&&&&&$&&&&$&&&&&$$$$$$$$$$&&&&&&$$$$$$&&&&&&$$$$$$$$$$$$$$&&&$&$&$$$$$$$$$$$$$$$&&$XXXXXXXXXX$XX" \
-        "&&$xx++++++++++++++x$$$x+++++++++++++++++++xxX&&&&&&X++++++++++++++++$&&&$$$$$$$$$$$$$$$$$$$$$$$$$$$" \
-        "$x+xXXXXXXXXXXXXXXXx+xXX+++++++++XXXXXXXXXXXXX$&&$++XXXXXXXXXXXXXXXXXXX&$+++++++++xXXXXXXX++++++++++" \
-        "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX$XXXXXXXXXXXXXXX$&&$+XXXXXXXXXXXXXXXXXXXX&$++XXXXXXXXXXXXXXXXXXXXXXXXx" \
-        "$X$XXXXXXXXXXXXXXXXX$$XXXXXXXXXXXXXXXXXXXXXXXXx$&$XXXXXXXXXXXXXXXXXXXXX&X+XXXXXXXXXXXXXXXXXXXXXXXXXX" \
-        "$XX$XXXXXXXX$$$$XXXX$$XXXXXXXXXXXXXXXXXXXXXXXXx$&$XXXXXXXXXXXXXXXXXXXX$&X+XXXXXXXXXXXXXXXXXXXXXXXXXX" \
-        "$XXXXXXXXXXXXXXX$XXX$$$XXXXXXXXXXXXXXXXXXXXXXXx$&$XXXXXXXXXXXXXXXXXXXX$&XxXXXXXXXXXXXXXXXXXXXXXXXXXX" \
-        "$$XXXXXXXXXXXXXXXXXX$$$XXXXXXXXXXXXXXXXXXXXXXXX$&$XXXXXXXXXXXXXXXXXXXX$&$XXXXXXXXXXXXXXXXXXXXXXXXXXX" \
-        "$$XXXXXXXXXXXXXXXXXX$$$$XX$XXXXXXXXXXXXXXXXXXX$$&$XXXXXXXXXXXXXXXXXXXX$&$XXXXXXXXXXXXXXX$XXXXXXXXXXX" \
-        "$$$XXXXXXXXXXXXXXXXX$$$$X$XXXXXXXXXXXXXXXXXXXX$$&$XXXXX$X$$$$$XXXXXXXX$&$XXXXXXXXXXXXXX$$XXXXXXXXXXX";
-
     std::string title =
         ":::::::-:...:::....:::::::....::::..:,-:::::/..:,::::::......:::.....::::....::::" \
         ".;;,...`';,.;;.....;;;`;;;;,..`;;;,;;-'````'...;;;;''''...:;;;;;;;:..`;;;;,..`;;;" \
@@ -154,13 +126,9 @@ void DungeonCrawl::DrawMainScreen(Time delta)
         ".) __/.)   /.) _).\\___ \\\\___ \\.......) _)./    /..)(...) _)..)   /" \
         "(__)..(__\\_)(____)(____/(____/......(____)\\_)__).(__).(____)(__\\_)";
 
-    static int colorSwap = 0;
-    if (++colorSwap > 400)
-        colorSwap = 0;
-
-    m_console.WriteData(mainMenu.data(), 0, 0, 100, 28, 0x0008);
-    m_console.WriteData(title.data(), 10, 4, 81, 12, 0x0006);
-    m_console.WriteData(pressEnter.data(), 17, 23, 66, 4, colorSwap > 200 ? 0x0008 : 0x000B);
+    IMAGE("main").WriteData(m_console, 0, 0);
+    m_console.WriteData(title.data(), 20, 4, 81, 12, 0x0006);
+    m_console.WriteData(pressEnter.data(), 27, 23, 66, 4, m_blink ? 0x0008 : 0x000B);
 
     if (m_input.Released(Button::BUTTON_SELECT))
         SetState(State::STATE_SHOP);
@@ -328,6 +296,88 @@ void DungeonCrawl::AddHero()
     m_heroes.push_back(hero);
 }
 
+void DungeonCrawl::DrawDungeon(Time delta)
+{
+    if (m_state == State::STATE_MAIN)
+        return;
+
+    bool complete;
+    int tileCount = 0;
+    for (int index = (m_floor / 5); index < (m_floor / 5) + 7; index++)
+    {
+        if (index >= m_dungeon.Size())
+            IMAGE("side_tile_background_3").WriteData(m_console, 100, tileCount * 4);
+        else
+        {
+            m_tiles[index].WriteData(m_console, delta, 100, tileCount * 4, complete);
+            if (index > 2)
+                m_console.WriteData(101, (tileCount * 4) + 2, 0x0007, "%d", ((index - 4) * 5) + 5);
+        }
+        tileCount++;
+    }
+    if ((m_floor / 5) % 2)
+    {
+        IMAGE("side_tile_background_4_left").WriteData(m_console, 100, 28);
+    }
+    else
+    {
+        IMAGE("side_tile_background_4_right").WriteData(m_console, 100, 28);
+    }
+
+    if ((m_floor % 5) != 0 || m_state != State::STATE_NEXT_FLOOR)
+    {
+        int playerDirection = (m_floor / 5) % 2 == 0 ? -1 : 1;
+        int playerPos = playerDirection == -1 ? 112 + ((m_floor % 5) * playerDirection) : 107 + ((m_floor % 5) * playerDirection);
+        m_console.WriteData(playerPos, 14, BLINK(0x0004), "O");
+    }
+    else if (m_state == State::STATE_NEXT_FLOOR)
+    {
+        if ((m_floor / 5) % 2)
+        {
+            m_console.WriteData(106, 13, BLINK(0x0004), "O");
+        }
+        else
+        {
+            m_console.WriteData(113, 13, BLINK(0x0004), "O");
+        }
+    }
+
+    if ((m_floor / 5) < 2)
+    {
+        static Animation sideBird1 = ANIMATION("side_bird");
+        static int direction1 = -1;
+        static int bird1x, bird1y = 0;
+        static Time bird1appear = ToMilliseconds(GetRandomValue(800, 1000));
+        static Time bird1move = ToMilliseconds(800);
+        if (bird1appear > Time::Zero)
+        {
+            bird1appear -= delta;
+            if (bird1appear < Time::Zero)
+            {
+                bird1appear = Time::Zero;
+                direction1 = GetRandomValue(0, 1) == 0 ? -1 : 1;
+                bird1x = direction1 == 1 ? 100 : 120;
+                if ((m_floor / 5) == 0)
+                    bird1y = GetRandomValue(4, 8);
+                if ((m_floor / 5) == 1)
+                    bird1y = GetRandomValue(0, 4);
+            }
+        }
+        else
+        {
+            bird1move -= delta;
+            if (bird1move < Time::Zero)
+            {
+                bird1move = ToMilliseconds(GetRandomValue(600, 1200));
+                bird1x += direction1;
+                if (bird1x == 100 || bird1x == 120)
+                    bird1appear = ToMilliseconds(GetRandomValue(100, 5000));
+            }
+            sideBird1.WriteData(m_console, delta, bird1x, bird1y, complete);
+        }
+    }
+}
+
 void DungeonCrawl::DrawStairs(Time delta, uint16_t attribute)
 {
     bool complete = false;
@@ -341,18 +391,6 @@ void DungeonCrawl::DrawStairs(Time delta, uint16_t attribute)
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
-
-    m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
-    int x = 24;
-    int count = 0;
-    for (int index = m_floor; index < m_dungeon.Size(); index += 5)
-    {
-        DamageType type = m_dungeon.GetFloor(index).type;
-        m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
-        x += 11;
-        if (count++ > 2)
-            break;
-    }
 }
 
 void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
@@ -369,18 +407,6 @@ void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
-
-    m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
-    int x = 24;
-    int count = 0;
-    for (int index = m_floor; index < m_dungeon.Size(); index += 5)
-    {
-        DamageType type = m_dungeon.GetFloor(index).type;
-        m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
-        x += 11;
-        if (count++ > 2)
-            break;
-    }
 
     // Draw torches
     static Animation torches[4] = { ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch") };
@@ -418,18 +444,6 @@ void DungeonCrawl::DrawTrap(Time delta, uint16_t attribute, bool showExit, bool 
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
-
-    m_console.WriteData(13, 27, 0x0007, "Dungeon: ");
-    int x = 24;
-    int count = 0;
-    for (int index = m_floor; index < m_dungeon.Size(); index += 5)
-    {
-        DamageType type = m_dungeon.GetFloor(index).type;
-        m_console.WriteData(x, 27, ToAttribute(type), "%s", ToString(type).c_str());
-        x += 11;
-        if (count++ > 2)
-            break;
-    }
 
     // Draw torches
     static Animation torches[4] = { ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch") };
@@ -2049,6 +2063,24 @@ void DungeonCrawl::SetState(State state)
         m_initFloor.rooms.push_back(room);
         m_currentFloor = &m_initFloor;
         m_currentRoom = &m_initFloor.rooms[0];
+
+        m_tiles.clear();
+        m_tiles.push_back(ANIMATION("side_tile_0"));
+        m_tiles.push_back(ANIMATION("side_tile_1"));
+        m_tiles.push_back(ANIMATION("side_tile_2"));
+        bool direction = false;
+        for (int index = 0; index < m_dungeon.Size(); index += 5)
+        {
+            Animation animation = direction ? ANIMATION("side_tile_3_left") : ANIMATION("side_tile_3_right");
+            animation.SetAttributes(1, ToAttribute(m_dungeon.GetFloor(index).type));
+            if (index > 20)
+                animation.SetAttributes(0, 0x000C);
+            if (index > 40)
+                animation.SetAttributes(0, 0x000D);
+
+            direction = !direction;
+            m_tiles.push_back(animation);
+        }
     }
     else if (state == State::STATE_NEXT_FLOOR)
     {
