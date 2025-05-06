@@ -2180,6 +2180,7 @@ void DungeonCrawl::SetState(State state)
         {
             m_heroes[index].currentHp = m_heroes[index].totalHp;
             m_heroes[index].currentMp = m_heroes[index].totalMp;
+            m_heroes[index].protect = true;
         }
         PushFountain();
     }
