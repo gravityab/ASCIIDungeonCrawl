@@ -41,6 +41,20 @@ void SeedRandomizer(uint32_t seed = std::chrono::system_clock::now().time_since_
 ///   The distribution method used when selecting a random number. By default it uses uniformed.
 uint32_t GetRandomValue(uint32_t min, uint32_t max, RandomDistributionType type = DISTRIBUTIONTYPE_UNIFORMED);
 
+///------------------------------------------------------------------------------------------------------------
+/// Perform a one-time rounded random number normal distribution with a given mean and standard deviation. Clamp the value
+/// between a min and maximum value.
+///
+/// \param[in] min
+///   The minimum value of the randomizer.
+/// \param[in] max
+///   The maximum value of the randomizer.
+/// \param[in] mean
+///   The mean of the the normal distribution
+/// \param[in] standardDeviation
+///   The number of standard deviations we are from the mean
+uint32_t GetNormalValue(uint32_t min, uint32_t max, double mean, double standardDeviation);
+
 //-------------------------------------------------------------------------------------------------------------
 // A helper class for acquiring random values between a defined range using a specific distribution method.
 // Meant to allow randomizer rules to be saved and replicated for continuous use.
