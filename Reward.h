@@ -10,11 +10,12 @@
 /// Enumeration of all reward types
 enum class Reward
 {
-	MONEY,            ///< Standard amount of gold
-	RARE_WEAPON,      ///> Rare weapon
-	RARE_MONEY,       ///> A larger sum of gold
-	EPIC_WEAPON,      ///> Epic weapon
-	EPIC_MONEY,       ///> A very large sum of gold
-	LEGENDARY_WEAPON, ///> Legendary weapon
-	LEGENDARY_MONEY,  ///> A horde of treasure
+    INVALID,
+    MONEY,            ///< Standard amount of gold
+    RARE_WEAPON,      ///> Rare weapon
+    RARE_MONEY,       ///> A larger sum of gold
+    EPIC_WEAPON,      ///> Epic weapon
+    EPIC_MONEY,       ///> A very large sum of gold
+    LEGENDARY_WEAPON, ///> Legendary weapon
+    LEGENDARY_MONEY,  ///> A horde of treasure
 };

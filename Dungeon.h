@@ -111,6 +111,7 @@ struct Floor
     std::vector<Door*> doors;
 };
 
+/*
 /// Class representing a full playable dungeon
 class Dungeon
 {
@@ -147,6 +148,7 @@ private:
     /// The database
     Database m_db;
 };
+*/
 
 class DungeonEx
 {
@@ -161,13 +163,22 @@ public:
     /// Construct all required tables for dungeon generation
     void Initialize();
 
+    /// Reset the dungeon generator
+    void Reset();
+
     /// Pop floor from front or generate new dungeon
     void GetNextFloor(Floor&& floor);
 
-private:
-    /// Generate the next 5 floors with a given theme
-    void GenerateDungeon();
+    /// Get the size of the attributes
+    int GetSize();
 
+    /// Get the attributes of the given floor
+    DamageType GetAttributes(int index);
+
+    /// Get an instance of the database
+    Database& GetDatabase();
+
+private:
     /// Get the difficulty value of the floor
     int GetDifficulty() const;
 
@@ -247,45 +258,11 @@ private:
     std::string ToStateLabel(State state, int numMonsters);
 
 private:
-    /// The list of elements left
-    std::list<DamageType> m_elementTable;
-
-    /// The list of monster families available
-    std::vector<MonsterFamily> m_monsterFamilyTable;
-
-    /// Difficulty to floor rarity table
-    std::map<int, std::vector<Rarity>> m_difficultyTable;
-
-    /// Room rarity to monster rarity table
-    std::map<Rarity, std::vector<Rarity>> m_monsterRarityTable;
-
-    /// Highest monster rarity to reward table
-    std::map<Rarity, Reward> m_rewardTable;
-
-    /// List of monsters available
-    std::vector<Monster> m_monsterTable;
-
-    /// List of boss monsters available
-    std::vector<Monster> m_bossTable;
-
-    /// List of available attributes
-    //std::vector<DamageType> m_attributes;
-
-    /// Door to next state table
-    std::list<State> m_nextStateTable;
-
-    /// The current floor to generate
-    int m_floor = 0;
-
-    /// The theme count
-    int m_themeCount = 0;
-
-private:
     /// The database
     Database m_db;
 
-    /// The next generated 5 themed floors
-    std::list<Floor> m_dungeon;
+    /// The database file
+    bool m_dbInitialized = false;
 
     /// The current monster family to use
     MonsterFamily m_currentFamily = MonsterFamily::GELATINOUS;
@@ -293,8 +270,8 @@ private:
     /// The current damage type
     DamageType m_currentType = DamageType::NORMAL;
 
-    /// Remaining floors that use same attribute
-    int m_remaining = 0;
+    /// The current floor to generate
+    int m_floor = 0;
 
     /// List of next attributes
     std::list<DamageType> m_nextAttributes;
@@ -304,7 +281,4 @@ private:
 
     /// Database of monster attacks
     std::map<std::string, Weapon> m_monsterWeapons;
-
-    /// Floor rarity to door rarity table
-    //std::map<Rarity, std::vector<Rarity>> m_doorRarityTable;
 };

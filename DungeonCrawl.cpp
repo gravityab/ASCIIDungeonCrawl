@@ -20,7 +20,7 @@ Time s_blinkTime = ToMilliseconds(600);
 
 // --------------------------------------------------------------------------------------------------------------------
 DungeonCrawl::DungeonCrawl()
-    : m_db(m_dungeon.GetDatabase())
+    : m_db(m_dungeonEx.GetDatabase())
 {}
 
 DungeonCrawl::~DungeonCrawl()
@@ -137,7 +137,7 @@ void DungeonCrawl::DrawMainScreen(Time delta)
 void DungeonCrawl::DrawDoorsScreen(Time delta)
 {
     // Draw the doors first
-    DrawBackground(delta, 0, ToAttribute(m_currentFloor->type));
+    DrawBackground(delta, 0, ToAttribute(m_currentFloorPtr->type));
 
     // Draw the individual doors
     DrawDoors(delta);
@@ -156,13 +156,15 @@ void DungeonCrawl::DrawDoorsScreen(Time delta)
             m_timeLeft = Time::Zero;
     }
     if (m_currentRoom && m_timeLeft == Time::Zero)
+    {
         SetState(m_currentRoom->door.state);
+    }
 }
 
 void DungeonCrawl::DrawShopScreen(Time delta)
 {
     // Draw the doors first
-    DrawBackground(delta, 1, ToAttribute(m_currentFloor->type));
+    DrawBackground(delta, 1, ToAttribute(m_currentFloorPtr->type));
 
     // Draw the shop screen
     DrawShop(delta);
@@ -177,7 +179,7 @@ void DungeonCrawl::DrawShopScreen(Time delta)
 void DungeonCrawl::DrawCombatScreen(Time delta)
 {
     // Draw the doors first
-    DrawBackground(delta, 1, ToAttribute(m_currentFloor->type));
+    DrawBackground(delta, 1, ToAttribute(m_currentFloorPtr->type));
 
     // Draw the monsters
     DrawMonsters(delta);
@@ -196,7 +198,7 @@ void DungeonCrawl::DrawCombatScreen(Time delta)
 void DungeonCrawl::DrawTreasureScreen(Time delta)
 {
     // Draw the doors first
-    DrawBackground(delta, 2, ToAttribute(m_currentFloor->type));
+    DrawBackground(delta, 2, ToAttribute(m_currentFloorPtr->type));
 
     // Draw the rewards
     DrawReward(delta);
@@ -211,7 +213,7 @@ void DungeonCrawl::DrawTreasureScreen(Time delta)
 void DungeonCrawl::DrawFountain(Time delta)
 {
     // Draw the doors first
-    DrawBackground(delta, 1, ToAttribute(m_currentFloor->type));
+    DrawBackground(delta, 1, ToAttribute(m_currentFloorPtr->type));
 
     bool complete;
     m_fountain.WriteData(m_console, delta, 74, 4, complete);
@@ -229,7 +231,7 @@ void DungeonCrawl::DrawFountain(Time delta)
 void DungeonCrawl::DrawTrapRoom(Time delta)
 {
     // Draw the doors first
-    DrawTrap(delta, ToAttribute(m_currentFloor->type), m_trapInitiated, m_trapTriggered);
+    DrawTrap(delta, ToAttribute(m_currentFloorPtr->type), m_trapInitiated, m_trapTriggered);
 
     // Draw the party
     DrawHero(delta);
@@ -241,7 +243,7 @@ void DungeonCrawl::DrawTrapRoom(Time delta)
 void DungeonCrawl::NextFloor(Time delta)
 {
     // Draw the doors first
-    DrawStairs(delta, ToAttribute(m_currentFloor->type));
+    DrawStairs(delta, ToAttribute(m_currentFloorPtr->type));
 
     // Draw the party
     DrawHero(delta);
@@ -305,9 +307,9 @@ void DungeonCrawl::DrawDungeon(Time delta)
     int tileCount = 0;
     for (int index = (m_floor / 5); index < (m_floor / 5) + 7; index++)
     {
-        if (index >= m_dungeon.Size())
-            IMAGE("side_tile_background_3").WriteData(m_console, 100, tileCount * 4);
-        else
+        //if (index >= m_dungeon.Size())
+        //    IMAGE("side_tile_background_3").WriteData(m_console, 100, tileCount * 4);
+        //else
         {
             m_tiles[index].WriteData(m_console, delta, 100, tileCount * 4, complete);
             if (index > 2)
@@ -473,9 +475,9 @@ void DungeonCrawl::DrawTrap(Time delta, uint16_t attribute, bool showExit, bool 
 void DungeonCrawl::DrawDoors(Time delta)
 {
     bool complete;
-    for (int index = 0; index < (int)m_currentFloor->rooms.size(); index++)
+    for (int index = 0; index < (int)m_currentFloorPtr->rooms.size(); index++)
     {
-        Door& door = m_currentFloor->rooms[index].door;
+        Door& door = m_currentFloorPtr->rooms[index].door;
         const int x = 27 * (index + 1) - 22;
         const int y = 1;
 
@@ -496,10 +498,10 @@ void DungeonCrawl::DrawDoors(Time delta)
         if (m_currentRoom)
         {
             // Display a preview of the other doors contents
-            uint16_t attribute = ToAttribute(m_currentFloor->rarity);
-            for (int rm = 0; rm < (int)m_currentFloor->rooms.size(); rm++)
+            uint16_t attribute = ToAttribute(m_currentFloorPtr->rarity);
+            for (int rm = 0; rm < (int)m_currentFloorPtr->rooms.size(); rm++)
             {
-                Room& room = m_currentFloor->rooms[rm];
+                Room& room = m_currentFloorPtr->rooms[rm];
                 if (rm == index)
                 {
                     if (room.shop.size() > 0)
@@ -539,10 +541,10 @@ void DungeonCrawl::DrawDoors(Time delta)
             }
 
             // Display a preview of the other doors contents
-            uint16_t attribute = ToAttribute(m_currentFloor->rarity);
-            for (int rm = 0; rm < (int)m_currentFloor->rooms.size(); rm++)
+            uint16_t attribute = ToAttribute(m_currentFloorPtr->rarity);
+            for (int rm = 0; rm < (int)m_currentFloorPtr->rooms.size(); rm++)
             {
-                Room& room = m_currentFloor->rooms[rm];
+                Room& room = m_currentFloorPtr->rooms[rm];
                 if (rm == index)
                 {
                     if (room.shop.size() > 0 && sightCount > 0)
@@ -1430,7 +1432,7 @@ void DungeonCrawl::ProcessInput()
     {
         if (m_ui.GetState() == CursorState::DOOR && m_input.Released(Button::BUTTON_SELECT))
         {
-            m_currentRoom = &m_currentFloor->rooms[m_ui.GetCursorIndex()];
+            m_currentRoom = &m_currentFloorPtr->rooms[m_ui.GetCursorIndex()];
             m_timeLeft = ToMilliseconds(800); // Trigger the opening sequence
             m_currentRoom->door.opened = true;
             return;
@@ -2025,15 +2027,20 @@ void DungeonCrawl::SetState(State state)
 
     if (state == State::STATE_MAIN)
     {
+        
         m_heroes.clear();
-        m_dungeon.Reset();
+        //m_dungeon.Reset();
         m_floor = 0;
 
         m_gold = GetRandomValue(250, 300);
         m_input.Initialize();
-        m_dungeon.Initialize();
-        m_dungeon.Generate();
-        m_db = m_dungeon.GetDatabase();
+        //m_dungeon.Initialize();
+        //m_dungeon.Generate();
+        //m_db = m_dungeon.GetDatabase();
+
+        m_dungeonEx.Initialize();
+        m_db = m_dungeonEx.GetDatabase();
+
         AddHero();
         m_initFloor.rooms.clear();
 
@@ -2061,33 +2068,19 @@ void DungeonCrawl::SetState(State state)
         }
 
         m_initFloor.rooms.push_back(room);
-        m_currentFloor = &m_initFloor;
-        m_currentRoom = &m_initFloor.rooms[0];
-
-        m_tiles.clear();
-        m_tiles.push_back(ANIMATION("side_tile_0"));
-        m_tiles.push_back(ANIMATION("side_tile_1"));
-        m_tiles.push_back(ANIMATION("side_tile_2"));
-        bool direction = false;
-        for (int index = 0; index < m_dungeon.Size(); index += 5)
-        {
-            Animation animation = direction ? ANIMATION("side_tile_3_left") : ANIMATION("side_tile_3_right");
-            animation.SetAttributes(1, ToAttribute(m_dungeon.GetFloor(index).type));
-            if (index > 20)
-                animation.SetAttributes(0, 0x000C);
-            if (index > 40)
-                animation.SetAttributes(0, 0x000D);
-
-            direction = !direction;
-            m_tiles.push_back(animation);
-        }
+        //m_currentFloor = &m_initFloor;
+        m_currentFloor = std::move(m_initFloor);
+        m_currentFloorPtr = &m_initFloor;
+        m_currentRoom = &m_currentFloor.rooms[0];
     }
     else if (state == State::STATE_NEXT_FLOOR)
     {
         m_stairs = ANIMATION("stairs");
         m_timeLeft = ToMilliseconds(2000);
         m_floor++;
-        m_currentFloor = &m_dungeon.GetFloor(m_floor);
+        //m_currentFloor = &m_dungeon.GetFloor(m_floor);
+        m_dungeonEx.GetNextFloor(std::move(m_currentFloor));
+        m_currentFloorPtr = &m_currentFloor;
     }
     else if (state == State::STATE_DOORS)
     {
@@ -2191,7 +2184,36 @@ void DungeonCrawl::SetState(State state)
         PushTrap();
     }
 
+    UpdateTiles();
+
     m_state = state;
+}
+
+void DungeonCrawl::UpdateTiles()
+{
+    m_tiles.clear();
+    m_tiles.push_back(ANIMATION("side_tile_0"));
+    m_tiles.push_back(ANIMATION("side_tile_1"));
+    m_tiles.push_back(ANIMATION("side_tile_2"));
+
+    bool direction = false;
+    for (int index = 0; index < m_dungeonEx.GetSize(); index++)
+    {
+        Animation animation = direction ? ANIMATION("side_tile_3_left") : ANIMATION("side_tile_3_right");
+
+        animation.SetAttributes(1, ToAttribute(m_dungeonEx.GetAttributes(index)));
+        if (index > 4)
+            animation.SetAttributes(0, 0x000C);
+        if (index > 8)
+            animation.SetAttributes(0, 0x000D);
+        if (index > 12)
+            animation.SetAttributes(0, 0x000E);
+        if (index > 16)
+            animation.SetAttributes(0, 0x000F);
+
+        direction = !direction;
+        m_tiles.push_back(animation);
+    }
 }
 
 void DungeonCrawl::PushMonsterActions()
@@ -2427,7 +2449,7 @@ void DungeonCrawl::PushDoors()
     context.cursor = ANIMATION("select_door");
     context.cursor.SetAttributes(0, 0x0007);
     context.cursor.SetAttributes(1, 0x0008);
-    context.maxIndex = (int)m_currentFloor->rooms.size() - 1;
+    context.maxIndex = (int)m_currentFloorPtr->rooms.size() - 1;
     m_ui.PushBack(context);
 }
 
@@ -2515,9 +2537,9 @@ void DungeonCrawl::PushTrapInitiated()
             if (m_heroes[index].currentMp < 0)
                 m_heroes[index].currentMp = 0;
 
-            if (m_currentFloor->type != DamageType::NORMAL)
+            if (m_currentFloorPtr->type != DamageType::NORMAL)
             {
-                m_heroes[index].condition = Die((m_floor / 5) + 1, 2, (m_floor / 5), m_currentFloor->type);
+                m_heroes[index].condition = Die((m_floor / 5) + 1, 2, (m_floor / 5), m_currentFloorPtr->type);
                 m_heroes[index].conditionTurnsLeft = GetRandomValue(1, 2);
             }
         }
