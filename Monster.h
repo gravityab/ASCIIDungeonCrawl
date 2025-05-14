@@ -78,3 +78,6 @@ public:
     /// Time to display spawn
     Time spawning = Time::Zero;
 };
+
+/// Convert rarity to string
+std::string ToString(MonsterFamily family);

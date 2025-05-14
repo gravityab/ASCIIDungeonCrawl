@@ -6,6 +6,7 @@
 
 /// Standard Template Library Headers
 #include <stdint.h>
+#include <string>
 
 /// Enumeration of all reward types
 enum class Reward
@@ -19,3 +20,5 @@ enum class Reward
     LEGENDARY_WEAPON, ///> Legendary weapon
     LEGENDARY_MONEY,  ///> A horde of treasure
 };
+
+std::string ToString(Reward reward);

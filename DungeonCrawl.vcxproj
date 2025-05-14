@@ -132,6 +132,7 @@
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Rarity.cpp" />
+    <ClCompile Include="Reward.cpp" />
     <ClCompile Include="Sleep.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="Weapon.cpp" />

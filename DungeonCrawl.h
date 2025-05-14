@@ -207,6 +207,18 @@ private:
     /// Print levels of dungeon numbers
     void TestDungeon();
 
+    /// Print the floor
+    void PrintFloor(Floor floor);
+
+    /// Print the room
+    void PrintRoom(int index, Room room);
+
+    /// Print monster
+    void PrintMonster(int index, Monster monster);
+
+    /// Print weapon
+    void PrintWeapon(int index, Weapon weapon);
+
 private:
     /// The game clock
     Clock m_clock;

@@ -2915,21 +2915,122 @@ void DungeonCrawl::TestDungeon()
     {
         Floor floor;
         m_dungeonEx.GetNextFloor(std::move(floor));
-        
-        if (floor.rooms[0].monsters.size() > 0)
+        PrintFloor(floor);
+
+        /*
+        std::string roomBuffer[3];
+        for (int roomIndex = 0; roomIndex < floor.rooms.size(); roomIndex++)
         {
-            Monster monster = floor.rooms[0].monsters[0];
-            std::string fam = monster.family == MonsterFamily::ARACHNID ? "spider" :
-                monster.family == MonsterFamily::DRAGON ? "dragon" :
-                monster.family == MonsterFamily::GELATINOUS ? "blob" :
-                monster.family == MonsterFamily::RODENT ? "bat" :
-                monster.family == MonsterFamily::UNDEAD ? "skeleton" : "";
-            std::string rar = monster.rarity == Rarity::COMMON ? "c" :
-                monster.rarity == Rarity::RARE ? "r" :
-                monster.rarity == Rarity::EPIC ? "e" : "l";
-            printf("[%3d] %s %12s HP:%5d Weapon:%s\n", floor.floorNumber, rar.c_str(), fam.c_str(), monster.currentHp, ToString(monster.weapon1.die).c_str());
+            if (floor.rooms[roomIndex].monsters.size() > 0)
+            {
+                roomBuffer[roomIndex].resize(50);
+                Monster monster = floor.rooms[roomIndex].monsters[0];
+                std::string fam = monster.family == MonsterFamily::ARACHNID ? "spider" : monster.family == MonsterFamily::DRAGON ? "dragon" : monster.family == MonsterFamily::GELATINOUS ? "blob" : monster.family == MonsterFamily::RODENT ? "bat" : monster.family == MonsterFamily::UNDEAD ? "skeleton" : "";
+                std::string rar = monster.rarity == Rarity::COMMON ? "common" : monster.rarity == Rarity::RARE ? "rare" : monster.rarity == Rarity::EPIC ? "epic" : "legendary";
+                sprintf_s((char*)roomBuffer[roomIndex].data(), 50, "%d %s %s HP:%d Wpn:%s", floor.rooms[roomIndex].monsters.size(), rar.c_str(), fam.c_str(), monster.currentHp, ToString(monster.weapon1.die).c_str());
+            }
         }
+
+        printf("[%3d]\n", floor.floorNumber);
+        if (!roomBuffer[0].empty()) printf("\t%s\n", roomBuffer[0].c_str());
+        if (!roomBuffer[1].empty()) printf("\t%s\n", roomBuffer[1].c_str());
+        if (!roomBuffer[2].empty()) printf("\t%s\n", roomBuffer[2].c_str());
+        */
     }
 
     exit(1);
+}
+
+void DungeonCrawl::PrintFloor(Floor floor)
+{
+    printf("[%d] %s %s %s Rm:%d\n",
+        floor.floorNumber,
+        ToString(floor.type).c_str(),
+        ToString(floor.rarity).c_str(),
+        ToString(floor.family).c_str(),
+        floor.rooms.size());
+
+    for (int index = 0; index < floor.rooms.size(); index++)
+    {
+        PrintRoom(index, floor.rooms[index]);
+    }
+}
+
+void DungeonCrawl::PrintRoom(int index, Room room)
+{
+    printf("  Rm:%d %s %s ",
+        index,
+        room.door.label.c_str(),
+        room.door.stateLabel.c_str());
+    if (room.reward != Reward::INVALID)
+    {
+        printf("Rw:%s Gld:%d Wpn:%s %s ",
+            ToString(room.reward).c_str(),
+            room.gold,
+            ToString(room.rewardWeapon.rarity).c_str(),
+            room.rewardWeapon.name.c_str());
+    }
+    if (room.trap != TrapType::INVALID)
+    {
+        printf("Trap:%s", room.trap == TrapType::TRAP_SPIKES ? "spikes" : "swinging axe");
+    }
+    printf("\n");
+
+    for (int index = 0; index < room.monsters.size(); index++)
+    {
+        //PrintMonster(index, room.monsters[index]);
+    }
+    for (int index = 0; index < room.shop.size(); index++)
+    {
+        //PrintWeapon(index, room.shop[index]);
+    }
+}
+
+void DungeonCrawl::PrintMonster(int index, Monster monster)
+{
+    printf("    Monster[%d] %s %s\n",
+        index,
+        ToString(monster.rarity).c_str(),
+        monster.name.c_str());
+
+    /*
+    monster.armor;
+    monster.attack1;
+    monster.attack2;
+    monster.attacking1;
+    monster.attacking2;
+    monster.currentHp;
+    monster.currentMp;
+    monster.dead;
+    monster.element;
+    monster.experience;
+    monster.family;
+    monster.idle;
+    monster.level;
+    monster.levelUp;
+    monster.levelUpTimeLeft;
+    monster.name;
+    monster.protect;
+    monster.rarity;
+    monster.rollMaxHp;
+    monster.rollMaxMp;
+    monster.selected;
+    monster.spawn;
+    monster.spawning;
+    monster.totalHp;
+    monster.totalMp;
+    monster.weakness;
+    monster.weapon1;
+    monster.weapon2;
+    monster.weapon3;
+    monster.weapon4;
+    */
+}
+
+void DungeonCrawl::PrintWeapon(int index, Weapon weapon)
+{
+    printf("    Wpn[%d] %s %s\n",
+        index,
+        ToString(weapon.rarity).c_str(),
+        weapon.name.c_str());
 }

@@ -193,7 +193,7 @@ State DungeonEx::RollState()
         return State::STATE_COMBAT;
 
     double mean = 1.5;
-    double standardDevition = 1.4;
+    double standardDevition = 1.3;
     int value = GetNormalValue(1, 4, mean, standardDevition);
     switch (value)
     {
@@ -417,6 +417,7 @@ Door DungeonEx::GenerateDoor(Rarity rarity, DamageType damageType, MonsterFamily
     door.rarity = rarity;
     door.state = RollState();
     door.monsterCount = GetNormalValue(1, 4, 1.5, 1.5);
+    if (IsBossFloor()) door.monsterCount = 1;
     door.stateLabel = ToStateLabel(door.state, door.monsterCount);
     return door;
 }
