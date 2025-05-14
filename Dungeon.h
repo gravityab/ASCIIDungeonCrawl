@@ -242,6 +242,9 @@ private:
     /// Whether the current floor should update current family and element
     int Remaining() const;
 
+    /// Get the die for the monster family
+    int GetDie(MonsterFamily family) const;
+
     /// Convert rarity to door name
     std::string ToDoorLabel(Rarity rarity);
 

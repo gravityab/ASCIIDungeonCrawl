@@ -204,6 +204,9 @@ private:
     /// Push the item purchase and replacement cursor state
     void PushShopItem();
 
+    /// Print levels of dungeon numbers
+    void TestDungeon();
+
 private:
     /// The game clock
     Clock m_clock;

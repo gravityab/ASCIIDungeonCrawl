@@ -2027,19 +2027,13 @@ void DungeonCrawl::SetState(State state)
 
     if (state == State::STATE_MAIN)
     {
-        
         m_heroes.clear();
-        //m_dungeon.Reset();
         m_floor = 0;
-
         m_gold = GetRandomValue(250, 300);
         m_input.Initialize();
-        //m_dungeon.Initialize();
-        //m_dungeon.Generate();
-        //m_db = m_dungeon.GetDatabase();
-
         m_dungeonEx.Initialize();
         m_db = m_dungeonEx.GetDatabase();
+        //TestDungeon();
 
         AddHero();
         m_initFloor.rooms.clear();
@@ -2913,4 +2907,29 @@ void DungeonCrawl::PushShopItem()
     context.weapon = prevContext.weapon;
     context.direction = CursorIndexDirection::VERTICAL;
     m_ui.PushBack(context);
+}
+
+void DungeonCrawl::TestDungeon()
+{
+    for (int index = 0; index < 100; index++)
+    {
+        Floor floor;
+        m_dungeonEx.GetNextFloor(std::move(floor));
+        
+        if (floor.rooms[0].monsters.size() > 0)
+        {
+            Monster monster = floor.rooms[0].monsters[0];
+            std::string fam = monster.family == MonsterFamily::ARACHNID ? "spider" :
+                monster.family == MonsterFamily::DRAGON ? "dragon" :
+                monster.family == MonsterFamily::GELATINOUS ? "blob" :
+                monster.family == MonsterFamily::RODENT ? "bat" :
+                monster.family == MonsterFamily::UNDEAD ? "skeleton" : "";
+            std::string rar = monster.rarity == Rarity::COMMON ? "c" :
+                monster.rarity == Rarity::RARE ? "r" :
+                monster.rarity == Rarity::EPIC ? "e" : "l";
+            printf("[%3d] %s %12s HP:%5d Weapon:%s\n", floor.floorNumber, rar.c_str(), fam.c_str(), monster.currentHp, ToString(monster.weapon1.die).c_str());
+        }
+    }
+
+    exit(1);
 }

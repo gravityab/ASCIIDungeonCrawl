@@ -149,12 +149,16 @@ MonsterFamily DungeonEx::RollMonsterFamily()
     if (IsBossFloor())
     {
         m_currentFamily = MonsterFamily::DRAGON;
+        return m_currentFamily;
     }
 
     // Only switch monster family every specific amount of levels
-    if (Remaining() != 0)
+    if (m_currentFamily != MonsterFamily::DRAGON)
     {
-        return m_currentFamily;
+        if (Remaining() != 0)
+        {
+            return m_currentFamily;
+        }
     }
 
     // Select a new monster family
@@ -208,19 +212,28 @@ State DungeonEx::RollState()
 
 Monster DungeonEx::RollMonster(DamageType type, Rarity rarity, MonsterFamily family)
 {
-    int buff = 1;
-    bool dead = false;
-    const int constant = (int)std::pow(2, (m_floor / 5) + 1 + buff);
-    const Die primary =   Die(int((m_floor / 5) + 1 + buff), 4, constant, type);
-    const Die secondary = Die(int((m_floor / 5) + 1 + buff), 2, constant, type);
-    const Die health =    Die(int((m_floor / 5) + 1 + buff), 6, constant, type);
+    const double part1 = 5 + (double(rarity) * 1);
+    const double part2 = std::pow(double(double(int(m_floor) / 5)), double(2));
+    const double part3 = double(rarity);
+    const double result = (part1 * part2) + part3;
+    const int expectedDamage = int(result);
+    const bool dead = false;
+
+    int constant  = expectedDamage / 2;
+    if (constant == 0) constant = 1;
+    const int die       = GetDie(family);
+    const int mult      = constant / double(die / 2);
+    const Die primary   = Die(mult / 1, die, constant);
+    const Die secondary = Die(mult / 2, die, constant);
+    const Die health    = Die(mult / 1, die, constant);
+    const int armor     = (m_floor / 5) + (int(rarity) - 1);
 
     Monster monster = ToMonster(rarity, type, family, primary, secondary);
     monster.rollMaxHp = health;
     monster.totalHp = monster.rollMaxHp.Roll();
     monster.currentHp = dead ? 0 : monster.totalHp;
-    monster.armor.armorClass = buff > 0 ? (m_floor / 5) + buff : (m_floor / 5);
-    monster.experience = constant + buff;
+    monster.armor.armorClass = armor;
+    monster.experience = constant;
     return monster;
 }
 
@@ -306,7 +319,8 @@ Room DungeonEx::GenerateRoom(Rarity rarity, DamageType damageType, MonsterFamily
 
 void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, MonsterFamily family)
 {
-    room.boss = family == MonsterFamily::DRAGON;
+    if (IsBossFloor())
+        room.boss = true;
 
     // Generate list of monsters
     int numMonsters = room.door.monsterCount;
@@ -440,6 +454,25 @@ int DungeonEx::GetIndex() const
 int DungeonEx::Remaining() const
 {
     return (m_floor % ElementCount);
+}
+
+int DungeonEx::GetDie(MonsterFamily family) const
+{
+    switch (family)
+    {
+        case MonsterFamily::ARACHNID:
+            return 6;
+        case MonsterFamily::DRAGON:
+            return 10;
+        case MonsterFamily::GELATINOUS:
+            return 4;
+        case MonsterFamily::RODENT:
+            return 4;
+        case MonsterFamily::UNDEAD:
+            return 8;
+    }
+
+    return 1;
 }
 
 std::string DungeonEx::ToDoorLabel(Rarity rarity)
