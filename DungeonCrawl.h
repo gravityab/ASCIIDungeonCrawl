@@ -114,6 +114,9 @@ private:
     /// Select next hero
     void NextHero();
 
+    /// Select previous hero
+    void PrevHero();
+
     /// Give player xp
     void ReceiveXP(Hero& hero);
 

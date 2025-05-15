@@ -1358,6 +1358,13 @@ void DungeonCrawl::ProcessInput()
             m_ui.PopBack(3);
         else
             m_ui.PopBack(2);
+
+        if (m_ui.GetState() == CursorState::COMBAT)
+        {
+            if (m_actions.size() > 0)
+                m_actions.pop_back();
+            PrevHero();
+        }
         return;
     }
 
@@ -1623,7 +1630,7 @@ void DungeonCrawl::ProcessInput()
         }
     }
 
-    m_console.WriteData(0, 0, 0x0008, "%s %d", ToString(m_ui.GetState()).c_str(), m_ui.GetCursorIndex());
+    m_console.WriteData(0, 0, 0x0008, "%s %d %d", ToString(m_ui.GetState()).c_str(), m_ui.GetCursorIndex(), m_ui.GetSize());
 }
 
 void DungeonCrawl::DrawCursor()
@@ -1649,6 +1656,39 @@ void DungeonCrawl::NextHero()
         {
             SetState(State::STATE_COMBAT_RESOLVE);
             return;
+        }
+    } while (m_heroes[m_heroIndex].currentHp == 0);
+    m_heroes[m_heroIndex].isTurn = true;
+
+    PushCombat(&m_heroes[m_heroIndex]);
+}
+
+void DungeonCrawl::PrevHero()
+{
+    bool hasHeroes = false;
+    int lowestIndex = 5; // Keep track of lowest available hero index
+    for (int index = 0; index < (int)m_heroes.size(); index++)
+    {
+        m_heroes[index].isTurn = false;
+        m_heroes[index].weapon1.selected = false;
+        m_heroes[index].weapon2.selected = false;
+        m_heroes[index].weapon3.selected = false;
+        m_heroes[index].weapon4.selected = false;
+        if (m_heroes[index].currentHp > 0)
+        {
+            hasHeroes = true;
+            lowestIndex = std::min<int>(lowestIndex, index);
+        }
+    }
+    assert(hasHeroes == true && "All options unavailable");
+
+    do
+    {
+        m_heroIndex--;
+        if (m_heroIndex < 0)
+        {
+            m_heroIndex = lowestIndex;
+            break;
         }
     } while (m_heroes[m_heroIndex].currentHp == 0);
     m_heroes[m_heroIndex].isTurn = true;
