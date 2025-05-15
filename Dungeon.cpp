@@ -359,16 +359,19 @@ void DungeonEx::GenerateReward(Weapon& weapon, int& gold, Reward reward, const s
     {
         weapon = ROLLTABLE(m_db.m_rareTable);
         weapon.Randomize();
+        weapon.gold = 0;
     }
     else if (reward == Reward::EPIC_WEAPON)
     {
         weapon = ROLLTABLE(m_db.m_epicTable);
         weapon.Randomize();
+        weapon.gold = 0;
     }
     else if (reward == Reward::LEGENDARY_WEAPON)
     {
         weapon = ROLLTABLE(m_db.m_legendaryTable);
         weapon.Randomize();
+        weapon.gold = 0;
     }
     else if (reward == Reward::MONEY)
     {
