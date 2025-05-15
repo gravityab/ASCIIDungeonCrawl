@@ -192,8 +192,8 @@ State DungeonEx::RollState()
     if (IsBossFloor())
         return State::STATE_COMBAT;
 
-    double mean = 1.5;
-    double standardDevition = 1.3;
+    double mean = 1.4;
+    double standardDevition = 1.4;
     int value = GetNormalValue(1, 4, mean, standardDevition);
     switch (value)
     {
