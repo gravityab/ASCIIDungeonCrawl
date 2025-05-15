@@ -69,6 +69,9 @@ public:
     /// The weakness of the monster
     DamageType weakness;
 
+    /// The strength of the monster
+    DamageType strength;
+
     /// Monster is currently attacking
     bool attacking1 = false;
 

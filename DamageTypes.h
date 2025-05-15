@@ -33,6 +33,9 @@ uint16_t ToAttribute(DamageType type);
 /// Convert a damage type to the weakness of damage type
 DamageType ToWeakness(DamageType type);
 
+/// Convert a damage type to the strength of damage type
+DamageType ToStrength(DamageType type);
+
 /// Convert a damage type to a condition string
 std::string ToConditionString(DamageType type);
 

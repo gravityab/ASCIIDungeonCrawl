@@ -210,14 +210,13 @@ State DungeonEx::RollState()
     }
 }
 
-Monster DungeonEx::RollMonster(DamageType type, Rarity rarity, MonsterFamily family)
+Monster DungeonEx::RollMonster(DamageType type, Rarity rarity, MonsterFamily family, bool dead)
 {
     const double part1 = 5 + (double(rarity) * 1);
     const double part2 = std::pow(double(double(int(m_floor) / 5)), double(2));
     const double part3 = double(rarity);
     const double result = (part1 * part2) + part3;
     const int expectedDamage = int(result);
-    const bool dead = false;
 
     int constant  = expectedDamage / 2;
     if (constant == 0) constant = 1;
@@ -326,8 +325,19 @@ void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, Mo
     int numMonsters = room.door.monsterCount;
     while (numMonsters-- > 0)
     {
-        Monster monster = RollMonster(type, rarity, family);
+        Monster monster = RollMonster(type, rarity, family, false);
         room.monsters.push_back(monster);
+    }
+
+    // Generate common recruit monsters if space allows
+    int numRecruitMonsters = GetRandomValue(0, 4 - room.door.monsterCount);
+    while (numRecruitMonsters-- > 0)
+    {
+        if (family == MonsterFamily::UNDEAD)
+        {
+            Monster monster = RollMonster(type, Rarity::COMMON, family, true);
+            room.monsters.push_back(monster);
+        }
     }
     
     // Generate the reward from the encounter
@@ -605,6 +615,7 @@ Monster DungeonEx::ToMonster(Rarity rarity, DamageType type, MonsterFamily famil
     monster.family = family;
     monster.element = type;
     monster.weakness = ToWeakness(type);
+    monster.strength = ToStrength(type);
     monster.armor.speed = 0;
     monster.armor.resistances.push_back(type);
     monster.rarity = rarity;

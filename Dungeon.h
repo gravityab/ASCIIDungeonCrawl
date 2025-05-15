@@ -201,7 +201,7 @@ private:
     State RollState();
 
     /// Roll a random monster
-    Monster RollMonster(DamageType type, Rarity rarity, MonsterFamily family);
+    Monster RollMonster(DamageType type, Rarity rarity, MonsterFamily family, bool dead);
 
     /// Roll a random reward
     Reward RollReward(Rarity rarity);

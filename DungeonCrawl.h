@@ -108,9 +108,6 @@ private:
     /// Process state input
     void ProcessInput();
 
-    /// Handle state input
-    void DoorInput();
-
     /// Draw the cursor
     void DrawCursor();
 

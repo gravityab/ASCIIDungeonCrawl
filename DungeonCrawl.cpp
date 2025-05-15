@@ -637,10 +637,10 @@ void DungeonCrawl::DrawHero(Time delta)
             DamageType type = monster->element;
             for (int res = 0; res < (int)hero.armor.resistances.size(); res++)
             {
-                if (hero.armor.resistances[res] == type)
+                if (hero.armor.resistances[res] == ToStrength(type))
                 {
                     hasResist = true;
-                    borderColor = ToAttribute(type);
+                    borderColor = ToAttribute(ToStrength(type));
                 }
                 if (hero.armor.resistances[res] == ToWeakness(type))
                 {
@@ -836,15 +836,15 @@ void DungeonCrawl::DrawMonsters(Time delta)
 
             for (int res = 0; res < (int)monster.armor.resistances.size(); res++)
             {
-                if (monster.armor.resistances[res] == type)
+                if (monster.armor.resistances[res] == ToStrength(type))
                 {
-                    m_ui.GetAnimation().SetAttributes(0, ToAttribute(ToWeakness(type)));
-                    m_ui.GetAnimation().SetAttributes(1, SOLID(ToAttribute(ToWeakness(type))));
+                    m_ui.GetAnimation().SetAttributes(0, ToAttribute(ToStrength(type)));
+                    m_ui.GetAnimation().SetAttributes(1, SOLID(ToAttribute(ToStrength(type))));
                 }
                 if (monster.armor.resistances[res] == ToWeakness(type))
                 {
-                    m_ui.GetAnimation().SetAttributes(0, ToAttribute(type));
-                    m_ui.GetAnimation().SetAttributes(1, SOLID(ToAttribute(type)));
+                    m_ui.GetAnimation().SetAttributes(0, ToAttribute(ToWeakness(type)));
+                    m_ui.GetAnimation().SetAttributes(1, SOLID(ToAttribute(ToWeakness(type))));
                 }
             }
 
@@ -898,7 +898,7 @@ void DungeonCrawl::DrawReward(Time delta)
 
         if (m_currentRoom->reward == Reward::MONEY
             || m_currentRoom->reward == Reward::RARE_MONEY
-            || m_currentRoom->reward == Reward::EPIC_WEAPON
+            || m_currentRoom->reward == Reward::EPIC_MONEY
             || m_currentRoom->reward == Reward::LEGENDARY_MONEY)
         {}
         else
@@ -1109,75 +1109,88 @@ void DungeonCrawl::DrawAction(Time delta)
         auto iter = m_actions.begin();
         Action& action = (*iter);
 
-        if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
+        // Iterate over all targets and cull actors with 0 HP
+        bool hasTargets = true;
+        if (action.weapon->target == Target::ENEMY
+            || action.weapon->target == Target::ALLENEMIES
+            || action.weapon->target == Target::ALLENEMIES)
         {
-            Hero* hero = static_cast<Hero*>(action.source);
-            hero->isTurn = true;
+            action.targets.erase(std::remove_if(action.targets.begin(), action.targets.end(), [](Actor* target) { return target->currentHp == 0; }), action.targets.end());
+            hasTargets = action.targets.size() > 0;
+        }
 
-            if (action.weapon->target == Target::ALLENEMIES)
+        if (hasTargets)
+        {
+            if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
             {
-                Actor* actor = action.targets[0];
-                if (actor->GetType() == ActorType::ACTOR_MONSTER)
+                Hero* hero = static_cast<Hero*>(action.source);
+                hero->isTurn = true;
+
+                if (action.weapon->target == Target::ALLENEMIES)
                 {
+                    Actor* actor = action.targets[0];
+                    if (actor->GetType() == ActorType::ACTOR_MONSTER)
+                    {
+                        if (m_damageTimeLeft == Time::Zero)
+                        {
+                            action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
+                            action.weapon->attack.SetAnimating(false);
+                            for (int index = 1; index < (int)action.targets.size(); index++)
+                            {
+                                Actor* actor = action.targets[index];
+                                action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
+                            }
+                            action.weapon->attack.SetAnimating(true);
+                        }
+                        else
+                        {
+                            for (int index = 1; index < (int)action.targets.size(); index++)
+                            {
+                                Actor* actor = action.targets[index];
+                                m_console.WriteData(actor->x + 5, actor->y + 8, m_damageAttribute, "%d", std::abs(m_damageFinal));
+                                if (m_damageOriginal - m_damageFinal != 0)
+                                    m_console.WriteData(actor->x + 8, actor->y + 8, m_damageAttribute2, "(%d)", std::abs(m_damageOriginal - m_damageFinal));
+                            }
+                        }
+                    }
+                }
+                else if (action.weapon->target == Target::ENEMY)
+                {
+                    Actor* actor = action.targets[0];
                     if (m_damageTimeLeft == Time::Zero)
                     {
                         action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
-                        action.weapon->attack.SetAnimating(false);
-                        for (int index = 1; index < (int)action.targets.size(); index++)
-                        {
-                            Actor* actor = action.targets[index];
-                            action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
-                        }
-                        action.weapon->attack.SetAnimating(true);
                     }
                     else
                     {
-                        for (int index = 1; index < (int)action.targets.size(); index++)
-                        {
-                            Actor* actor = action.targets[index];
-                            m_console.WriteData(actor->x + 5, actor->y + 8, m_damageAttribute, "%d", std::abs(m_damageFinal));
-                            if (m_damageOriginal - m_damageFinal != 0)
-                                m_console.WriteData(actor->x + 8, actor->y + 8, m_damageAttribute2, "(%d)", std::abs(m_damageOriginal - m_damageFinal));
-                        }
+                        m_console.WriteData(actor->x + 5, actor->y + 8, m_damageAttribute, "%d", std::abs(m_damageFinal));
+                        if (m_damageOriginal - m_damageFinal != 0)
+                            m_console.WriteData(actor->x + 8, actor->y + 8, m_damageAttribute2, "(%d)", std::abs(m_damageOriginal - m_damageFinal));
                     }
                 }
             }
-            else if (action.weapon->target == Target::ENEMY)
+            if (!action.source || action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
             {
-                Actor* actor = action.targets[0];
-                if (m_damageTimeLeft == Time::Zero)
+                if (action.source)
                 {
-                    action.weapon->attack.WriteData(m_console, delta, actor->x, actor->y, complete);
+                    // TODO: Animate hero getting hit
+                    Monster* monster = static_cast<Monster*>(action.source);
+                    if (action.weapon->altAnimation)
+                        monster->attacking2 = true;
+                    else
+                        monster->attacking1 = true;
                 }
-                else
+
+                for (int index = 0; index < (int)m_heroes.size(); index++)
+                    m_heroes[index].isTurn = false;
+
+                if (m_damageTimeLeft != Time::Zero)
                 {
-                    m_console.WriteData(actor->x + 5, actor->y + 8, m_damageAttribute, "%d", std::abs(m_damageFinal));
+                    Actor* actor = action.targets[0];
+                    m_console.WriteData(actor->x + 7, actor->y - 1, m_damageAttribute, " %d ", std::abs(m_damageFinal));
                     if (m_damageOriginal - m_damageFinal != 0)
-                        m_console.WriteData(actor->x + 8, actor->y + 8, m_damageAttribute2, "(%d)", std::abs(m_damageOriginal - m_damageFinal));
+                        m_console.WriteData(actor->x + 11, actor->y - 1, m_damageAttribute2, "(%d) ", std::abs(m_damageOriginal - m_damageFinal));
                 }
-            }
-        }
-        if (!action.source || action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
-        {
-            if (action.source)
-            {
-                // TODO: Animate hero getting hit
-                Monster* monster = static_cast<Monster*>(action.source);
-                if (action.weapon->altAnimation)
-                    monster->attacking2 = true;
-                else
-                    monster->attacking1 = true;
-            }
-
-            for (int index = 0; index < (int)m_heroes.size(); index++)
-                m_heroes[index].isTurn = false;
-
-            if (m_damageTimeLeft != Time::Zero)
-            {
-                Actor* actor = action.targets[0];
-                m_console.WriteData(actor->x + 7, actor->y - 1, m_damageAttribute, " %d ", std::abs(m_damageFinal));
-                if (m_damageOriginal - m_damageFinal != 0)
-                    m_console.WriteData(actor->x + 11, actor->y - 1, m_damageAttribute2, "(%d) ", std::abs(m_damageOriginal - m_damageFinal));
             }
         }
 
@@ -1203,7 +1216,7 @@ void DungeonCrawl::DrawAction(Time delta)
             }
 
             m_damageTimeLeft -= delta;
-            if (m_damageTimeLeft < Time::Zero)
+            if (m_damageTimeLeft < Time::Zero || !hasTargets)
             {
                 m_damageTimeLeft = Time::Zero;
                 m_actions.erase(iter);
@@ -1243,15 +1256,21 @@ void DungeonCrawl::DrawAction(Time delta)
                     hero->isTurn = false;
                 }
 
-                // Asumming the actor isn't dead, use the weapon
-                if (!action.source || action.source->currentHp > 0)
-                {
-                    UseWeapon(action);
-                    m_damageTimeLeft = ToMilliseconds(1000);
-                }
+                // If we have no more targets skip the action
+                if (!hasTargets)
+                    m_actions.erase(iter);
                 else
                 {
-                    m_actions.erase(iter);
+                    // Asumming the actor isn't dead, use the weapon
+                    if (!action.source || action.source->currentHp > 0)
+                    {
+                        UseWeapon(action);
+                        m_damageTimeLeft = ToMilliseconds(1000);
+                    }
+                    else
+                    {
+                        m_actions.erase(iter);
+                    }
                 }
             }
         }
@@ -1604,18 +1623,7 @@ void DungeonCrawl::ProcessInput()
         }
     }
 
-    m_console.WriteData(0, 0, 0x0008, "%s ", ToString(m_ui.GetState()).c_str());
-}
-
-void DungeonCrawl::DoorInput()
-{
-    
-
-    if (m_input.Released(Button::BUTTON_UP))
-    {
-        //if (m_ui.GetState() == CursorState::DOOR)
-    }
-
+    m_console.WriteData(0, 0, 0x0008, "%s %d", ToString(m_ui.GetState()).c_str(), m_ui.GetCursorIndex());
 }
 
 void DungeonCrawl::DrawCursor()
@@ -1852,7 +1860,7 @@ void DungeonCrawl::UseWeapon(Action action)
             bool hasResistance = false;
             for (int res = 0; res < (int)actor->armor.resistances.size(); res++)
             {
-                if (actor->armor.resistances[res] == damageType)
+                if (actor->armor.resistances[res] == ToStrength(damageType))
                 {
                     hasResistance = true;
                     break;
@@ -2916,26 +2924,6 @@ void DungeonCrawl::TestDungeon()
         Floor floor;
         m_dungeonEx.GetNextFloor(std::move(floor));
         PrintFloor(floor);
-
-        /*
-        std::string roomBuffer[3];
-        for (int roomIndex = 0; roomIndex < floor.rooms.size(); roomIndex++)
-        {
-            if (floor.rooms[roomIndex].monsters.size() > 0)
-            {
-                roomBuffer[roomIndex].resize(50);
-                Monster monster = floor.rooms[roomIndex].monsters[0];
-                std::string fam = monster.family == MonsterFamily::ARACHNID ? "spider" : monster.family == MonsterFamily::DRAGON ? "dragon" : monster.family == MonsterFamily::GELATINOUS ? "blob" : monster.family == MonsterFamily::RODENT ? "bat" : monster.family == MonsterFamily::UNDEAD ? "skeleton" : "";
-                std::string rar = monster.rarity == Rarity::COMMON ? "common" : monster.rarity == Rarity::RARE ? "rare" : monster.rarity == Rarity::EPIC ? "epic" : "legendary";
-                sprintf_s((char*)roomBuffer[roomIndex].data(), 50, "%d %s %s HP:%d Wpn:%s", floor.rooms[roomIndex].monsters.size(), rar.c_str(), fam.c_str(), monster.currentHp, ToString(monster.weapon1.die).c_str());
-            }
-        }
-
-        printf("[%3d]\n", floor.floorNumber);
-        if (!roomBuffer[0].empty()) printf("\t%s\n", roomBuffer[0].c_str());
-        if (!roomBuffer[1].empty()) printf("\t%s\n", roomBuffer[1].c_str());
-        if (!roomBuffer[2].empty()) printf("\t%s\n", roomBuffer[2].c_str());
-        */
     }
 
     exit(1);
@@ -2992,39 +2980,6 @@ void DungeonCrawl::PrintMonster(int index, Monster monster)
         index,
         ToString(monster.rarity).c_str(),
         monster.name.c_str());
-
-    /*
-    monster.armor;
-    monster.attack1;
-    monster.attack2;
-    monster.attacking1;
-    monster.attacking2;
-    monster.currentHp;
-    monster.currentMp;
-    monster.dead;
-    monster.element;
-    monster.experience;
-    monster.family;
-    monster.idle;
-    monster.level;
-    monster.levelUp;
-    monster.levelUpTimeLeft;
-    monster.name;
-    monster.protect;
-    monster.rarity;
-    monster.rollMaxHp;
-    monster.rollMaxMp;
-    monster.selected;
-    monster.spawn;
-    monster.spawning;
-    monster.totalHp;
-    monster.totalMp;
-    monster.weakness;
-    monster.weapon1;
-    monster.weapon2;
-    monster.weapon3;
-    monster.weapon4;
-    */
 }
 
 void DungeonCrawl::PrintWeapon(int index, Weapon weapon)
