@@ -57,6 +57,9 @@ private:
     /// Draw the treasure screen
     void DrawTreasureScreen(Time delta);
 
+    /// Draw the passive selection screen
+    void DrawPassiveScreen(Time delta);
+
     /// Draw the fountain room
     void DrawFountain(Time delta);
 
@@ -105,8 +108,20 @@ private:
     /// Draw action
     void DrawAction(Time delta);
 
+    /// Draw the passives tab
+    void DrawPassivesTab(int index, const std::string& label);
+
+    /// Process passive input
+    void ProcessPassiveInput();
+
     /// Process state input
     void ProcessInput();
+
+    /// Draw the passive options
+    void DrawPassiveOptions(Time delta);
+
+    /// Draw the passive screen
+    void DrawPassives(Time delta);
 
     /// Draw the cursor
     void DrawCursor();
@@ -161,6 +176,9 @@ private:
 
     /// Push the shop cursor state
     void PushShop();
+
+    /// Push the passive cursor state
+    void PushPassive();
 
     /// Push the fountain cursor state
     void PushFountain();
@@ -242,7 +260,6 @@ private:
     Input m_input;
 
     /// The dungeon instance
-    //Dungeon m_dungeon;
     DungeonEx m_dungeonEx;
 
     /// The floor number
@@ -327,6 +344,9 @@ private:
     /// Track when to display attributes
     bool m_showAttributes = true;
 
+    /// Show passive screen
+    bool m_showPassives = false;
+
     /// The current hero index
     int m_heroIndex = 0;
 
@@ -341,6 +361,27 @@ private:
 
     /// Condition on player 4
     Weapon m_condition4;
+
+    /// The passives screen cursor
+    Animation m_passivesCursor;
+
+    /// The passives screen cursor x
+    int m_passivesX = 0;
+
+    /// The passives screen cursor y
+    int m_passivesY = 0;
+
+    /// Whether the 
+    bool m_passivesTab = false;
+
+    /// The passives screen cursor tab
+    int m_passivesTabIndex = 0;
+
+    /// List of owned passives
+    std::vector<Passive> m_passives;
+
+    /// List of passive options after combat
+    std::vector<Passive> m_passiveOptions;
 
     /// The tiles for the dungeon map
     std::vector<Animation> m_tiles;

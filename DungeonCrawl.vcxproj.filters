@@ -78,6 +78,9 @@
     <ClCompile Include="Reward.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Passives.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Clock.h">
@@ -156,6 +159,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Traps.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Passives.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

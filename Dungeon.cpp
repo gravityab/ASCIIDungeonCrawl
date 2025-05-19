@@ -193,7 +193,7 @@ State DungeonEx::RollState()
         return State::STATE_COMBAT;
 
     double mean = 1.35;
-    double standardDevition = 1.4;
+    double standardDevition = 1.2;
     int value = GetNormalValue(1, 4, mean, standardDevition);
     switch (value)
     {

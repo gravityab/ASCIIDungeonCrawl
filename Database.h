@@ -10,6 +10,7 @@
 #include "Frame.h"
 #include "Weapon.h"
 #include "Monster.h"
+#include "Passives.h"
 
 /// Standard Template Library Headers
 #include <map>
@@ -18,43 +19,46 @@
 class Database
 {
 public:
-	/// Initialize the database table
-	void Initialize();
+    /// Initialize the database table
+    void Initialize();
 
-	/// Reset the database
-	void Reset();
+    /// Reset the database
+    void Reset();
 
 public:
-	/// The image database
-	std::map<std::string, Image> m_imageDb;
+    /// The image database
+    std::map<std::string, Image> m_imageDb;
 
-	/// The frame database
-	std::map<std::string, Frame> m_frameDb;
+    /// The frame database
+    std::map<std::string, Frame> m_frameDb;
 
-	/// The animation database
-	std::map<std::string, Animation> m_animationDb;
+    /// The animation database
+    std::map<std::string, Animation> m_animationDb;
 
-	/// The die range database
-	std::map<std::string, DieRange> m_dieRangeDb;
+    /// The die range database
+    std::map<std::string, DieRange> m_dieRangeDb;
 
-	/// The weapon database
-	std::map<std::string, Weapon> m_weaponDb;
+    /// The weapon database
+    std::map<std::string, Weapon> m_weaponDb;
 
-	/// The monster table
-	std::map<std::string, Monster> m_monsterDb;
+    /// The monster table
+    std::map<std::string, Monster> m_monsterDb;
 
-	/// The common weapons table
-	std::vector<Weapon> m_commonTable;
+    /// The passive table
+    std::map<PassiveType, Passive> m_passiveDb;
 
-	/// The rare weapons table
-	std::vector<Weapon> m_rareTable;
+    /// The common weapons table
+    std::vector<Weapon> m_commonTable;
 
-	/// The epic weapons table
-	std::vector<Weapon> m_epicTable;
+    /// The rare weapons table
+    std::vector<Weapon> m_rareTable;
 
-	/// The legendary table
-	std::vector<Weapon> m_legendaryTable;
+    /// The epic weapons table
+    std::vector<Weapon> m_epicTable;
 
-	/// The potion table
-	std::vector<Weapon> m_potionTable;
+    /// The legendary table
+    std::vector<Weapon> m_legendaryTable;
+
+    /// The potion table
+    std::vector<Weapon> m_potionTable;
 };

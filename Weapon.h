@@ -13,6 +13,26 @@
 /// Standard Template Library Headers
 #include <string>
 
+enum class WeaponType : int32_t
+{
+    INVALID = -1,
+    GLOVES,
+    DAGGER,
+    SWORD,
+    GREATSWORD,
+    WAND,
+    STAFF,
+
+    ROBE,
+    LEATHER,
+    PLATE,
+
+    POTION,
+    NEWHERO,
+    LEVELUP,
+    LEVELUP5,
+};
+
 /// Structure for a weapon
 struct Weapon
 {
@@ -28,7 +48,8 @@ public:
         Target target_,
         Rarity rarity_,
         Animation attack_,
-        Animation idle_);
+        Animation idle_,
+        WeaponType weapon_);
 
     /// Constructor for monsters predefined properties
     Weapon(
@@ -62,8 +83,11 @@ public:
     /// The dice of the weapon
     DieRange dice;
 
-    /// The type of weapon
+    /// The elemental type of weapon
     DamageType type = DamageType::NORMAL;
+
+    /// The type pf weapon
+    WeaponType weaponType = WeaponType::INVALID;
 
     /// The die associated with the result of the weapon use
     Die die;

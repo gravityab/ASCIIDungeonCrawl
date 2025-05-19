@@ -173,6 +173,7 @@ std::string ToString(CursorState state)
         case CursorState::TRAP: return "Trap";
         case CursorState::TRAP_INITIATED: return "Leave";
         case CursorState::ITEM_USED: return "Item Used";
+        case CursorState::PASSIVE_SELECT: return "Select Passive";
         default:
             return "Unknown";
     }

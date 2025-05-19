@@ -37,6 +37,7 @@ enum class CursorState
     TRAP,        ///< Select roll for trap
     TRAP_INITIATED,
     ITEM_USED,   ///< Animation to display item result
+    PASSIVE_SELECT, /// Passive selection screen
 };
 
 enum class CursorIndexDirection

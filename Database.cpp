@@ -4,133 +4,133 @@
 
 #include "Database.h"
 
-#define WEAPON_DB_COMMON(a, e, b, c, d) \
+#define WEAPON_DB_COMMON(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::NORMAL, Rarity::COMMON)] \
-        = Weapon(a, DamageType::NORMAL, b, e, Rarity::COMMON, c, d).As(DamageType::NORMAL, Rarity::COMMON); \
+        = Weapon(a, DamageType::NORMAL, b, e, Rarity::COMMON, c, d, f).As(DamageType::NORMAL, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::COLD, Rarity::COMMON)] \
-        = Weapon(a, DamageType::COLD, b, e, Rarity::COMMON, c, d).As(DamageType::COLD, Rarity::COMMON); \
+        = Weapon(a, DamageType::COLD, b, e, Rarity::COMMON, c, d, f).As(DamageType::COLD, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::FIRE, Rarity::COMMON)] \
-        = Weapon(a, DamageType::FIRE, b, e, Rarity::COMMON, c, d).As(DamageType::FIRE, Rarity::COMMON); \
+        = Weapon(a, DamageType::FIRE, b, e, Rarity::COMMON, c, d, f).As(DamageType::FIRE, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::LIGHTNING, Rarity::COMMON)] \
-        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::COMMON, c, d).As(DamageType::LIGHTNING, Rarity::COMMON); \
+        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::COMMON, c, d, f).As(DamageType::LIGHTNING, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::NECROTIC, Rarity::COMMON)] \
-        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::COMMON, c, d).As(DamageType::NECROTIC, Rarity::COMMON); \
+        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::COMMON, c, d, f).As(DamageType::NECROTIC, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::POISON, Rarity::COMMON)] \
-        = Weapon(a, DamageType::POISON, b, e, Rarity::COMMON, c, d).As(DamageType::POISON, Rarity::COMMON); \
+        = Weapon(a, DamageType::POISON, b, e, Rarity::COMMON, c, d, f).As(DamageType::POISON, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::PSYCHIC, Rarity::COMMON)] \
-        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::COMMON, c, d).As(DamageType::PSYCHIC, Rarity::COMMON); \
+        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::COMMON, c, d, f).As(DamageType::PSYCHIC, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::HOLY, Rarity::COMMON)] \
-        = Weapon(a, DamageType::HOLY, b, e, Rarity::COMMON, c, d).As(DamageType::HOLY, Rarity::COMMON); \
+        = Weapon(a, DamageType::HOLY, b, e, Rarity::COMMON, c, d, f).As(DamageType::HOLY, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::STEEL, Rarity::COMMON)] \
-        = Weapon(a, DamageType::STEEL, b, e, Rarity::COMMON, c, d).As(DamageType::STEEL, Rarity::COMMON); \
+        = Weapon(a, DamageType::STEEL, b, e, Rarity::COMMON, c, d, f).As(DamageType::STEEL, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::DARK, Rarity::COMMON)] \
-        = Weapon(a, DamageType::DARK, b, e, Rarity::COMMON, c, d).As(DamageType::DARK, Rarity::COMMON); \
+        = Weapon(a, DamageType::DARK, b, e, Rarity::COMMON, c, d, f).As(DamageType::DARK, Rarity::COMMON); \
     m_weaponDb[Weapon::ToString(a, DamageType::WATER, Rarity::COMMON)] \
-        = Weapon(a, DamageType::WATER, b, e, Rarity::COMMON, c, d).As(DamageType::WATER, Rarity::COMMON);
+        = Weapon(a, DamageType::WATER, b, e, Rarity::COMMON, c, d, f).As(DamageType::WATER, Rarity::COMMON);
 
-#define WEAPON_DB_RARE(a, e, b, c, d) \
+#define WEAPON_DB_RARE(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::NORMAL, Rarity::RARE)] \
-        = Weapon(a, DamageType::NORMAL, b, e, Rarity::RARE, c, d).As(DamageType::NORMAL, Rarity::RARE); \
+        = Weapon(a, DamageType::NORMAL, b, e, Rarity::RARE, c, d, f).As(DamageType::NORMAL, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::COLD, Rarity::RARE)] \
-        = Weapon(a, DamageType::COLD, b, e, Rarity::RARE, c, d).As(DamageType::COLD, Rarity::RARE); \
+        = Weapon(a, DamageType::COLD, b, e, Rarity::RARE, c, d, f).As(DamageType::COLD, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::FIRE, Rarity::RARE)] \
-        = Weapon(a, DamageType::FIRE, b, e, Rarity::RARE, c, d).As(DamageType::FIRE, Rarity::RARE); \
+        = Weapon(a, DamageType::FIRE, b, e, Rarity::RARE, c, d, f).As(DamageType::FIRE, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::LIGHTNING, Rarity::RARE)] \
-        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::RARE, c, d).As(DamageType::LIGHTNING, Rarity::RARE); \
+        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::RARE, c, d, f).As(DamageType::LIGHTNING, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::NECROTIC, Rarity::RARE)] \
-        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::RARE, c, d).As(DamageType::NECROTIC, Rarity::RARE); \
+        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::RARE, c, d, f).As(DamageType::NECROTIC, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::POISON, Rarity::RARE)] \
-        = Weapon(a, DamageType::POISON, b, e, Rarity::RARE, c, d).As(DamageType::POISON, Rarity::RARE); \
+        = Weapon(a, DamageType::POISON, b, e, Rarity::RARE, c, d, f).As(DamageType::POISON, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::PSYCHIC, Rarity::RARE)] \
-        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::RARE, c, d).As(DamageType::PSYCHIC, Rarity::RARE); \
+        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::RARE, c, d, f).As(DamageType::PSYCHIC, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::HOLY, Rarity::RARE)] \
-        = Weapon(a, DamageType::HOLY, b, e, Rarity::RARE, c, d).As(DamageType::HOLY, Rarity::RARE); \
+        = Weapon(a, DamageType::HOLY, b, e, Rarity::RARE, c, d, f).As(DamageType::HOLY, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::STEEL, Rarity::RARE)] \
-        = Weapon(a, DamageType::STEEL, b, e, Rarity::RARE, c, d).As(DamageType::STEEL, Rarity::RARE); \
+        = Weapon(a, DamageType::STEEL, b, e, Rarity::RARE, c, d, f).As(DamageType::STEEL, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::DARK, Rarity::RARE)] \
-        = Weapon(a, DamageType::DARK, b, e, Rarity::RARE, c, d).As(DamageType::DARK, Rarity::RARE); \
+        = Weapon(a, DamageType::DARK, b, e, Rarity::RARE, c, d, f).As(DamageType::DARK, Rarity::RARE); \
     m_weaponDb[Weapon::ToString(a, DamageType::WATER, Rarity::RARE)] \
-        = Weapon(a, DamageType::WATER, b, e, Rarity::RARE, c, d).As(DamageType::WATER, Rarity::RARE);
+        = Weapon(a, DamageType::WATER, b, e, Rarity::RARE, c, d, f).As(DamageType::WATER, Rarity::RARE);
 
-#define WEAPON_DB_EPIC(a, e, b, c, d) \
+#define WEAPON_DB_EPIC(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::NORMAL, Rarity::EPIC)] \
-        = Weapon(a, DamageType::NORMAL, b, e, Rarity::EPIC, c, d).As(DamageType::NORMAL, Rarity::EPIC); \
+        = Weapon(a, DamageType::NORMAL, b, e, Rarity::EPIC, c, d, f).As(DamageType::NORMAL, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::COLD, Rarity::EPIC)] \
-        = Weapon(a, DamageType::COLD, b, e, Rarity::EPIC, c, d).As(DamageType::COLD, Rarity::EPIC); \
+        = Weapon(a, DamageType::COLD, b, e, Rarity::EPIC, c, d, f).As(DamageType::COLD, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::FIRE, Rarity::EPIC)] \
-        = Weapon(a, DamageType::FIRE, b, e, Rarity::EPIC, c, d).As(DamageType::FIRE, Rarity::EPIC); \
+        = Weapon(a, DamageType::FIRE, b, e, Rarity::EPIC, c, d, f).As(DamageType::FIRE, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::LIGHTNING, Rarity::EPIC)] \
-        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::EPIC, c, d).As(DamageType::LIGHTNING, Rarity::EPIC); \
+        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::EPIC, c, d, f).As(DamageType::LIGHTNING, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::NECROTIC, Rarity::EPIC)] \
-        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::EPIC, c, d).As(DamageType::NECROTIC, Rarity::EPIC); \
+        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::EPIC, c, d, f).As(DamageType::NECROTIC, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::POISON, Rarity::EPIC)] \
-        = Weapon(a, DamageType::POISON, b, e, Rarity::EPIC, c, d).As(DamageType::POISON, Rarity::EPIC); \
+        = Weapon(a, DamageType::POISON, b, e, Rarity::EPIC, c, d, f).As(DamageType::POISON, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::PSYCHIC, Rarity::EPIC)] \
-        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::EPIC, c, d).As(DamageType::PSYCHIC, Rarity::EPIC); \
+        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::EPIC, c, d, f).As(DamageType::PSYCHIC, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::HOLY, Rarity::EPIC)] \
-        = Weapon(a, DamageType::HOLY, b, e, Rarity::EPIC, c, d).As(DamageType::HOLY, Rarity::EPIC); \
+        = Weapon(a, DamageType::HOLY, b, e, Rarity::EPIC, c, d, f).As(DamageType::HOLY, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::STEEL, Rarity::EPIC)] \
-        = Weapon(a, DamageType::STEEL, b, e, Rarity::EPIC, c, d).As(DamageType::STEEL, Rarity::EPIC); \
+        = Weapon(a, DamageType::STEEL, b, e, Rarity::EPIC, c, d, f).As(DamageType::STEEL, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::DARK, Rarity::EPIC)] \
-        = Weapon(a, DamageType::DARK, b, e, Rarity::EPIC, c, d).As(DamageType::DARK, Rarity::EPIC); \
+        = Weapon(a, DamageType::DARK, b, e, Rarity::EPIC, c, d, f).As(DamageType::DARK, Rarity::EPIC); \
     m_weaponDb[Weapon::ToString(a, DamageType::WATER, Rarity::EPIC)] \
-        = Weapon(a, DamageType::WATER, b, e, Rarity::EPIC, c, d).As(DamageType::WATER, Rarity::EPIC);
+        = Weapon(a, DamageType::WATER, b, e, Rarity::EPIC, c, d, f).As(DamageType::WATER, Rarity::EPIC);
 
-#define WEAPON_DB_LEGENDARY(a, e, b, c, d) \
+#define WEAPON_DB_LEGENDARY(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::NORMAL, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::NORMAL, b, e, Rarity::LEGENDARY, c, d).As(DamageType::NORMAL, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::NORMAL, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::NORMAL, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::COLD, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::COLD, b, e, Rarity::LEGENDARY, c, d).As(DamageType::COLD, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::COLD, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::COLD, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::FIRE, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::FIRE, b, e, Rarity::LEGENDARY, c, d).As(DamageType::FIRE, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::FIRE, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::FIRE, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::LIGHTNING, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::LEGENDARY, c, d).As(DamageType::LIGHTNING, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::LIGHTNING, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::NECROTIC, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::LEGENDARY, c, d).As(DamageType::NECROTIC, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::NECROTIC, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::POISON, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::POISON, b, e, Rarity::LEGENDARY, c, d).As(DamageType::POISON, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::POISON, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::POISON, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::PSYCHIC, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::LEGENDARY, c, d).As(DamageType::PSYCHIC, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::PSYCHIC, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::HOLY, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::HOLY, b, e, Rarity::LEGENDARY, c, d).As(DamageType::HOLY, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::HOLY, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::HOLY, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::STEEL, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::STEEL, b, e, Rarity::LEGENDARY, c, d).As(DamageType::STEEL, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::STEEL, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::STEEL, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::DARK, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::DARK, b, e, Rarity::LEGENDARY, c, d).As(DamageType::DARK, Rarity::LEGENDARY); \
+        = Weapon(a, DamageType::DARK, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::DARK, Rarity::LEGENDARY); \
     m_weaponDb[Weapon::ToString(a, DamageType::WATER, Rarity::LEGENDARY)] \
-        = Weapon(a, DamageType::WATER, b, e, Rarity::LEGENDARY, c, d).As(DamageType::WATER, Rarity::LEGENDARY);
+        = Weapon(a, DamageType::WATER, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::WATER, Rarity::LEGENDARY);
 
-#define WEAPON_DB_COMMON_HEALING(a, e, b, c, d) \
+#define WEAPON_DB_COMMON_HEALING(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::COMMON)] \
-        = Weapon(a, DamageType::HEALING, b, e, Rarity::COMMON, c, d).As(DamageType::HEALING, Rarity::COMMON); \
+        = Weapon(a, DamageType::HEALING, b, e, Rarity::COMMON, c, d, f).As(DamageType::HEALING, Rarity::COMMON); \
 
-#define WEAPON_DB_COMMON_PROTECT(a, e, b, c, d) \
+#define WEAPON_DB_COMMON_PROTECT(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, Rarity::COMMON)] \
-        = Weapon(a, DamageType::PROTECT, b, e, Rarity::COMMON, c, d).As(DamageType::PROTECT, Rarity::COMMON);
+        = Weapon(a, DamageType::PROTECT, b, e, Rarity::COMMON, c, d, f).As(DamageType::PROTECT, Rarity::COMMON);
 
-#define WEAPON_DB_RARE_HEALING(a, e, b, c, d) \
+#define WEAPON_DB_RARE_HEALING(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::RARE)] \
-        = Weapon(Weapon::ToString(a, Rarity::RARE), DamageType::HEALING, b, e, Rarity::RARE, c, d).As(DamageType::HEALING, Rarity::RARE);
+        = Weapon(Weapon::ToString(a, Rarity::RARE), DamageType::HEALING, b, e, Rarity::RARE, c, d, f).As(DamageType::HEALING, Rarity::RARE);
 
-#define WEAPON_DB_RARE_PROTECT(a, e, b, c, d) \
+#define WEAPON_DB_RARE_PROTECT(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, Rarity::RARE)] \
-        = Weapon(Weapon::ToString(a, Rarity::RARE), DamageType::PROTECT, b, e, Rarity::RARE, c, d).As(DamageType::PROTECT, Rarity::RARE);
+        = Weapon(Weapon::ToString(a, Rarity::RARE), DamageType::PROTECT, b, e, Rarity::RARE, c, d, f).As(DamageType::PROTECT, Rarity::RARE);
 
-#define WEAPON_DB_EPIC_HEALING(a, e, b, c, d) \
+#define WEAPON_DB_EPIC_HEALING(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::EPIC)] \
-        = Weapon(Weapon::ToString(a, Rarity::EPIC), DamageType::HEALING, b, e, Rarity::EPIC, c, d).As(DamageType::HEALING, Rarity::EPIC);
+        = Weapon(Weapon::ToString(a, Rarity::EPIC), DamageType::HEALING, b, e, Rarity::EPIC, c, d, f).As(DamageType::HEALING, Rarity::EPIC);
 
-#define WEAPON_DB_EPIC_PROTECT(a, e, b, c, d) \
+#define WEAPON_DB_EPIC_PROTECT(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, Rarity::EPIC)] \
-        = Weapon(Weapon::ToString(a, Rarity::EPIC), DamageType::PROTECT, b, e, Rarity::EPIC, c, d).As(DamageType::PROTECT, Rarity::EPIC);
+        = Weapon(Weapon::ToString(a, Rarity::EPIC), DamageType::PROTECT, b, e, Rarity::EPIC, c, d, f).As(DamageType::PROTECT, Rarity::EPIC);
 
-#define WEAPON_DB_LEGENDARY_HEALING(a, e, b, c, d) \
+#define WEAPON_DB_LEGENDARY_HEALING(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::LEGENDARY)] \
-        = Weapon(Weapon::ToString(a, Rarity::LEGENDARY), DamageType::HEALING, b, e, Rarity::LEGENDARY, c, d).As(DamageType::HEALING, Rarity::LEGENDARY);
+        = Weapon(Weapon::ToString(a, Rarity::LEGENDARY), DamageType::HEALING, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::HEALING, Rarity::LEGENDARY);
 
-#define WEAPON_DB_LEGENDARY_PROTECT(a, e, b, c, d) \
+#define WEAPON_DB_LEGENDARY_PROTECT(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::PROTECT, Rarity::LEGENDARY)] \
-        = Weapon(Weapon::ToString(a, Rarity::LEGENDARY), DamageType::PROTECT, b, e, Rarity::LEGENDARY, c, d).As(DamageType::PROTECT, Rarity::LEGENDARY);
+        = Weapon(Weapon::ToString(a, Rarity::LEGENDARY), DamageType::PROTECT, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::PROTECT, Rarity::LEGENDARY);
 
 #define WEAPON_TABLE(a, b) \
     m_weaponDb[Weapon::ToString(a, DamageType::NORMAL, b)], \
@@ -370,7 +370,6 @@ void Database::Initialize()
             "...\\-----------/....",
             0, 0, 20, 4, 0x000C);
 
-
         m_imageDb["main"] = Image(
             "##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@%%%%%%%%%%%%%%%%%%%%%%@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#####%@@%##########" \
             "%@@@@%%%%%%%%%%%%%%%%%%%%%%%%%@@@%%%%%%%%%%%%%%%%%%%%%%@@@@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@@@@%%%%%%%%%%%%@%%%%%%%%%%%%" \
@@ -404,7 +403,52 @@ void Database::Initialize()
             "%%%%%%%%%%%%%##%%%%%%%%%%%%%############%%###%%%%%%%%%%%%%%%%%%%#%%##%%%%%%%%%%%%%%%%%%#%@%%%%%%%%%%%%%%%%%%%%%%%%%#####" \
             "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%###%%%%#%%%%#%%%%%%%%%%##%%%%%%%%%%%@%%%%%%%%%%%%%%%%%%%%%%@%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%",
             0, 0, 120, 30, 0x0008);
-        
+
+        m_imageDb["passives"] = Image(
+            "......................................................................................................................" \
+            "......................................................................................................................" \
+            "_____________________________________________________________________________________________________________________." \
+            "|                                                                                                                    |" \
+            "|  /--------------\\   /--------------\\   /--------------\\   /--------------\\   /--------------\\   /--------------\\   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  \\--------------/   \\--------------/   \\--------------/   \\--------------/   \\--------------/   \\--------------/   |" \
+            "|  /--------------\\   /--------------\\   /--------------\\   /--------------\\   /--------------\\   /--------------\\   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  |              |   |              |   |              |   |              |   |              |   |              |   |" \
+            "|  \\--------------/   \\--------------/   \\--------------/   \\--------------/   \\--------------/   \\--------------/   |" \
+            "|  ________________________________________________________________________________________________________________  |" \
+            "| |                                                                                                                | |" \
+            "| |                                                                                                                | |" \
+            "| |________________________________________________________________________________________________________________| |" \
+            "|____________________________________________________________________________________________________________________|",
+            0, 0, 118, 29, 0x000F);
+
+        m_imageDb["passive_dialog_short"] = Image(
+            ".________________________________________________________________________________________________." \
+            "|                                                                                                |" \
+            "|                                                                                                |" \
+            "|________________________________________________________________________________________________|",
+            0, 0, 98, 4, 0x0007);
+
+        m_imageDb["passives_tab"] = Image(
+            "..____________.." \
+            "./            \\." \
+            "/              \\",
+            0, 0, 16, 3, 0x0008);
+
         m_imageDb["background"] = Image(
             "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --" \
             "|..................................................................................................|" \
@@ -586,49 +630,6 @@ void Database::Initialize()
             "...................................................................................................." \
             "....................................................................................................",
             0, 0, 100, 18, 0x0007);
-
-
-        /*m_imageDb["swinging_axe_a"] = Image(
-            "...........................................oo...o...oo.............................................." \
-            "........................................oo......o......oo..........................................." \
-            "......................................oo........o........oo........................................." \
-            "...................................oo...........o...........oo......................................" \
-            ".................................oo.............o.............oo...................................." \
-            ".....................-^.......oo................o................oo.......^-........................" \
-            "..................../ / \.-^^...................o...................^^-./ \ \......................." \
-            "....................| \    /....................o....................\    / |......................." \
-            ".....................\_^-___\...................o.................../___-^_/........................" \
-            ".......................^---__>..................o..................<__---^.........................." \
-            "...............................................| |.................................................." \
-            ".........................................\^=--^   ^--=^/............................................" \
-            "..........................................\_=--___--=_/............................................." \
-            "............................................^^_____^^..............................................." \
-            "...................................................................................................." \
-            "...................................................................................................." \
-            "...................................................................................................." \
-            "....................................................................................................",
-            0, 0, 100, 18, 0x0007);
-
-        m_imageDb["swinging_axe_b"] = Image(
-            ".............................................o..o..o................................................" \
-            "...........................................oo...o...oo.............................................." \
-            "..........................................o.....o.....o............................................." \
-            "........................................oo......o......oo..........................................." \
-            ".......................................o........o........o.........................................." \
-            ".....................................oo.........o.........oo........................................" \
-            "....................................o...........o...........o......................................." \
-            "...........................^=-_...oo............o............oo.._-=^..............................." \
-            "...........................| | -^ |.............o............|.^-.| |..............................." \
-            "............................\ ^____--__.........o........__--____^ /................................" \
-            "..............................=_____=..........| |.........=_____=.................................." \
-            ".........................................\^=--^   ^--=^/............................................" \
-            "..........................................\_=--___--=_/............................................." \
-            "............................................^^_____^^..............................................." \
-            "...................................................................................................." \
-            "...................................................................................................." \
-            "...................................................................................................." \
-            "....................................................................................................",
-            0, 0, 100, 18, 0x0007);*/
 
         m_imageDb["spikes_1"] = Image(
             "...................................................................................................." \
@@ -5221,78 +5222,78 @@ void Database::Initialize()
     // ----------------------------------------------------------------------------------------------------------------
     m_weaponDb.clear();
     {
-        m_weaponDb["Empty"] = Weapon("Empty", DamageType::NORMAL, m_dieRangeDb["weapon_unarmed"], Target::ENEMY, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["weapon_gloves"]);
-        m_weaponDb["Unarmed"] = Weapon("Unarmed", DamageType::NORMAL, m_dieRangeDb["weapon_unarmed"], Target::ENEMY, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["weapon_gloves"]);
+        m_weaponDb["Empty"] = Weapon("Empty", DamageType::NORMAL, m_dieRangeDb["weapon_unarmed"], Target::ENEMY, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["weapon_gloves"], WeaponType::INVALID);
+        m_weaponDb["Unarmed"] = Weapon("Unarmed", DamageType::NORMAL, m_dieRangeDb["weapon_unarmed"], Target::ENEMY, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["weapon_gloves"], WeaponType::INVALID);
 
-        WEAPON_DB_COMMON("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"], m_animationDb["fist_attack"], m_animationDb["weapon_gloves"]);
-        WEAPON_DB_COMMON("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"]);
-        WEAPON_DB_COMMON_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"]);
-        WEAPON_DB_COMMON_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"]);
-        WEAPON_DB_COMMON("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"]);
-        WEAPON_DB_COMMON_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"]);
-        WEAPON_DB_COMMON_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"]);
-        WEAPON_DB_COMMON("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"], m_animationDb["slash_attack"], m_animationDb["weapon_dagger"]);
-        WEAPON_DB_COMMON("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"], m_animationDb["slash_attack"], m_animationDb["weapon_sword"]);
-        WEAPON_DB_COMMON("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"], m_animationDb["slash_attack"], m_animationDb["weapon_great_sword"]);
-        WEAPON_DB_COMMON("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"], m_animationDb["fist_attack"], m_animationDb["armor_robe"]);
-        WEAPON_DB_COMMON("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"], m_animationDb["fist_attack"], m_animationDb["armor_leather"]);
-        WEAPON_DB_COMMON("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"], m_animationDb["fist_attack"], m_animationDb["armor_plate"]);
+        WEAPON_DB_COMMON("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"], m_animationDb["fist_attack"], m_animationDb["weapon_gloves"], WeaponType::GLOVES);
+        WEAPON_DB_COMMON("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"], WeaponType::WAND);
+        WEAPON_DB_COMMON_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"], WeaponType::WAND);
+        WEAPON_DB_COMMON_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"], m_animationDb["blast_attack"], m_animationDb["weapon_wand"], WeaponType::WAND);
+        WEAPON_DB_COMMON("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"], WeaponType::STAFF);
+        WEAPON_DB_COMMON_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"], WeaponType::STAFF);
+        WEAPON_DB_COMMON_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"], m_animationDb["blast_attack"], m_animationDb["weapon_staff"], WeaponType::STAFF);
+        WEAPON_DB_COMMON("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"], m_animationDb["slash_attack"], m_animationDb["weapon_dagger"], WeaponType::DAGGER);
+        WEAPON_DB_COMMON("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"], m_animationDb["slash_attack"], m_animationDb["weapon_sword"], WeaponType::SWORD);
+        WEAPON_DB_COMMON("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"], m_animationDb["slash_attack"], m_animationDb["weapon_great_sword"], WeaponType::GREATSWORD);
+        WEAPON_DB_COMMON("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"], m_animationDb["fist_attack"], m_animationDb["armor_robe"], WeaponType::ROBE);
+        WEAPON_DB_COMMON("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"], m_animationDb["fist_attack"], m_animationDb["armor_leather"], WeaponType::LEATHER);
+        WEAPON_DB_COMMON("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"], m_animationDb["fist_attack"], m_animationDb["armor_plate"], WeaponType::PLATE);
 
-        WEAPON_DB_RARE("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["weapon_rare_gloves"]);
-        WEAPON_DB_RARE("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"]);
-        WEAPON_DB_RARE_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"]);
-        WEAPON_DB_RARE_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"]);
-        WEAPON_DB_RARE("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"]);
-        WEAPON_DB_RARE_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"]);
-        WEAPON_DB_RARE_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"]);
-        WEAPON_DB_RARE("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_dagger"]);
-        WEAPON_DB_RARE("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_sword"]);
-        WEAPON_DB_RARE("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_great_sword"]);
-        WEAPON_DB_RARE("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["armor_rare_robe"]);
-        WEAPON_DB_RARE("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["armor_rare_leather"]);
-        WEAPON_DB_RARE("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["armor_rare_plate"]);
+        WEAPON_DB_RARE("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["weapon_rare_gloves"], WeaponType::GLOVES);
+        WEAPON_DB_RARE("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"], WeaponType::WAND);
+        WEAPON_DB_RARE_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"], WeaponType::WAND);
+        WEAPON_DB_RARE_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_wand"], WeaponType::WAND);
+        WEAPON_DB_RARE("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"], WeaponType::STAFF);
+        WEAPON_DB_RARE_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"], WeaponType::STAFF);
+        WEAPON_DB_RARE_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::RARE), m_animationDb["blast_attack"], m_animationDb["weapon_rare_staff"], WeaponType::STAFF);
+        WEAPON_DB_RARE("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_dagger"], WeaponType::DAGGER);
+        WEAPON_DB_RARE("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_sword"], WeaponType::SWORD);
+        WEAPON_DB_RARE("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::RARE), m_animationDb["slash_attack"], m_animationDb["weapon_rare_great_sword"], WeaponType::GREATSWORD);
+        WEAPON_DB_RARE("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["armor_rare_robe"], WeaponType::ROBE);
+        WEAPON_DB_RARE("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["armor_rare_leather"], WeaponType::LEATHER);
+        WEAPON_DB_RARE("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"].As(Rarity::RARE), m_animationDb["fist_attack"], m_animationDb["armor_rare_plate"], WeaponType::PLATE);
 
-        WEAPON_DB_EPIC("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["weapon_epic_gloves"]);
-        WEAPON_DB_EPIC("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"]);
-        WEAPON_DB_EPIC_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"]);
-        WEAPON_DB_EPIC_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"]);
-        WEAPON_DB_EPIC("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"]);
-        WEAPON_DB_EPIC_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"]);
-        WEAPON_DB_EPIC_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"]);
-        WEAPON_DB_EPIC("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_dagger"]);
-        WEAPON_DB_EPIC("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_sword"]);
-        WEAPON_DB_EPIC("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_great_sword"]);
-        WEAPON_DB_EPIC("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["armor_epic_robe"]);
-        WEAPON_DB_EPIC("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["armor_epic_leather"]);
-        WEAPON_DB_EPIC("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["armor_epic_plate"]);
+        WEAPON_DB_EPIC("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["weapon_epic_gloves"], WeaponType::GLOVES);
+        WEAPON_DB_EPIC("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"], WeaponType::WAND);
+        WEAPON_DB_EPIC_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"], WeaponType::WAND);
+        WEAPON_DB_EPIC_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_wand"], WeaponType::WAND);
+        WEAPON_DB_EPIC("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"], WeaponType::STAFF);
+        WEAPON_DB_EPIC_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"], WeaponType::STAFF);
+        WEAPON_DB_EPIC_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::EPIC), m_animationDb["blast_attack"], m_animationDb["weapon_epic_staff"], WeaponType::STAFF);
+        WEAPON_DB_EPIC("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_dagger"], WeaponType::DAGGER);
+        WEAPON_DB_EPIC("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_sword"], WeaponType::SWORD);
+        WEAPON_DB_EPIC("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::EPIC), m_animationDb["slash_attack"], m_animationDb["weapon_epic_great_sword"], WeaponType::GREATSWORD);
+        WEAPON_DB_EPIC("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["armor_epic_robe"], WeaponType::ROBE);
+        WEAPON_DB_EPIC("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["armor_epic_leather"], WeaponType::LEATHER);
+        WEAPON_DB_EPIC("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"].As(Rarity::EPIC), m_animationDb["fist_attack"], m_animationDb["armor_epic_plate"], WeaponType::PLATE);
 
-        WEAPON_DB_LEGENDARY("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["weapon_legendary_gloves"]);
-        WEAPON_DB_LEGENDARY("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"]);
-        WEAPON_DB_LEGENDARY_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"]);
-        WEAPON_DB_LEGENDARY_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"]);
-        WEAPON_DB_LEGENDARY("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"]);
-        WEAPON_DB_LEGENDARY_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"]);
-        WEAPON_DB_LEGENDARY_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"]);
-        WEAPON_DB_LEGENDARY("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_dagger"]);
-        WEAPON_DB_LEGENDARY("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_sword"]);
-        WEAPON_DB_LEGENDARY("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_great_sword"]);
-        WEAPON_DB_LEGENDARY("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["armor_legendary_robe"]);
-        WEAPON_DB_LEGENDARY("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["armor_legendary_leather"]);
-        WEAPON_DB_LEGENDARY("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["armor_legendary_plate"]);
+        WEAPON_DB_LEGENDARY("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["weapon_legendary_gloves"], WeaponType::GLOVES);
+        WEAPON_DB_LEGENDARY("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"], WeaponType::WAND);
+        WEAPON_DB_LEGENDARY_HEALING("Wand", Target::PLAYERHP_REUSE, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"], WeaponType::WAND);
+        WEAPON_DB_LEGENDARY_PROTECT("Wand", Target::PLAYER_PROTECT, m_dieRangeDb["weapon_wand"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_wand"], WeaponType::WAND);
+        WEAPON_DB_LEGENDARY("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"], WeaponType::STAFF);
+        WEAPON_DB_LEGENDARY_HEALING("Staff", Target::ALLPLAYERSHP, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"], WeaponType::STAFF);
+        WEAPON_DB_LEGENDARY_PROTECT("Staff", Target::PLAYER_PROTECTALL, m_dieRangeDb["weapon_staff"].As(Rarity::LEGENDARY), m_animationDb["blast_attack"], m_animationDb["weapon_legendary_staff"], WeaponType::STAFF);
+        WEAPON_DB_LEGENDARY("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_dagger"], WeaponType::DAGGER);
+        WEAPON_DB_LEGENDARY("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_sword"], WeaponType::SWORD);
+        WEAPON_DB_LEGENDARY("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::LEGENDARY), m_animationDb["slash_attack"], m_animationDb["weapon_legendary_great_sword"], WeaponType::GREATSWORD);
+        WEAPON_DB_LEGENDARY("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["armor_legendary_robe"], WeaponType::ROBE);
+        WEAPON_DB_LEGENDARY("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["armor_legendary_leather"], WeaponType::LEATHER);
+        WEAPON_DB_LEGENDARY("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["armor_legendary_plate"], WeaponType::PLATE);
 
-        m_weaponDb["Lesser Healing Potion"] = Weapon("Lesser Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion_lesser"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_healing_potion"]);
-        m_weaponDb["Lesser Magic Potion"] = Weapon("Lesser Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_lesser"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_magic_potion"]);
-        m_weaponDb["Lesser Resurrect Potion"] = Weapon("Lesser Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect_lesser"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_resurrect_potion"]);
-        m_weaponDb["Healing Potion"] = Weapon("Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["healing_potion"]);
-        m_weaponDb["Magic Potion"] = Weapon("Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["magic_potion"]);
-        m_weaponDb["Resurrect Potion"] = Weapon("Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["resurrect_potion"]);
-        m_weaponDb["Greater Healing Potion"] = Weapon("Greater Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_healing_potion"]);
-        m_weaponDb["Greater Magic Potion"] = Weapon("Greater Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_magic_potion"]);
-        m_weaponDb["Greater Resurrect Potion"] = Weapon("Greater Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect_greater"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_resurrect_potion"]);
+        m_weaponDb["Lesser Healing Potion"] = Weapon("Lesser Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion_lesser"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_healing_potion"], WeaponType::POTION);
+        m_weaponDb["Lesser Magic Potion"] = Weapon("Lesser Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_lesser"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_magic_potion"], WeaponType::POTION);
+        m_weaponDb["Lesser Resurrect Potion"] = Weapon("Lesser Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect_lesser"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_resurrect_potion"], WeaponType::POTION);
+        m_weaponDb["Healing Potion"] = Weapon("Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["healing_potion"], WeaponType::POTION);
+        m_weaponDb["Magic Potion"] = Weapon("Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["magic_potion"], WeaponType::POTION);
+        m_weaponDb["Resurrect Potion"] = Weapon("Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["resurrect_potion"], WeaponType::POTION);
+        m_weaponDb["Greater Healing Potion"] = Weapon("Greater Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_healing_potion"], WeaponType::POTION);
+        m_weaponDb["Greater Magic Potion"] = Weapon("Greater Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_greater"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_magic_potion"], WeaponType::POTION);
+        m_weaponDb["Greater Resurrect Potion"] = Weapon("Greater Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect_greater"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["greater_resurrect_potion"], WeaponType::POTION);
         
-        m_weaponDb["New Hero"] = Weapon("New Hero", DamageType::NORMAL, m_dieRangeDb["new_hero"], Target::NEWHERO, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["new_hero"]);
-        m_weaponDb["Level Up"] = Weapon("Level Up", DamageType::NORMAL, m_dieRangeDb["level_up"], Target::PLAYERLEVEL, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["level_up"]);
-        m_weaponDb["Level Up 5"] = Weapon("Level Up 5", DamageType::NORMAL, m_dieRangeDb["level_up_5"], Target::PLAYERLEVEL5, Rarity::EPIC, m_animationDb["fist_attack"], m_animationDb["level_up_5"]);
+        m_weaponDb["New Hero"] = Weapon("New Hero", DamageType::NORMAL, m_dieRangeDb["new_hero"], Target::NEWHERO, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["new_hero"], WeaponType::NEWHERO);
+        m_weaponDb["Level Up"] = Weapon("Level Up", DamageType::NORMAL, m_dieRangeDb["level_up"], Target::PLAYERLEVEL, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["level_up"], WeaponType::LEVELUP);
+        m_weaponDb["Level Up 5"] = Weapon("Level Up 5", DamageType::NORMAL, m_dieRangeDb["level_up_5"], Target::PLAYERLEVEL5, Rarity::EPIC, m_animationDb["fist_attack"], m_animationDb["level_up_5"], WeaponType::LEVELUP5);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -5467,7 +5468,37 @@ void Database::Initialize()
     }
 
     //-----------------------------------------------------------------------------------------------------------------
-
+    m_passiveDb.clear();
+    {
+        m_passiveDb[PassiveType::GLOVES_BASH]        = Passive("Bludgeon",          Rarity::COMMON, m_animationDb["weapon_gloves"], 0, 0, 0, "Gloves have slight chance to stun opponent.");
+        m_passiveDb[PassiveType::GLOVES_PICKPOCKET]  = Passive("5 Finger Discount", Rarity::COMMON, m_animationDb["weapon_gloves"], 1, 0, 0, "Gloves have chance to steal gold on hit when equipped with leather.");
+        m_passiveDb[PassiveType::GLOVES_BOXER]       = Passive("Boxing",            Rarity::COMMON, m_animationDb["weapon_gloves"], 2, 0, 0, "Gloves swing once per level if equipped with two gloves.");
+        m_passiveDb[PassiveType::DAGGER_DUALWIELD]   = Passive("Dual Wield",        Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 0, 0, "Attack with both weapons so as long only Daggers or Swords are equipped in both hands.");
+        m_passiveDb[PassiveType::DAGGER_BLEED]       = Passive("Bled Dry",          Rarity::COMMON, m_animationDb["weapon_dagger"], 4, 0, 0, "Daggers have chance to add bleed condition to enemy.");
+        m_passiveDb[PassiveType::DAGGER_MULTIATTACK] = Passive("Nimble Fingers",    Rarity::COMMON, m_animationDb["weapon_dagger"], 5, 0, 0, "Daggers attack twice.");
+        m_passiveDb[PassiveType::SWORD_PARRY]        = Passive("Parry Master",      Rarity::COMMON, m_animationDb["weapon_dagger"], 0, 1, 0, "Swords have chance to parry incoming attacks.");
+        m_passiveDb[PassiveType::SWORD_RIPOSTE]      = Passive("Riposte",           Rarity::COMMON, m_animationDb["weapon_dagger"], 1, 1, 0, "Use equipped swords when attacked.");
+        m_passiveDb[PassiveType::SWORD_SHIELD]       = Passive("Shield Training",   Rarity::COMMON, m_animationDb["weapon_dagger"], 2, 1, 0, "Swords deal twice as much damage with a shield.");
+        m_passiveDb[PassiveType::SWORD_BATTLEWIZARD] = Passive("Battle Wizard",     Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 1, 0, "Equiping sword with staff deals additional damage.");
+        m_passiveDb[PassiveType::GREATSWORD_HEAVYSWING] = Passive("Heavy Swing",    Rarity::COMMON, m_animationDb["weapon_dagger"], 4, 1, 0, "Great sword speed decreased, great axes deal extra multi per level.");
+        m_passiveDb[PassiveType::GREATSWORD_ALONE]   = Passive("Speciality",        Rarity::COMMON, m_animationDb["weapon_dagger"], 5, 1, 0, "Having only a great sword deals 2 times multi damage.");
+        m_passiveDb[PassiveType::GREATSWORD_HURT]    = Passive("Masochist",         Rarity::COMMON, m_animationDb["weapon_dagger"], 0, 0, 1, "Every attack received this turn to hero equipping great swords doubles multi.");
+        m_passiveDb[PassiveType::WAND_QUICKSPELL]    = Passive("Quick Spell",       Rarity::COMMON, m_animationDb["weapon_dagger"], 1, 0, 1, "Wands and Staves gain -2 speed.");
+        m_passiveDb[PassiveType::WAND_ELEMENTALMASTER] = Passive("Elemental Master", Rarity::COMMON, m_animationDb["weapon_dagger"], 2, 0, 1, "Wands add 2x level to multi when eqipped with Robe.");
+        m_passiveDb[PassiveType::WAND_FINESSE]       = Passive("Wand Finesse",      Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 0, 1, "Wands have chance to attack twice.");
+        m_passiveDb[PassiveType::STAFF_ELEMENTALMASTER] = Passive("Elemental Master", Rarity::COMMON, m_animationDb["weapon_dagger"], 4, 0, 1, "Staffs deal twice as much multi but are slower.");
+        m_passiveDb[PassiveType::STAFF_IGNOREELEMENT] = Passive("Potent Spells",    Rarity::COMMON, m_animationDb["weapon_dagger"], 5, 0, 1, "Staffs ignore elemental weaknesses.");
+        m_passiveDb[PassiveType::STAFF_MAGICSHIELD]  = Passive("Magical Bubble",    Rarity::COMMON, m_animationDb["weapon_dagger"], 0, 1, 1, "Equipping robes with staff adds staff damage to mitigation as protective bubble.");
+        m_passiveDb[PassiveType::PLATE_TAUNT]        = Passive("Taunt",             Rarity::COMMON, m_animationDb["weapon_dagger"], 1, 1, 1, "Add higher chance for monsters to aim for plate wearers.");
+        m_passiveDb[PassiveType::PLATE_HPBOOST]      = Passive("Good Health",       Rarity::COMMON, m_animationDb["weapon_dagger"], 2, 1, 1, "Double the heroes hp per level when equipped with plate.");
+        m_passiveDb[PassiveType::PLATE_IGNOREDAMAGE] = Passive("Craftmenship",      Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 1, 1, "Change to ignore damage when equipping plate.");
+        m_passiveDb[PassiveType::LEATHER_GOLD]       = Passive("Good Eye",          Rarity::COMMON, m_animationDb["weapon_dagger"], 4, 1, 1, "Add X gold per monster slain. X is rarity of leather equipped.");
+        m_passiveDb[PassiveType::LEATHER_SCOUT]      = Passive("Scout Ahead",       Rarity::COMMON, m_animationDb["weapon_dagger"], 5, 1, 1, "See behind doors depending on how many heroes equip leather [1:Shop, 2:Traps, 4:Fountains and Monsters].");
+        m_passiveDb[PassiveType::LEATHER_DAMAGE]     = Passive("Nimble",            Rarity::COMMON, m_animationDb["weapon_dagger"], 0, 0, 2, "Daggers and Swords deal X extra multi. X is Level times Rarity.");
+        m_passiveDb[PassiveType::ROBE_BACKLINE]      = Passive("Camoflage",         Rarity::COMMON, m_animationDb["weapon_dagger"], 1, 0, 2, "Robes make the wearer less threatening to monsters.");
+        m_passiveDb[PassiveType::ROBE_GLASSCANNON]   = Passive("Glass Cannon",      Rarity::COMMON, m_animationDb["weapon_dagger"], 2, 0, 2, "Magical damage is doubled. Damage recieved is doubled.");
+        m_passiveDb[PassiveType::ROBE_MPCOST]        = Passive("Budget Spellcraft", Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 0, 2, "Magical cost is reduced by X. X is Rarity.");
+    }
 }
 
 void Database::Reset()

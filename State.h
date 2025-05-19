@@ -10,15 +10,16 @@
 /// Enumeration of all the states within a dungeon crawl game
 enum class State : uint8_t
 {
-	INVALID,
-	STATE_MAIN,        ///< The main menu screen
-	STATE_NEXT_FLOOR,  ///< Increment the floor
-	STATE_DOORS,       ///< Display the doors screen
-	STATE_SHOP,        ///< Display the shop screen
-	STATE_COMBAT,      ///< Display the comabat screen
-	STATE_COMBAT_RESOLVE, ///< Resolve the combat turn
-	STATE_TREASURE,    ///< Display the treasure screen
-	STATE_FOUNTAIN,    ///< Display fairy room
-	STATE_TRAP,        ///< Display a room with a trap
+    INVALID,
+    STATE_MAIN,        ///< The main menu screen
+    STATE_NEXT_FLOOR,  ///< Increment the floor
+    STATE_DOORS,       ///< Display the doors screen
+    STATE_SHOP,        ///< Display the shop screen
+    STATE_COMBAT,      ///< Display the comabat screen
+    STATE_COMBAT_RESOLVE, ///< Resolve the combat turn
+    STATE_TREASURE,    ///< Display the treasure screen
+    STATE_FOUNTAIN,    ///< Display fairy room
+    STATE_TRAP,        ///< Display a room with a trap
+    STETE_PASSIVE,     ///< Display passive selection
 };
 

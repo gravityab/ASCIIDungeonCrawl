@@ -15,6 +15,7 @@ Time s_blinkTime = ToMilliseconds(600);
 #define ANIMATION(x) m_db.m_animationDb[x]
 #define WEAPON(x)    m_db.m_weaponDb[x] 
 #define MONSTER(x)   m_db.m_monsterDb[x]
+#define PASSIVE(x)   m_db.m_passiveDb[x]
 #define BLINK(x)     m_blink ? x : x | 0xC000
 #define SOLID(x)     x | 0xC000
 
@@ -87,6 +88,9 @@ bool DungeonCrawl::RunLoop()
             case State::STATE_TREASURE:
                 DrawTreasureScreen(delta);
                 break;
+            case State::STETE_PASSIVE:
+                DrawPassiveScreen(delta);
+                break;
             case State::STATE_FOUNTAIN:
                 DrawFountain(delta);
                 break;
@@ -95,7 +99,11 @@ bool DungeonCrawl::RunLoop()
                 break;
         }
 
+        // Draw the dungeon tiles
         DrawDungeon(delta);
+
+        // Draw the passive screen
+        DrawPassives(delta);
 
         m_console.Draw(m_handle);
     }
@@ -131,7 +139,10 @@ void DungeonCrawl::DrawMainScreen(Time delta)
     m_console.WriteData(pressEnter.data(), 27, 23, 66, 4, m_blink ? 0x0008 : 0x000B);
 
     if (m_input.Released(Button::BUTTON_SELECT))
+    {
         SetState(State::STATE_SHOP);
+        //SetState(State::STETE_PASSIVE);
+    }
 }
 
 void DungeonCrawl::DrawDoorsScreen(Time delta)
@@ -205,6 +216,21 @@ void DungeonCrawl::DrawTreasureScreen(Time delta)
 
     // Draw the party
     DrawHero(delta);
+
+    // Handle cursor state
+    DrawCursor();
+}
+
+void DungeonCrawl::DrawPassiveScreen(Time delta)
+{
+    // Draw the doors first
+    DrawBackground(delta, 2, ToAttribute(m_currentFloorPtr->type));
+
+    // Draw the heroes
+    DrawHero(delta);
+
+    // Draw the passives
+    DrawPassiveOptions(delta);
 
     // Handle cursor state
     DrawCursor();
@@ -601,9 +627,6 @@ void DungeonCrawl::DrawShop(Time delta)
         if (m_ui.GetCursorIndex() == 4)
             m_ui.GetAnimation().WriteData(m_console, delta, x, y, complete);
     }
-
-    //if (m_cursorIndex == 4)
-    //	m_cursor.WriteData(m_console, delta, x, y, complete);
 }
 
 void DungeonCrawl::DrawHero(Time delta)
@@ -1296,7 +1319,18 @@ void DungeonCrawl::DrawAction(Time delta)
         if (heroesAlive && monstersAlive)
             SetState(State::STATE_COMBAT);
         if (heroesAlive && !monstersAlive)
-            SetState(State::STATE_TREASURE);
+        {
+            bool givePassive = false;
+            for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
+            {
+                if ((int)m_currentRoom->monsters[index].rarity >= (int)Rarity::RARE)
+                    givePassive = true;
+            }
+            if (givePassive)
+                SetState(State::STETE_PASSIVE);
+            else
+                SetState(State::STATE_TREASURE);
+        }
         if (!heroesAlive)
         {
             // Game over. Display the screen until the player presses start
@@ -1308,8 +1342,78 @@ void DungeonCrawl::DrawAction(Time delta)
     }
 }
 
+void DungeonCrawl::DrawPassivesTab(int index, const std::string& label)
+{
+    int x = 14 * index + 1;
+    int y = 0;
+
+    IMAGE("passives_tab").SetAttribute(m_passivesTabIndex == index ? 0x000F : 0x0008);
+    IMAGE("passives_tab").WriteData(m_console, x, y);
+    m_console.WriteData(x + 4, y + 1, m_passivesTabIndex == index && m_passivesTab ? BLINK(0x000F) : 0x000F, "%s", label.c_str());
+}
+
+void DungeonCrawl::ProcessPassiveInput()
+{
+    if (m_input.Released(Button::BUTTON_RIGHT))
+    {
+        if (!m_passivesTab)
+            m_passivesX++;
+        if (m_passivesTab)
+            m_passivesTabIndex++;
+    }
+    else if (m_input.Released(Button::BUTTON_LEFT))
+    {
+        if (!m_passivesTab)
+            m_passivesX--;
+        if (m_passivesTab)
+            m_passivesTabIndex--;
+    }
+    else if (m_input.Released(Button::BUTTON_UP))
+    {
+        if (!m_passivesTab)
+            m_passivesY--;
+        if (m_passivesY == -1)
+            m_passivesTab = true;
+    }
+    else if (m_input.Released(Button::BUTTON_DOWN))
+    {
+        if (!m_passivesTab)
+            m_passivesY++;
+        if (m_passivesTab)
+            m_passivesTab = false;
+    }
+
+    if (m_passivesX < 0)
+        m_passivesX = 0;
+    if (m_passivesY < 0)
+        m_passivesY = 0;
+    if (m_passivesX > 5)
+        m_passivesX = 5;
+    if (m_passivesY > 1)
+        m_passivesY = 1;
+
+    if (m_passivesTabIndex < 0)
+        m_passivesTabIndex = 0;
+    if (m_passivesTabIndex > 1)
+        m_passivesTabIndex = 1;
+}
+
 void DungeonCrawl::ProcessInput()
 {
+    // Handle drawing the passives
+    if (m_input.Released(Button::BUTTON_PASSIVES))
+    {
+        m_showPassives = !m_showPassives;
+        return;
+    }
+
+    // Handle the input of the passives screen
+    if (m_showPassives)
+    {
+        ProcessPassiveInput();
+        return;
+    }
+
     // Handle cursor index
     CursorIndexDirection direction = m_ui.GetDirection();
     if ((m_input.Released(Button::BUTTON_RIGHT) && direction == CursorIndexDirection::HORIZONTAL)
@@ -1451,6 +1555,20 @@ void DungeonCrawl::ProcessInput()
             m_ui.GetContext().source->weapon2.selected = m_ui.GetCursorIndex() == 1;
             m_ui.GetContext().source->weapon3.selected = m_ui.GetCursorIndex() == 2;
             m_ui.GetContext().source->weapon4.selected = m_ui.GetCursorIndex() == 3;
+        }
+    }
+
+    // Passives
+    {
+        if (m_ui.GetState() == CursorState::PASSIVE_SELECT && m_input.Released(Button::BUTTON_SELECT))
+        {
+            Passive passive = m_passiveOptions[m_ui.GetCursorIndex()];
+            passive.bNew = true;
+            passive.owned = true;
+            m_passives.push_back(passive);
+            
+            SetState(State::STATE_TREASURE);
+            return;
         }
     }
 
@@ -1631,6 +1749,97 @@ void DungeonCrawl::ProcessInput()
     }
 
     m_console.WriteData(0, 0, 0x0008, "%s %d %d", ToString(m_ui.GetState()).c_str(), m_ui.GetCursorIndex(), m_ui.GetSize());
+}
+
+void DungeonCrawl::DrawPassiveOptions(Time delta)
+{
+    bool complete = false;
+    int x = 18;
+    int y = 4;
+
+    IMAGE("passive_dialog_short").WriteData(m_console, 1, 15);
+
+    int index = 0;
+    for (int index = 0; index < (int)m_passiveOptions.size(); index++)
+    {
+        m_passiveOptions[index].animation.WriteData(m_console, delta, x, y, complete);
+        m_console.WriteData(x - 2, y - 1, ToAttribute(m_passiveOptions[index].rarity), "  %s  ", m_passiveOptions[index].name.c_str());
+
+        if (m_ui.GetState() == CursorState::PASSIVE_SELECT)
+        {
+            if (m_ui.GetCursorIndex() == index)
+                m_ui.GetAnimation().WriteData(m_console, delta, x, y, complete);
+        }
+
+        if (m_ui.GetCursorIndex() == index)
+        {
+            m_console.WriteData(2, 17, 0x0007, "%s", m_passiveOptions[index].description.c_str());
+        }
+
+        x += 24;
+    }
+}
+
+void DungeonCrawl::DrawPassives(Time delta)
+{
+    if (!m_showPassives)
+        return;
+
+    IMAGE("passives").WriteData(m_console, 1, 0);
+
+    // Draw all tabs
+    if (m_passivesTabIndex != 0) DrawPassivesTab(0, "Weapons");
+    if (m_passivesTabIndex != 1) DrawPassivesTab(1, "Armor");
+    // Draw selected tabs over rest
+    if (m_passivesTabIndex == 0) DrawPassivesTab(0, "Weapons");
+    if (m_passivesTabIndex == 1) DrawPassivesTab(1, "Armor");
+
+    // Draw the greyed borders
+    for (int x = 0; x < 6; x++)
+    {
+        for (int y = 0; y < 2; y++)
+        {
+            Image image = IMAGE("weapon_border");
+            image.SetAttribute(0x0008);
+            image.WriteData(m_console, 19 * x + 4, 10 * y + 4);
+        }
+    }
+
+    // Draw owned passives
+    for (auto passive : m_passives)
+    {
+        if (passive.tabIndex == m_passivesTabIndex)
+        {
+            int x = 19 * passive.x + 4;
+            int y = 10 * passive.y + 4;
+
+            bool complete;
+            passive.animation.WriteData(m_console, delta, x, y, complete);
+            m_console.WriteData(x + 1, y + 1, 0x0007, "%s", passive.name.c_str());
+            if (passive.bNew)
+                m_console.WriteData(x + 12, y + 8, 0x000A, "NEW");
+        }
+    }
+
+    // Draw the cursor
+    if (!m_passivesTab)
+    {
+        int x = 19 * m_passivesX + 4;
+        int y = 10 * m_passivesY + 4;
+
+        bool complete;
+        m_passivesCursor.WriteData(m_console, delta, x, y, complete);
+
+        for (auto passive : m_passives)
+        {
+            if (passive.x == m_passivesX
+                && passive.y == m_passivesY
+                && passive.tabIndex == m_passivesTabIndex)
+            {
+                m_console.WriteData(5, 26, 0x0007, "%s", passive.description.c_str());
+            }
+        }
+    }
 }
 
 void DungeonCrawl::DrawCursor()
@@ -2114,6 +2323,13 @@ void DungeonCrawl::SetState(State state)
         m_currentFloor = std::move(m_initFloor);
         m_currentFloorPtr = &m_initFloor;
         m_currentRoom = &m_currentFloor.rooms[0];
+
+        m_passives.clear();
+        m_passivesCursor = ANIMATION("select_weapon");
+        m_passivesX = 0;
+        m_passivesY = 0;
+        m_passivesTab = false;
+        m_passivesTabIndex = 0;
     }
     else if (state == State::STATE_NEXT_FLOOR)
     {
@@ -2123,6 +2339,12 @@ void DungeonCrawl::SetState(State state)
         //m_currentFloor = &m_dungeon.GetFloor(m_floor);
         m_dungeonEx.GetNextFloor(std::move(m_currentFloor));
         m_currentFloorPtr = &m_currentFloor;
+
+        // No longer display any passives as new
+        for (auto passive : m_passives)
+        {
+            passive.bNew = false;
+        }
     }
     else if (state == State::STATE_DOORS)
     {
@@ -2147,6 +2369,18 @@ void DungeonCrawl::SetState(State state)
         }
 
         PushShop();
+    }
+    else if (state == State::STETE_PASSIVE)
+    {
+        m_passiveOptions.clear();
+        int numPassives = 3;
+        while (numPassives-- > 0)
+        {
+            PassiveType type = PassiveType(GetRandomValue(0, (int)PassiveType::COUNT - 1));
+            m_passiveOptions.push_back(PASSIVE(type));
+        }
+
+        PushPassive();
     }
     else if (state == State::STATE_COMBAT)
     {
@@ -2504,6 +2738,19 @@ void DungeonCrawl::PushShop()
     context.cursor.SetAttributes(1, 0x0008);
     context.index = 4; // Start at the exit
     context.maxIndex = (int)m_currentRoom->shop.size();
+    context.direction = CursorIndexDirection::HORIZONTAL;
+    m_ui.PushBack(context);
+}
+
+void DungeonCrawl::PushPassive()
+{
+    CursorContext context;
+    context.state = CursorState::PASSIVE_SELECT;
+    context.cursor = ANIMATION("select_weapon");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
+    context.index = 0; // Start at the exit
+    context.maxIndex = (int)m_passiveOptions.size();
     context.direction = CursorIndexDirection::HORIZONTAL;
     m_ui.PushBack(context);
 }
