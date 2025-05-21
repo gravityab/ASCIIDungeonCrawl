@@ -78,6 +78,12 @@ private:
     /// Draw the stairs background
     void DrawStairs(Time delta, uint16_t attribute);
 
+    /// Draw the menu dialog
+    void DrawMenu(Time delta);
+
+    /// Draw the restart confirmation dialog
+    void DrawRestart(Time delta);
+
     /// Draw a background
     void DrawBackground(Time delta, int index, uint16_t attribute);
 
@@ -109,7 +115,7 @@ private:
     void DrawAction(Time delta);
 
     /// Draw the passives tab
-    void DrawPassivesTab(int index, const std::string& label);
+    void DrawPassivesTab(int index, const std::string& label, bool hasNew);
 
     /// Process passive input
     void ProcessPassiveInput();
@@ -131,6 +137,9 @@ private:
 
     /// Select previous hero
     void PrevHero();
+
+    /// Get unique passive that isn't in the current and owned list
+    void GetUniquePassive();
 
     /// Give player xp
     void ReceiveXP(Hero& hero);
@@ -221,6 +230,12 @@ private:
 
     /// Push the item purchase and replacement cursor state
     void PushShopItem();
+
+    /// Push the menu dialog
+    void PushMenu();
+
+    /// Push the menu restart confirmation dialog
+    void PushMenuRestart();
 
     /// Print levels of dungeon numbers
     void TestDungeon();
@@ -346,6 +361,12 @@ private:
 
     /// Show passive screen
     bool m_showPassives = false;
+
+    /// Show the menu dialog
+    bool m_showMenu = false;
+
+    /// Show the restart confirmation dialog
+    bool m_showRestartDialog = false;
 
     /// The current hero index
     int m_heroIndex = 0;

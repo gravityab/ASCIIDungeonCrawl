@@ -227,6 +227,10 @@ Monster DungeonEx::RollMonster(DamageType type, Rarity rarity, MonsterFamily fam
     const Die health    = Die(mult / 1, die, constant);
     const int armor     = (m_floor / 5) + (int(rarity) - 1);
 
+    static std::vector<DamageType> typeTable = { DamageType::NORMAL, DamageType::COLD, DamageType::FIRE, DamageType::LIGHTNING, DamageType::WATER, DamageType::NECROTIC, DamageType::PSYCHIC, DamageType::DARK, DamageType::POISON, DamageType::STEEL, DamageType::HOLY };
+    if (rarity >= Rarity::RARE)
+        type = ROLLTABLE(typeTable);
+
     Monster monster = ToMonster(rarity, type, family, primary, secondary);
     monster.rollMaxHp = health;
     monster.totalHp = monster.rollMaxHp.Roll();
@@ -325,7 +329,7 @@ void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, Mo
     int numMonsters = room.door.monsterCount;
     while (numMonsters-- > 0)
     {
-        Monster monster = RollMonster(type, rarity, family, false);
+        Monster monster = RollMonster(type, RollRarity(rarity), family, false);
         room.monsters.push_back(monster);
     }
 

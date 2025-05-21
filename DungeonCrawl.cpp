@@ -88,7 +88,7 @@ bool DungeonCrawl::RunLoop()
             case State::STATE_TREASURE:
                 DrawTreasureScreen(delta);
                 break;
-            case State::STETE_PASSIVE:
+            case State::STATE_PASSIVE:
                 DrawPassiveScreen(delta);
                 break;
             case State::STATE_FOUNTAIN:
@@ -104,6 +104,12 @@ bool DungeonCrawl::RunLoop()
 
         // Draw the passive screen
         DrawPassives(delta);
+
+        // Draw the menu screen
+        DrawMenu(delta);
+
+        // Draw the restart confirmation dialog
+        DrawRestart(delta);
 
         m_console.Draw(m_handle);
     }
@@ -141,7 +147,7 @@ void DungeonCrawl::DrawMainScreen(Time delta)
     if (m_input.Released(Button::BUTTON_SELECT))
     {
         SetState(State::STATE_SHOP);
-        //SetState(State::STETE_PASSIVE);
+        //SetState(State::STATE_PASSIVE);
     }
 }
 
@@ -419,6 +425,37 @@ void DungeonCrawl::DrawStairs(Time delta, uint16_t attribute)
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
+}
+
+void DungeonCrawl::DrawMenu(Time delta)
+{
+    if (!m_showMenu)
+        return;
+    if (m_ui.GetState() != CursorState::MENU
+        && m_ui.GetState() != CursorState::MENU_CREDITS
+        && m_ui.GetState() != CursorState::MENU_RESTART)
+        return;
+
+    int x = 52;
+    int y = 6;
+    IMAGE("menu").WriteData(m_console, x, y);
+    m_console.WriteData(x + 4, y + 2, m_ui.GetCursorIndex() == 0 ? BLINK(0x0007) : 0x0007, "Restart");
+    m_console.WriteData(x + 4, y + 4, m_ui.GetCursorIndex() == 1 ? BLINK(0x0007) : 0x0007, "Credits");
+    m_console.WriteData(x + 4, y + 6, m_ui.GetCursorIndex() == 2 ? BLINK(0x0007) : 0x0007, "Exit Game");
+}
+
+void DungeonCrawl::DrawRestart(Time delta)
+{
+    if (!m_showMenu)
+        return;
+    if (m_ui.GetState() != CursorState::MENU_RESTART)
+        return;
+
+    int x = 44;
+    int y = 7;
+    IMAGE("menu_restart_dialog").WriteData(m_console, x, y);
+    m_console.WriteData(x + 6, y + 6, m_ui.GetCursorIndex() == 0 ? BLINK(0x0007) : 0x0007, " NO ");
+    m_console.WriteData(x + 21, y + 6, m_ui.GetCursorIndex() == 1 ? BLINK(0x0007) : 0x0007, " YES " );
 }
 
 void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
@@ -1327,7 +1364,7 @@ void DungeonCrawl::DrawAction(Time delta)
                     givePassive = true;
             }
             if (givePassive)
-                SetState(State::STETE_PASSIVE);
+                SetState(State::STATE_PASSIVE);
             else
                 SetState(State::STATE_TREASURE);
         }
@@ -1342,14 +1379,18 @@ void DungeonCrawl::DrawAction(Time delta)
     }
 }
 
-void DungeonCrawl::DrawPassivesTab(int index, const std::string& label)
+void DungeonCrawl::DrawPassivesTab(int index, const std::string& label_, bool hasNew)
 {
+    std::string label = label_;
+    if (hasNew)
+        label = "* " + label;
+
     int x = 14 * index + 1;
     int y = 0;
 
     IMAGE("passives_tab").SetAttribute(m_passivesTabIndex == index ? 0x000F : 0x0008);
     IMAGE("passives_tab").WriteData(m_console, x, y);
-    m_console.WriteData(x + 4, y + 1, m_passivesTabIndex == index && m_passivesTab ? BLINK(0x000F) : 0x000F, "%s", label.c_str());
+    m_console.WriteData(hasNew ? x + 2 : x + 4, y + 1, m_passivesTabIndex == index && m_passivesTab ? BLINK(0x000F) : 0x000F, "%s", label.c_str());
 }
 
 void DungeonCrawl::ProcessPassiveInput()
@@ -1394,12 +1435,28 @@ void DungeonCrawl::ProcessPassiveInput()
 
     if (m_passivesTabIndex < 0)
         m_passivesTabIndex = 0;
-    if (m_passivesTabIndex > 1)
-        m_passivesTabIndex = 1;
+    if (m_passivesTabIndex > 5)
+        m_passivesTabIndex = 5;
 }
 
 void DungeonCrawl::ProcessInput()
 {
+    // Handle pushing the menu above everything
+    if (m_input.Released(Button::BUTTON_MENU))
+    {
+        if (!m_showMenu)
+            PushMenu();
+        else if (m_showMenu && m_ui.GetState() == CursorState::MENU)
+            m_ui.PopBack(1);
+        else if (m_showMenu && m_ui.GetState() == CursorState::MENU_CREDITS)
+            m_ui.PopBack(1);
+        else if (m_showMenu && m_ui.GetState() == CursorState::MENU_RESTART)
+            m_ui.PopBack(1);
+
+        m_showMenu = !m_showMenu;
+        return;
+    }
+
     // Handle drawing the passives
     if (m_input.Released(Button::BUTTON_PASSIVES))
     {
@@ -1458,7 +1515,9 @@ void DungeonCrawl::ProcessInput()
             m_heroes[index].weapon4.selected = false;
         }
 
-        if (m_ui.GetState() == CursorState::REWARD)
+        if (m_ui.GetState() == CursorState::MENU)
+            m_ui.PopBack(1);
+        else if (m_ui.GetState() == CursorState::REWARD)
             m_ui.PopBack(3);
         else
             m_ui.PopBack(2);
@@ -1468,6 +1527,41 @@ void DungeonCrawl::ProcessInput()
             if (m_actions.size() > 0)
                 m_actions.pop_back();
             PrevHero();
+        }
+        return;
+    }
+
+    // Navigate escape menu
+    if (m_ui.GetState() == CursorState::MENU && m_input.Released(Button::BUTTON_SELECT))
+    {
+        if (m_ui.GetCursorIndex() == 0)
+        {
+            PushMenuRestart();
+        }
+        else if (m_ui.GetCursorIndex() == 1)
+        {
+            // Display credits
+            //PushMenuCredits();
+        }
+        else if (m_ui.GetCursorIndex() == 2)
+        {
+            // Exit the game
+            exit(0);
+        }
+        return;
+    }
+
+    // Navigate restart confirmation dialog
+    if (m_ui.GetState() == CursorState::MENU_RESTART && m_input.Released(Button::BUTTON_SELECT))
+    {
+        if (m_ui.GetCursorIndex() == 0)
+        {
+            m_ui.PopBack(1);
+        }
+        else if (m_ui.GetCursorIndex() == 1)
+        {
+            m_showMenu = false;
+            SetState(State::STATE_MAIN);
         }
         return;
     }
@@ -1506,6 +1600,12 @@ void DungeonCrawl::ProcessInput()
         m_ui.GetContext().target = &m_heroes[m_ui.GetCursorIndex()];
         UseSelectedItem();
         m_ui.PopBackTo(2);
+        return;
+    }
+
+    // Avoid menu accepting input
+    if (m_showMenu)
+    {
         return;
     }
 
@@ -1786,13 +1886,29 @@ void DungeonCrawl::DrawPassives(Time delta)
         return;
 
     IMAGE("passives").WriteData(m_console, 1, 0);
+    auto HasNew = [&](int tabIndex)->bool {
+        for (auto passive : m_passives)
+        {
+            if (passive.tabIndex == tabIndex && passive.bNew)
+                return true;
+        }
+        return false;
+    };
 
     // Draw all tabs
-    if (m_passivesTabIndex != 0) DrawPassivesTab(0, "Weapons");
-    if (m_passivesTabIndex != 1) DrawPassivesTab(1, "Armor");
+    if (m_passivesTabIndex != 0) DrawPassivesTab(0, "Weapons 1", HasNew(0));
+    if (m_passivesTabIndex != 1) DrawPassivesTab(1, "Weapons 2", HasNew(1));
+    if (m_passivesTabIndex != 2) DrawPassivesTab(2, "Armor", HasNew(2));
+    if (m_passivesTabIndex != 3) DrawPassivesTab(3, "Misc 1", HasNew(3));
+    if (m_passivesTabIndex != 4) DrawPassivesTab(4, "Misc 2", HasNew(4));
+    if (m_passivesTabIndex != 5) DrawPassivesTab(5, "Misc 3", HasNew(5));
     // Draw selected tabs over rest
-    if (m_passivesTabIndex == 0) DrawPassivesTab(0, "Weapons");
-    if (m_passivesTabIndex == 1) DrawPassivesTab(1, "Armor");
+    if (m_passivesTabIndex == 0) DrawPassivesTab(0, "Weapons 1", HasNew(0));
+    if (m_passivesTabIndex == 1) DrawPassivesTab(1, "Weapons 2", HasNew(1));
+    if (m_passivesTabIndex == 2) DrawPassivesTab(2, "Armor", HasNew(2));
+    if (m_passivesTabIndex == 3) DrawPassivesTab(3, "Misc 1", HasNew(3));
+    if (m_passivesTabIndex == 4) DrawPassivesTab(4, "Misc 2", HasNew(4));
+    if (m_passivesTabIndex == 5) DrawPassivesTab(5, "Misc 3", HasNew(5));
 
     // Draw the greyed borders
     for (int x = 0; x < 6; x++)
@@ -1830,13 +1946,14 @@ void DungeonCrawl::DrawPassives(Time delta)
         bool complete;
         m_passivesCursor.WriteData(m_console, delta, x, y, complete);
 
-        for (auto passive : m_passives)
+        for (auto&& passive : m_passives)
         {
             if (passive.x == m_passivesX
                 && passive.y == m_passivesY
                 && passive.tabIndex == m_passivesTabIndex)
             {
                 m_console.WriteData(5, 26, 0x0007, "%s", passive.description.c_str());
+                passive.bNew = false;
             }
         }
     }
@@ -1903,6 +2020,47 @@ void DungeonCrawl::PrevHero()
     m_heroes[m_heroIndex].isTurn = true;
 
     PushCombat(&m_heroes[m_heroIndex]);
+}
+
+void DungeonCrawl::GetUniquePassive()
+{
+    while (true)
+    {
+        PassiveType type = PassiveType(GetRandomValue(0, (int)PassiveType::COUNT - 1));
+        Passive selected = PASSIVE(type);
+
+        // Do not show passives that the player owns
+        bool duplicate = false;
+        for (auto passive : m_passives)
+        {
+            if (passive.x == selected.x
+                && passive.y == selected.y
+                && passive.tabIndex == selected.tabIndex)
+            {
+                duplicate = true;
+                break;
+            }
+        }
+        if (duplicate)
+            continue;
+
+        // Do not show passives that are the same within the list of options
+        for (auto passive : m_passiveOptions)
+        {
+            if (passive.x == selected.x
+                && passive.y == selected.y
+                && passive.tabIndex == selected.tabIndex)
+            {
+                duplicate = true;
+                break;
+            }
+        }
+        if (duplicate)
+            continue;
+
+        m_passiveOptions.push_back(selected);
+        break;
+    }
 }
 
 void DungeonCrawl::ReceiveXP(Hero& hero)
@@ -2341,10 +2499,10 @@ void DungeonCrawl::SetState(State state)
         m_currentFloorPtr = &m_currentFloor;
 
         // No longer display any passives as new
-        for (auto passive : m_passives)
-        {
-            passive.bNew = false;
-        }
+        //for (auto&& passive : m_passives)
+        //{
+        //    passive.bNew = false;
+        //}
     }
     else if (state == State::STATE_DOORS)
     {
@@ -2370,14 +2528,13 @@ void DungeonCrawl::SetState(State state)
 
         PushShop();
     }
-    else if (state == State::STETE_PASSIVE)
+    else if (state == State::STATE_PASSIVE)
     {
         m_passiveOptions.clear();
         int numPassives = 3;
         while (numPassives-- > 0)
         {
-            PassiveType type = PassiveType(GetRandomValue(0, (int)PassiveType::COUNT - 1));
-            m_passiveOptions.push_back(PASSIVE(type));
+            GetUniquePassive();
         }
 
         PushPassive();
@@ -2750,7 +2907,7 @@ void DungeonCrawl::PushPassive()
     context.cursor.SetAttributes(0, 0x0007);
     context.cursor.SetAttributes(1, 0x0008);
     context.index = 0; // Start at the exit
-    context.maxIndex = (int)m_passiveOptions.size();
+    context.maxIndex = (int)m_passiveOptions.size() - 1;
     context.direction = CursorIndexDirection::HORIZONTAL;
     m_ui.PushBack(context);
 }
@@ -3201,6 +3358,28 @@ void DungeonCrawl::PushShopItem()
     context.target = &m_heroes[m_ui.GetCursorIndex()];
     context.weapon = prevContext.weapon;
     context.direction = CursorIndexDirection::VERTICAL;
+    m_ui.PushBack(context);
+}
+
+void DungeonCrawl::PushMenu()
+{
+    CursorContext context;
+    context.state = CursorState::MENU;
+    context.cursor = ANIMATION("select_nothing");
+    context.index = 0;
+    context.maxIndex = 2;
+    context.direction = CursorIndexDirection::VERTICAL;
+    m_ui.PushBack(context);
+}
+
+void DungeonCrawl::PushMenuRestart()
+{
+    CursorContext context;
+    context.state = CursorState::MENU_RESTART;
+    context.cursor = ANIMATION("select_nothing");
+    context.index = 0;
+    context.maxIndex = 1;
+    context.direction = CursorIndexDirection::HORIZONTAL;
     m_ui.PushBack(context);
 }
 

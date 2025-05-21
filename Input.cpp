@@ -28,6 +28,7 @@ void Input::Initialize()
     m_buttons[(int)Button::BUTTON_BACK].map = VK_BACK;
     m_buttons[(int)Button::BUTTON_TOGGLE].map = VK_RSHIFT;
     m_buttons[(int)Button::BUTTON_PASSIVES].map = VK_RCONTROL;
+    m_buttons[(int)Button::BUTTON_MENU].map = VK_ESCAPE;
 }
 
 void Input::Poll()

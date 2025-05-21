@@ -20,6 +20,6 @@ enum class State : uint8_t
     STATE_TREASURE,    ///< Display the treasure screen
     STATE_FOUNTAIN,    ///< Display fairy room
     STATE_TRAP,        ///< Display a room with a trap
-    STETE_PASSIVE,     ///< Display passive selection
+    STATE_PASSIVE,     ///< Display passive selection
 };
 

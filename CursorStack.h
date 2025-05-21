@@ -38,6 +38,9 @@ enum class CursorState
     TRAP_INITIATED,
     ITEM_USED,   ///< Animation to display item result
     PASSIVE_SELECT, /// Passive selection screen
+    MENU,        ///< Menu dialog
+    MENU_CREDITS, ///< Menu credits dialog
+    MENU_RESTART ///< Menu restart confirmation dialog
 };
 
 enum class CursorIndexDirection

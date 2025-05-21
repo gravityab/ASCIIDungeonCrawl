@@ -18,6 +18,7 @@ enum class Button : uint16_t
     BUTTON_BACK,   ///< Back
     BUTTON_TOGGLE, ///< Toggle hero view
     BUTTON_PASSIVES, ///< Toggle passives
+    BUTTON_MENU,   ///< Display the main menu
     BUTTON_COUNT   ///< Number of buttons
 };
 constexpr int s_ButtonCount = static_cast<int>(Button::BUTTON_COUNT);

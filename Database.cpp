@@ -4222,6 +4222,29 @@ void Database::Initialize()
             "................",
             0, 0, 16, 10, 0x0008);
 
+        m_imageDb["menu"] = Image(
+            "/---------------\\" \
+            "|               |" \
+            "|               |" \
+            "|               |" \
+            "|               |" \
+            "|               |" \
+            "|               |" \
+            "|               |" \
+            "\\--------------/",
+            0, 0, 17, 9, 0x0007);
+
+        m_imageDb["menu_restart_dialog"] = Image(
+            "/------------------------------\\" \
+            "|                              |" \
+            "|  You will lose all progress  |" \
+            "|  Are you sure?               |" \
+            "|                              |" \
+            "|                              |" \
+            "|                              |" \
+            "\\------------------------------/",
+            0, 0, 32, 8, 0x0007);
+
         m_imageDb["hero_border"] = Image(
             "/-----------------------\\" \
             "|                       |" \
@@ -5470,34 +5493,67 @@ void Database::Initialize()
     //-----------------------------------------------------------------------------------------------------------------
     m_passiveDb.clear();
     {
-        m_passiveDb[PassiveType::GLOVES_BASH]        = Passive("Bludgeon",          Rarity::COMMON, m_animationDb["weapon_gloves"], 0, 0, 0, "Gloves have slight chance to stun opponent.");
-        m_passiveDb[PassiveType::GLOVES_PICKPOCKET]  = Passive("5 Finger Discount", Rarity::COMMON, m_animationDb["weapon_gloves"], 1, 0, 0, "Gloves have chance to steal gold on hit when equipped with leather.");
-        m_passiveDb[PassiveType::GLOVES_BOXER]       = Passive("Boxing",            Rarity::COMMON, m_animationDb["weapon_gloves"], 2, 0, 0, "Gloves swing once per level if equipped with two gloves.");
-        m_passiveDb[PassiveType::DAGGER_DUALWIELD]   = Passive("Dual Wield",        Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 0, 0, "Attack with both weapons so as long only Daggers or Swords are equipped in both hands.");
-        m_passiveDb[PassiveType::DAGGER_BLEED]       = Passive("Bled Dry",          Rarity::COMMON, m_animationDb["weapon_dagger"], 4, 0, 0, "Daggers have chance to add bleed condition to enemy.");
-        m_passiveDb[PassiveType::DAGGER_MULTIATTACK] = Passive("Nimble Fingers",    Rarity::COMMON, m_animationDb["weapon_dagger"], 5, 0, 0, "Daggers attack twice.");
-        m_passiveDb[PassiveType::SWORD_PARRY]        = Passive("Parry Master",      Rarity::COMMON, m_animationDb["weapon_dagger"], 0, 1, 0, "Swords have chance to parry incoming attacks.");
-        m_passiveDb[PassiveType::SWORD_RIPOSTE]      = Passive("Riposte",           Rarity::COMMON, m_animationDb["weapon_dagger"], 1, 1, 0, "Use equipped swords when attacked.");
-        m_passiveDb[PassiveType::SWORD_SHIELD]       = Passive("Shield Training",   Rarity::COMMON, m_animationDb["weapon_dagger"], 2, 1, 0, "Swords deal twice as much damage with a shield.");
-        m_passiveDb[PassiveType::SWORD_BATTLEWIZARD] = Passive("Battle Wizard",     Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 1, 0, "Equiping sword with staff deals additional damage.");
-        m_passiveDb[PassiveType::GREATSWORD_HEAVYSWING] = Passive("Heavy Swing",    Rarity::COMMON, m_animationDb["weapon_dagger"], 4, 1, 0, "Great sword speed decreased, great axes deal extra multi per level.");
-        m_passiveDb[PassiveType::GREATSWORD_ALONE]   = Passive("Speciality",        Rarity::COMMON, m_animationDb["weapon_dagger"], 5, 1, 0, "Having only a great sword deals 2 times multi damage.");
-        m_passiveDb[PassiveType::GREATSWORD_HURT]    = Passive("Masochist",         Rarity::COMMON, m_animationDb["weapon_dagger"], 0, 0, 1, "Every attack received this turn to hero equipping great swords doubles multi.");
-        m_passiveDb[PassiveType::WAND_QUICKSPELL]    = Passive("Quick Spell",       Rarity::COMMON, m_animationDb["weapon_dagger"], 1, 0, 1, "Wands and Staves gain -2 speed.");
-        m_passiveDb[PassiveType::WAND_ELEMENTALMASTER] = Passive("Elemental Master", Rarity::COMMON, m_animationDb["weapon_dagger"], 2, 0, 1, "Wands add 2x level to multi when eqipped with Robe.");
-        m_passiveDb[PassiveType::WAND_FINESSE]       = Passive("Wand Finesse",      Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 0, 1, "Wands have chance to attack twice.");
-        m_passiveDb[PassiveType::STAFF_ELEMENTALMASTER] = Passive("Elemental Master", Rarity::COMMON, m_animationDb["weapon_dagger"], 4, 0, 1, "Staffs deal twice as much multi but are slower.");
-        m_passiveDb[PassiveType::STAFF_IGNOREELEMENT] = Passive("Potent Spells",    Rarity::COMMON, m_animationDb["weapon_dagger"], 5, 0, 1, "Staffs ignore elemental weaknesses.");
-        m_passiveDb[PassiveType::STAFF_MAGICSHIELD]  = Passive("Magical Bubble",    Rarity::COMMON, m_animationDb["weapon_dagger"], 0, 1, 1, "Equipping robes with staff adds staff damage to mitigation as protective bubble.");
-        m_passiveDb[PassiveType::PLATE_TAUNT]        = Passive("Taunt",             Rarity::COMMON, m_animationDb["weapon_dagger"], 1, 1, 1, "Add higher chance for monsters to aim for plate wearers.");
-        m_passiveDb[PassiveType::PLATE_HPBOOST]      = Passive("Good Health",       Rarity::COMMON, m_animationDb["weapon_dagger"], 2, 1, 1, "Double the heroes hp per level when equipped with plate.");
-        m_passiveDb[PassiveType::PLATE_IGNOREDAMAGE] = Passive("Craftmenship",      Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 1, 1, "Change to ignore damage when equipping plate.");
-        m_passiveDb[PassiveType::LEATHER_GOLD]       = Passive("Good Eye",          Rarity::COMMON, m_animationDb["weapon_dagger"], 4, 1, 1, "Add X gold per monster slain. X is rarity of leather equipped.");
-        m_passiveDb[PassiveType::LEATHER_SCOUT]      = Passive("Scout Ahead",       Rarity::COMMON, m_animationDb["weapon_dagger"], 5, 1, 1, "See behind doors depending on how many heroes equip leather [1:Shop, 2:Traps, 4:Fountains and Monsters].");
-        m_passiveDb[PassiveType::LEATHER_DAMAGE]     = Passive("Nimble",            Rarity::COMMON, m_animationDb["weapon_dagger"], 0, 0, 2, "Daggers and Swords deal X extra multi. X is Level times Rarity.");
-        m_passiveDb[PassiveType::ROBE_BACKLINE]      = Passive("Camoflage",         Rarity::COMMON, m_animationDb["weapon_dagger"], 1, 0, 2, "Robes make the wearer less threatening to monsters.");
-        m_passiveDb[PassiveType::ROBE_GLASSCANNON]   = Passive("Glass Cannon",      Rarity::COMMON, m_animationDb["weapon_dagger"], 2, 0, 2, "Magical damage is doubled. Damage recieved is doubled.");
-        m_passiveDb[PassiveType::ROBE_MPCOST]        = Passive("Budget Spellcraft", Rarity::COMMON, m_animationDb["weapon_dagger"], 3, 0, 2, "Magical cost is reduced by X. X is Rarity.");
+        m_passiveDb[PassiveType::GLOVES_BASH]           = Passive("Bludgeon",          Rarity::COMMON, m_animationDb["weapon_gloves"].As(0x0007, 0x0006, 0x0001),      0, 0, 0, "Gloves have slight chance to stun opponent.");
+        m_passiveDb[PassiveType::GLOVES_PICKPOCKET]     = Passive("5 Finger Discount", Rarity::COMMON, m_animationDb["weapon_gloves"].As(0x0007, 0x0008, 0x0002),      1, 0, 0, "Gloves have chance to steal gold on hit when equipped with leather.");
+        m_passiveDb[PassiveType::GLOVES_BOXER]          = Passive("Boxing",            Rarity::COMMON, m_animationDb["weapon_gloves"].As(0x0007, 0x000E, 0x0003),      2, 0, 0, "Gloves swing once per level if equipped with two gloves.");
+        m_passiveDb[PassiveType::DAGGER_DUALWIELD]      = Passive("Dual Wield",        Rarity::COMMON, m_animationDb["weapon_dagger"].As(0x0007, 0x000F, 0x0004),      3, 0, 0, "Attack with both weapons so as long only Daggers or Swords are equipped in both hands.");
+        m_passiveDb[PassiveType::DAGGER_BLEED]          = Passive("Bled Dry",          Rarity::COMMON, m_animationDb["weapon_dagger"].As(0x0007, 0x0006, 0x0005),      4, 0, 0, "Daggers have chance to add bleed condition to enemy.");
+        m_passiveDb[PassiveType::DAGGER_MULTIATTACK]    = Passive("Nimble Fingers",    Rarity::COMMON, m_animationDb["weapon_dagger"].As(0x0007, 0x0008, 0x0006),      5, 0, 0, "Daggers attack twice.");
+        m_passiveDb[PassiveType::SWORD_PARRY]           = Passive("Parry Master",      Rarity::COMMON, m_animationDb["weapon_sword"].As(0x0007, 0x000E, 0x0007),       0, 1, 0, "Swords have chance to parry incoming attacks.");
+        m_passiveDb[PassiveType::SWORD_RIPOSTE]         = Passive("Riposte",           Rarity::COMMON, m_animationDb["weapon_sword"].As(0x0007, 0x000F, 0x0009),       1, 1, 0, "Use equipped swords when attacked.");
+        m_passiveDb[PassiveType::SWORD_BATTLEWIZARD]    = Passive("Battle Wizard",     Rarity::COMMON, m_animationDb["weapon_sword"].As(0x0007, 0x0006, 0x000B),       2, 1, 0, "Equiping sword with staff deals additional damage.");
+        m_passiveDb[PassiveType::GREATSWORD_HEAVYSWING] = Passive("Heavy Swing",       Rarity::COMMON, m_animationDb["weapon_great_sword"].As(0x0007, 0x0008, 0x000C), 3, 1, 0, "Great sword speed decreased, great axes deal extra multi per level.");
+        m_passiveDb[PassiveType::GREATSWORD_ALONE]      = Passive("Speciality",        Rarity::COMMON, m_animationDb["weapon_great_sword"].As(0x0007, 0x000E, 0x000D), 4, 1, 0, "Having only a great sword deals 2 times multi damage.");
+        m_passiveDb[PassiveType::GREATSWORD_HURT]       = Passive("Masochist",         Rarity::COMMON, m_animationDb["weapon_great_sword"].As(0x0007, 0x000F, 0x000E), 5, 1, 0, "Every attack received this turn to hero equipping great swords doubles multi.");
+        m_passiveDb[PassiveType::WAND_QUICKSPELL]       = Passive("Quick Spell",       Rarity::COMMON, m_animationDb["weapon_wand"].As(0x0007, 0x0006, 0x000F),        0, 0, 1, "Wands and Staves gain -2 speed.");
+        m_passiveDb[PassiveType::WAND_ELEMENTALMASTER]  = Passive("Elemental Master",  Rarity::COMMON, m_animationDb["weapon_wand"].As(0x0007, 0x0008, 0x0001),        1, 0, 1, "Wands add 2x level to multi when eqipped with Robe.");
+        m_passiveDb[PassiveType::WAND_FINESSE]          = Passive("Wand Finesse",      Rarity::COMMON, m_animationDb["weapon_wand"].As(0x0007, 0x000E, 0x0002),        2, 0, 1, "Wands have chance to attack twice.");
+        m_passiveDb[PassiveType::STAFF_ELEMENTALMASTER] = Passive("Elemental Master",  Rarity::COMMON, m_animationDb["weapon_staff"].As(0x0007, 0x000F, 0x0003),       3, 0, 1, "Staffs deal twice as much multi but are slower.");
+        m_passiveDb[PassiveType::STAFF_IGNOREELEMENT]   = Passive("Potent Spells",     Rarity::COMMON, m_animationDb["weapon_staff"].As(0x0007, 0x0006, 0x0004),       4, 0, 1, "Staffs ignore elemental weaknesses.");
+        m_passiveDb[PassiveType::STAFF_MAGICSHIELD]     = Passive("Magical Bubble",    Rarity::COMMON, m_animationDb["weapon_staff"].As(0x0007, 0x0008, 0x0005),       5, 0, 1, "Equipping robes with staff adds staff damage to mitigation as protective bubble.");
+        m_passiveDb[PassiveType::PLATE_TAUNT]           = Passive("Taunt",             Rarity::COMMON, m_animationDb["armor_plate"].As(0x0007, 0x000E, 0x0006),        0, 0, 2, "Add higher chance for monsters to aim for plate wearers.");
+        m_passiveDb[PassiveType::PLATE_HPBOOST]         = Passive("Good Health",       Rarity::COMMON, m_animationDb["armor_plate"].As(0x0007, 0x000F, 0x0007),        1, 0, 2, "Double the heroes hp per level when equipped with plate.");
+        m_passiveDb[PassiveType::PLATE_IGNOREDAMAGE]    = Passive("Craftmenship",      Rarity::COMMON, m_animationDb["armor_plate"].As(0x0007, 0x0006, 0x0009),        2, 0, 2, "Change to ignore damage when equipping plate.");
+        m_passiveDb[PassiveType::LEATHER_GOLD]          = Passive("Good Eye",          Rarity::COMMON, m_animationDb["armor_leather"].As(0x0007, 0x0008, 0x000A),      3, 0, 2, "Add X gold per monster slain. X is rarity of leather equipped.");
+        m_passiveDb[PassiveType::LEATHER_SCOUT]         = Passive("Scout Ahead",       Rarity::COMMON, m_animationDb["armor_leather"].As(0x0007, 0x000E, 0x000B),      4, 0, 2, "See behind doors depending on how many heroes equip leather [1:Shop, 2:Traps, 4:Fountains and Monsters].");
+        m_passiveDb[PassiveType::LEATHER_DAMAGE]        = Passive("Nimble",            Rarity::COMMON, m_animationDb["armor_leather"].As(0x0007, 0x000F, 0x000C),      5, 0, 2, "Daggers and Swords deal X extra multi. X is Level times Rarity.");
+        m_passiveDb[PassiveType::ROBE_BACKLINE]         = Passive("Camoflage",         Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x0006, 0x000D),         0, 1, 2, "Robes make the wearer less threatening to monsters.");
+        m_passiveDb[PassiveType::ROBE_GLASSCANNON]      = Passive("Glass Cannon",      Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x0008, 0x000E),         1, 1, 2, "Magical damage is doubled. Damage recieved is doubled.");
+        m_passiveDb[PassiveType::ROBE_MPCOST]           = Passive("Budget Spellcraft", Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x000E, 0x000F),         2, 1, 2, "Magical cost is reduced by X. X is Rarity.");
+
+
+        //m_passiveDb[PassiveType::SWORD_SHIELD]          = Passive("Shield Training",   Rarity::COMMON, m_animationDb["weapon_sword"].As(0x000A),       2, 1, 0, "Swords deal twice as much damage with a shield.");
+
+        /// Trap Rewards -- Succeeding traps yeilds rewards
+        /// Suprise Round -- Small chance that enemies don't attack on round 1
+        /// Test Subject -- Every potion consumed adds 1 AC
+        /// Fairy Weapons -- Fairy Weapons now drop from rewards
+        /// Artifact Weapons -- Adds Artifact Quality Weapons
+        /// Time Traveler -- Go back upstairs 5 floors
+        /// Elemental Potency I -- Elemental bonus increased to 4x damage
+        /// Elemental Potency II -- Elemental bonus increased to 8x damage
+        /// Hobbiest -- Increase Multi for Every Weapon purchased
+        /// Layered Armor -- Armor is equipped over one another
+        /// Skeleton Slayer I -- Deal double damage to skeletons
+        /// Skeleton Slayer II -- Deal quadruple damage to skeletons
+        /// Spider Slayer I -- Deal double damage to spiders
+        /// Spider Slayer II -- Deal quadruple damage to spiders
+        /// Blob Slayer I -- Deal double damage to blobs
+        /// Blob Slayer II -- Deal quadruple damage to blobs
+        /// Bat Slayer I -- Deal double damage to bats
+        /// Bat Slayer II -- Deal quadruple damage to bats
+        /// Hedge Fund I -- Add +1 multi for every 50 gold
+        /// Hedge Fund II -- Add +1 multi for every 10 gold
+        /// Double Rewards -- Incrase rewards by 1 Item
+        /// Big Money --- Incrase gold rewards by double
+        /// Elite Slayer I --- Deal double damage to Rare or above monsters
+        /// Elite Slayer II --- Deal quadruple damage to Rare or above monsters
+        /// Elite Slayer III --- Deal octuple damage to Rare or above monsters
+        /// Slow Traps --- Traps are twice as easy to succeed
+        /// Keen Eye --- Shops allow items to be locked for purchase in next shop
+
+
+        //m_passiveDb[PassiveType::GLOVES_BASH].animation
     }
 }
 
