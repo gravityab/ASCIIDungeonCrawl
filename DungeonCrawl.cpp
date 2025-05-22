@@ -1707,6 +1707,43 @@ void DungeonCrawl::ProcessInput()
             action.targets.push_back(&m_currentRoom->monsters[m_ui.GetCursorIndex()]);
             m_actions.push_back(action);
 
+            // Apply passives
+            if (OwnsPassive(PassiveType::GLOVES_BOXER))
+            {
+                if (EquippingWeapon(action.source, WeaponType::GLOVES, 2))
+                {
+                    m_actions.pop_back(); // Replace attack with attacking with both gloves per level
+                    for (int index = 0; index < action.source->level; index++)
+                    {
+                        action.weapon = &action.source->weapon1;
+                        m_actions.push_back(action);
+                        action.weapon = &action.source->weapon2;
+                        m_actions.push_back(action);
+                    }
+                }
+            }
+
+            if (OwnsPassive(PassiveType::DAGGER_DUALWIELD))
+            {
+                bool enabled = false;
+                if (EquippingWeapon(action.source, WeaponType::DAGGER, 2))
+                    enabled = true;
+                if (EquippingWeapon(action.source, WeaponType::SWORD, 2))
+                    enabled = true;
+                if (EquippingWeapon(action.source, WeaponType::DAGGER, 1) && EquippingWeapon(action.source, WeaponType::SWORD, 1))
+                    enabled = true;
+
+                if (enabled)
+                {
+                    m_actions.pop_back(); // Replace attack with attacking with both daggers/swords
+                    action.weapon = &action.source->weapon1;
+                    m_actions.push_back(action);
+                    action.weapon = &action.source->weapon2;
+                    m_actions.push_back(action);
+                }
+            }
+            
+
             m_ui.PopBackTo(2);
             NextHero();
             return;
@@ -2029,22 +2066,12 @@ void DungeonCrawl::GetUniquePassive()
         PassiveType type = PassiveType(GetRandomValue(0, (int)PassiveType::COUNT - 1));
         Passive selected = PASSIVE(type);
 
-        // Do not show passives that the player owns
-        bool duplicate = false;
-        for (auto passive : m_passives)
-        {
-            if (passive.x == selected.x
-                && passive.y == selected.y
-                && passive.tabIndex == selected.tabIndex)
-            {
-                duplicate = true;
-                break;
-            }
-        }
-        if (duplicate)
+        // Do not show passives the player already owns
+        if (OwnsPassive(type))
             continue;
 
         // Do not show passives that are the same within the list of options
+        bool duplicate = false;
         for (auto passive : m_passiveOptions)
         {
             if (passive.x == selected.x
@@ -2123,15 +2150,130 @@ void DungeonCrawl::LevelUp(Hero& hero)
     hero.currentMp = hero.totalMp;
 }
 
+bool DungeonCrawl::OwnsPassive(PassiveType type)
+{
+    Passive selected = PASSIVE(type);
+    for (auto passive : m_passives)
+    {
+        if (passive.x == selected.x
+            && passive.y == selected.y
+            && passive.tabIndex == selected.tabIndex)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool DungeonCrawl::EquippingWeapon(Actor* actor, WeaponType type, int count)
+{
+    int value = 0;
+    if (actor->armor.weaponType == type)
+        value++;
+    if (actor->weapon1.weaponType == type)
+        value++;
+    if (actor->weapon2.weaponType == type)
+        value++;
+    if (actor->weapon3.weaponType == type)
+        value++;
+    if (actor->weapon4.weaponType == type)
+        value++;
+    return value >= count;
+}
+
+Die DungeonCrawl::CalculateDamageDie(Actor* actor, Weapon* weapon, bool baseDamage)
+{
+    // Invalid weapon
+    if (!weapon)
+        return Die(0, 0, 0);
+
+    // Get the base damage die
+    Die damageDie = weapon->die;
+    if (baseDamage)
+        return damageDie;
+
+    // No damage is applied to conditions currently
+    if (!actor)
+        return damageDie;
+
+    // Monsters don't have damage modifiers
+    if (actor->GetType() == ActorType::ACTOR_MONSTER)
+        return damageDie;
+
+    // Add level bonus to damage die
+    damageDie.multiplier += actor->level / 3;
+    damageDie.constant += actor->level;
+
+    // Apply passive bonuses
+    if (OwnsPassive(PassiveType::GREATSWORD_HEAVYSWING))
+    {
+        if (EquippingWeapon(actor, WeaponType::GREATSWORD, 1)
+            && weapon->weaponType == WeaponType::GREATSWORD)
+        {
+            damageDie.multiplier += (actor->level * (int)weapon->rarity);
+        }
+    }
+    if (OwnsPassive(PassiveType::GREATSWORD_ALONE))
+    {
+        if (EquippingWeapon(actor, WeaponType::GREATSWORD, 1) && EquippingWeapon(actor, WeaponType::INVALID, 1)
+            && weapon->weaponType == WeaponType::GREATSWORD)
+        {
+            damageDie.multiplier *= 2;
+        }
+    }
+    if (OwnsPassive(PassiveType::LEATHER_DAMAGE))
+    {
+        // "Daggers and Swords deal X extra multi. X is Level times Rarity."
+        bool hasLeather = EquippingWeapon(actor, WeaponType::LEATHER, 1);
+        if (hasLeather && EquippingWeapon(actor, WeaponType::DAGGER, 2))
+            damageDie.multiplier += (actor->level * (int)weapon->rarity);
+        else if (hasLeather && EquippingWeapon(actor, WeaponType::SWORD, 2))
+            damageDie.multiplier += (actor->level * (int)weapon->rarity);
+        else if (hasLeather && EquippingWeapon(actor, WeaponType::DAGGER, 1) && EquippingWeapon(actor, WeaponType::SWORD, 1))
+            damageDie.multiplier += (actor->level * (int)weapon->rarity);
+    }
+    if (OwnsPassive(PassiveType::ROBE_GLASSCANNON))
+    {
+        if ((EquippingWeapon(actor, WeaponType::WAND, 1) || EquippingWeapon(actor, WeaponType::STAFF, 1))
+            && (weapon->weaponType == WeaponType::WAND || weapon->weaponType == WeaponType::STAFF))
+        {
+            damageDie.multiplier *= 2;
+            damageDie.constant *= 2;
+        }
+    }
+    if (OwnsPassive(PassiveType::SWORD_BATTLEWIZARD))
+    {
+        if ((EquippingWeapon(actor, WeaponType::SWORD, 1) || EquippingWeapon(actor, WeaponType::STAFF, 1))
+            && (weapon->weaponType == WeaponType::SWORD || weapon->weaponType == WeaponType::STAFF))
+        {
+            damageDie.multiplier *= 2;
+            damageDie.constant *= 2;
+        }
+    }
+    if (OwnsPassive(PassiveType::WAND_ELEMENTALMASTER))
+    {
+        bool hasRobe = EquippingWeapon(actor, WeaponType::ROBE, 1);
+        if (hasRobe && EquippingWeapon(actor, WeaponType::WAND, 1) && weapon->weaponType == WeaponType::WAND)
+            damageDie.multiplier += (actor->level * (int)weapon->rarity);
+        else if (hasRobe && EquippingWeapon(actor, WeaponType::STAFF, 1) && weapon->weaponType == WeaponType::STAFF)
+            damageDie.multiplier += (actor->level * (int)weapon->rarity);
+    }
+
+    return damageDie;
+}
+
 void DungeonCrawl::UseWeapon(Action action)
 {
     m_damageAttribute = 0x0004; // Red
 
     // Roll the damage to heal or deal
     DamageType damageType;
+    Die damageDie = CalculateDamageDie(action.source, action.weapon, false);
+    int damage = damageDie.Roll(&damageType);
+
+    /*
     Die damageDie = action.weapon->die;
     int damage = 0;
-
     if (action.source)
     {
         // Apply robe buff to wand / staff weapon
@@ -2164,6 +2306,7 @@ void DungeonCrawl::UseWeapon(Action action)
         // Condition damage
         damage = damageDie.Roll(&damageType);
     }
+    */
 
     // Keep track of damage before modifiers
     m_damageOriginal = damage;
@@ -2334,6 +2477,22 @@ void DungeonCrawl::UseWeapon(Action action)
                 actor->currentHp = 0;
             if (actor->currentHp > actor->totalHp)
                 actor->currentHp = actor->totalHp;
+        }
+
+        // Apply any passive effects
+        if (OwnsPassive(PassiveType::GLOVES_BASH))
+        {
+            if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
+            {
+                if (action.weapon->weaponType == WeaponType::GLOVES)
+                {
+                    Monster* monster = static_cast<Monster*>(action.source);
+                    if (GetRandomValue(0, 3) == 0)
+                    {
+                        monster->stunned = true;
+                    }
+                }
+            }
         }
     }
 
@@ -2663,6 +2822,13 @@ void DungeonCrawl::PushMonsterActions()
 
 void DungeonCrawl::CreateMonsterAction(Monster& monster)
 {
+    // Bypass adding action if monster is stunned
+    if (monster.stunned)
+    {
+        monster.stunned = false; // Stun only lasts for 1 turn
+        return;
+    }
+
     std::vector<Weapon*> weapons;
     if (monster.rarity >= Rarity::COMMON)
         weapons.push_back(&monster.weapon1);

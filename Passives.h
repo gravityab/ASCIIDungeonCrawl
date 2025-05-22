@@ -23,7 +23,7 @@ enum class PassiveType : int32_t
     DAGGER_MULTIATTACK, // Daggers swing twice
     SWORD_PARRY, // Swords have chance to parry incoming attacks
     SWORD_RIPOSTE, // Use equipped swords when attacked
-    SWORD_SHIELD, // Swords deal twice as much damage with a shield
+    //SWORD_SHIELD, // Swords deal twice as much damage with a shield
     SWORD_BATTLEWIZARD, // Equiping sword with staff deals additional damage
     GREATSWORD_HEAVYSWING, // Great sword speed decreased, great axes deal extra multi per level
     GREATSWORD_ALONE, // Having only a great sword deals 2 times multi damage

@@ -5493,7 +5493,7 @@ void Database::Initialize()
     //-----------------------------------------------------------------------------------------------------------------
     m_passiveDb.clear();
     {
-        m_passiveDb[PassiveType::GLOVES_BASH]           = Passive("Bludgeon",          Rarity::COMMON, m_animationDb["weapon_gloves"].As(0x0007, 0x0006, 0x0001),      0, 0, 0, "Gloves have slight chance to stun opponent.");
+        m_passiveDb[PassiveType::GLOVES_BASH]           = Passive("Rabbit Punch",      Rarity::COMMON, m_animationDb["weapon_gloves"].As(0x0007, 0x0006, 0x0001),      0, 0, 0, "Gloves have slight chance to stun opponent.");
         m_passiveDb[PassiveType::GLOVES_PICKPOCKET]     = Passive("5 Finger Discount", Rarity::COMMON, m_animationDb["weapon_gloves"].As(0x0007, 0x0008, 0x0002),      1, 0, 0, "Gloves have chance to steal gold on hit when equipped with leather.");
         m_passiveDb[PassiveType::GLOVES_BOXER]          = Passive("Boxing",            Rarity::COMMON, m_animationDb["weapon_gloves"].As(0x0007, 0x000E, 0x0003),      2, 0, 0, "Gloves swing once per level if equipped with two gloves.");
         m_passiveDb[PassiveType::DAGGER_DUALWIELD]      = Passive("Dual Wield",        Rarity::COMMON, m_animationDb["weapon_dagger"].As(0x0007, 0x000F, 0x0004),      3, 0, 0, "Attack with both weapons so as long only Daggers or Swords are equipped in both hands.");
@@ -5501,9 +5501,9 @@ void Database::Initialize()
         m_passiveDb[PassiveType::DAGGER_MULTIATTACK]    = Passive("Nimble Fingers",    Rarity::COMMON, m_animationDb["weapon_dagger"].As(0x0007, 0x0008, 0x0006),      5, 0, 0, "Daggers attack twice.");
         m_passiveDb[PassiveType::SWORD_PARRY]           = Passive("Parry Master",      Rarity::COMMON, m_animationDb["weapon_sword"].As(0x0007, 0x000E, 0x0007),       0, 1, 0, "Swords have chance to parry incoming attacks.");
         m_passiveDb[PassiveType::SWORD_RIPOSTE]         = Passive("Riposte",           Rarity::COMMON, m_animationDb["weapon_sword"].As(0x0007, 0x000F, 0x0009),       1, 1, 0, "Use equipped swords when attacked.");
-        m_passiveDb[PassiveType::SWORD_BATTLEWIZARD]    = Passive("Battle Wizard",     Rarity::COMMON, m_animationDb["weapon_sword"].As(0x0007, 0x0006, 0x000B),       2, 1, 0, "Equiping sword with staff deals additional damage.");
+        m_passiveDb[PassiveType::SWORD_BATTLEWIZARD]    = Passive("Battle Wizard",     Rarity::COMMON, m_animationDb["weapon_sword"].As(0x0007, 0x0006, 0x000B),       2, 1, 0, "Equipping sword with staff deals additional damage.");
         m_passiveDb[PassiveType::GREATSWORD_HEAVYSWING] = Passive("Heavy Swing",       Rarity::COMMON, m_animationDb["weapon_great_sword"].As(0x0007, 0x0008, 0x000C), 3, 1, 0, "Great sword speed decreased, great axes deal extra multi per level.");
-        m_passiveDb[PassiveType::GREATSWORD_ALONE]      = Passive("Speciality",        Rarity::COMMON, m_animationDb["weapon_great_sword"].As(0x0007, 0x000E, 0x000D), 4, 1, 0, "Having only a great sword deals 2 times multi damage.");
+        m_passiveDb[PassiveType::GREATSWORD_ALONE]      = Passive("Speciality",        Rarity::COMMON, m_animationDb["weapon_great_sword"].As(0x0007, 0x000E, 0x000D), 4, 1, 0, "Equipping only a great sword deals 2 times multi damage.");
         m_passiveDb[PassiveType::GREATSWORD_HURT]       = Passive("Masochist",         Rarity::COMMON, m_animationDb["weapon_great_sword"].As(0x0007, 0x000F, 0x000E), 5, 1, 0, "Every attack received this turn to hero equipping great swords doubles multi.");
         m_passiveDb[PassiveType::WAND_QUICKSPELL]       = Passive("Quick Spell",       Rarity::COMMON, m_animationDb["weapon_wand"].As(0x0007, 0x0006, 0x000F),        0, 0, 1, "Wands and Staves gain -2 speed.");
         m_passiveDb[PassiveType::WAND_ELEMENTALMASTER]  = Passive("Elemental Master",  Rarity::COMMON, m_animationDb["weapon_wand"].As(0x0007, 0x0008, 0x0001),        1, 0, 1, "Wands add 2x level to multi when eqipped with Robe.");
@@ -5516,10 +5516,10 @@ void Database::Initialize()
         m_passiveDb[PassiveType::PLATE_IGNOREDAMAGE]    = Passive("Craftmenship",      Rarity::COMMON, m_animationDb["armor_plate"].As(0x0007, 0x0006, 0x0009),        2, 0, 2, "Change to ignore damage when equipping plate.");
         m_passiveDb[PassiveType::LEATHER_GOLD]          = Passive("Good Eye",          Rarity::COMMON, m_animationDb["armor_leather"].As(0x0007, 0x0008, 0x000A),      3, 0, 2, "Add X gold per monster slain. X is rarity of leather equipped.");
         m_passiveDb[PassiveType::LEATHER_SCOUT]         = Passive("Scout Ahead",       Rarity::COMMON, m_animationDb["armor_leather"].As(0x0007, 0x000E, 0x000B),      4, 0, 2, "See behind doors depending on how many heroes equip leather [1:Shop, 2:Traps, 4:Fountains and Monsters].");
-        m_passiveDb[PassiveType::LEATHER_DAMAGE]        = Passive("Nimble",            Rarity::COMMON, m_animationDb["armor_leather"].As(0x0007, 0x000F, 0x000C),      5, 0, 2, "Daggers and Swords deal X extra multi. X is Level times Rarity.");
+        m_passiveDb[PassiveType::LEATHER_DAMAGE]        = Passive("Nimble",            Rarity::COMMON, m_animationDb["armor_leather"].As(0x0007, 0x000F, 0x000C),      5, 0, 2, "Equipping Leather makes Daggers and Swords deal X extra multi. X is Level times Rarity.");
         m_passiveDb[PassiveType::ROBE_BACKLINE]         = Passive("Camoflage",         Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x0006, 0x000D),         0, 1, 2, "Robes make the wearer less threatening to monsters.");
-        m_passiveDb[PassiveType::ROBE_GLASSCANNON]      = Passive("Glass Cannon",      Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x0008, 0x000E),         1, 1, 2, "Magical damage is doubled. Damage recieved is doubled.");
-        m_passiveDb[PassiveType::ROBE_MPCOST]           = Passive("Budget Spellcraft", Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x000E, 0x000F),         2, 1, 2, "Magical cost is reduced by X. X is Rarity.");
+        m_passiveDb[PassiveType::ROBE_GLASSCANNON]      = Passive("Glass Cannon",      Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x0008, 0x000E),         1, 1, 2, "As long as hero is wearing Robes, magical damage is doubled. Damage recieved is doubled.");
+        m_passiveDb[PassiveType::ROBE_MPCOST]           = Passive("Budget Spellcraft", Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x000E, 0x000F),         2, 1, 2, "As long as hero is wearing Robes, the cost of performing magical attacks is reduced.");
 
 
         //m_passiveDb[PassiveType::SWORD_SHIELD]          = Passive("Shield Training",   Rarity::COMMON, m_animationDb["weapon_sword"].As(0x000A),       2, 1, 0, "Swords deal twice as much damage with a shield.");

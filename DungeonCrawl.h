@@ -147,6 +147,15 @@ private:
     /// Level a hero
     void LevelUp(Hero& hero);
 
+    /// Check if the player owns a particular passive
+    bool OwnsPassive(PassiveType type);
+
+    /// Check if actor is equipping specific weapon types
+    bool EquippingWeapon(Actor* actor, WeaponType type, int count);
+
+    /// Calculate the final damage die with bonuses
+    Die CalculateDamageDie(Actor* actor, Weapon* weapon, bool baseDamage);
+
     /// Use the weapon on the target
     void UseWeapon(Action action);
 

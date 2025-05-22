@@ -80,6 +80,9 @@ public:
 
     /// Time to display spawn
     Time spawning = Time::Zero;
+
+    /// Whether the monster is stunned for the round
+    bool stunned = false;
 };
 
 /// Convert rarity to string
