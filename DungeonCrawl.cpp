@@ -1713,7 +1713,9 @@ void DungeonCrawl::ProcessInput()
                 if (EquippingWeapon(action.source, WeaponType::GLOVES, 2))
                 {
                     m_actions.pop_back(); // Replace attack with attacking with both gloves per level
-                    for (int index = 0; index < action.source->level; index++)
+
+                    const int attacks = (action.source->level / 4) + 1;
+                    for (int index = 0; index < attacks; index++)
                     {
                         action.weapon = &action.source->weapon1;
                         m_actions.push_back(action);
