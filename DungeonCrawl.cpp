@@ -2271,43 +2271,6 @@ void DungeonCrawl::UseWeapon(Action action)
     Die damageDie = CalculateDamageDie(action.source, action.weapon, false);
     int damage = damageDie.Roll(&damageType);
 
-    /*
-    Die damageDie = action.weapon->die;
-    int damage = 0;
-    if (action.source)
-    {
-        // Apply robe buff to wand / staff weapon
-        if (action.weapon->mpCost > 0
-            && action.source
-            && action.source->GetType() == ActorType::ACTOR_HERO)
-        {
-            Hero* hero = static_cast<Hero*>(action.source);
-            if (hero->armor.target == Target::PLAYERAC_SPELL)
-            {
-                damageDie.multiplier += 1 + (action.source->level / (5 - (int)hero->armor.rarity));
-                m_damageAttribute = 0x0006; // Gold
-            }
-        }
-
-        if (action.source->GetType() == ActorType::ACTOR_HERO)
-        {
-            damageDie.multiplier += (action.source->level / 3); // Every 3 levels we add 1 mult
-            damageDie.constant += action.source->level; // Ever level we add 1 const
-        }
-
-        damage = damageDie.Roll(&damageType);
-
-        action.source->currentMp -= action.weapon->mpCost;
-        if (action.source->currentMp < 0)
-            action.source->currentMp = 0; // It's possible some moves drain MP
-    }
-    else
-    {
-        // Condition damage
-        damage = damageDie.Roll(&damageType);
-    }
-    */
-
     // Keep track of damage before modifiers
     m_damageOriginal = damage;
     m_damageAttribute2 = ToAttribute(damageType);
@@ -2402,7 +2365,6 @@ void DungeonCrawl::UseWeapon(Action action)
             continue;
         }
 
-
         // Reduce or increase damage to if resistant or weak
         if (isDamaging || isDraining)
         {
@@ -2479,18 +2441,18 @@ void DungeonCrawl::UseWeapon(Action action)
                 actor->currentHp = actor->totalHp;
         }
 
-        // Apply any passive effects
-        if (OwnsPassive(PassiveType::GLOVES_BASH))
+        if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
         {
-            if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
+            Monster* monster = static_cast<Monster*>(actor);
+            if (GetRandomValue(0, 3) == 0)
             {
-                if (action.weapon->weaponType == WeaponType::GLOVES)
+                if (OwnsPassive(PassiveType::GLOVES_BASH) && action.weapon->weaponType == WeaponType::GLOVES)
                 {
-                    Monster* monster = static_cast<Monster*>(action.source);
-                    if (GetRandomValue(0, 3) == 0)
-                    {
-                        monster->stunned = true;
-                    }
+                    monster->stunned = true;
+                }
+                if (OwnsPassive(PassiveType::DAGGER_BLEED) && action.weapon->weaponType == WeaponType::DAGGER)
+                {
+                    monster->condition = damageDie;
                 }
             }
         }
@@ -2530,63 +2492,104 @@ void DungeonCrawl::AddFairy()
 
 void DungeonCrawl::ApplyCondition()
 {
-    m_condition1.die = Die(0, 0, 0, DamageType::NORMAL);
-    m_condition2.die = Die(0, 0, 0, DamageType::NORMAL);
-    m_condition3.die = Die(0, 0, 0, DamageType::NORMAL);
-    m_condition4.die = Die(0, 0, 0, DamageType::NORMAL);
-
-    // Deal condition damage
-    for (int index = 0; index < (int)m_heroes.size(); index++)
     {
-        // Condition slowly goes away
-        if (m_heroes[index].conditionTurnsLeft != 0)
-            m_heroes[index].conditionTurnsLeft--;
-        if (m_heroes[index].conditionTurnsLeft == 0)
+        // Deal condition damage to monsters
+        m_mcondition1.die = Die(0, 0, 0, DamageType::NORMAL);
+        m_mcondition2.die = Die(0, 0, 0, DamageType::NORMAL);
+        m_mcondition3.die = Die(0, 0, 0, DamageType::NORMAL);
+        m_mcondition4.die = Die(0, 0, 0, DamageType::NORMAL);
+        for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
         {
-            m_heroes[index].condition = Die(0, 0, 0, DamageType::NORMAL);
-            continue;
-        }
+            Weapon* condition = nullptr;
+            if (index == 0)
+            {
+                m_mcondition1.die = m_currentRoom->monsters[index].condition;
+                condition = &m_mcondition1;
+            }
+            if (index == 1)
+            {
+                m_mcondition2.die = m_currentRoom->monsters[index].condition;
+                condition = &m_mcondition2;
+            }
+            if (index == 2)
+            {
+                m_mcondition3.die = m_currentRoom->monsters[index].condition;
+                condition = &m_mcondition3;
+            }
+            if (index == 3)
+            {
+                m_mcondition4.die = m_currentRoom->monsters[index].condition;
+                condition = &m_mcondition4;
+            }
+            if (condition->die.die == 0 && condition->die.constant == 0)
+                continue;
 
-        Weapon* condition = nullptr;
-        if (index == 0)
-        {
-            m_condition1.die = m_heroes[index].condition;
-            condition = &m_condition1;
+            Action action;
+            action.source = nullptr;
+            action.targets.push_back(&m_currentRoom->monsters[index]);
+            action.weapon = condition;
+            m_actions.push_back(action);
         }
-        if (index == 1)
-        {
-            m_condition2.die = m_heroes[index].condition;
-            condition = &m_condition2;
-        }
-        if (index == 2)
-        {
-            m_condition3.die = m_heroes[index].condition;
-            condition = &m_condition3;
-        }
-        if (index == 3)
-        {
-            m_condition4.die = m_heroes[index].condition;
-            condition = &m_condition4;
-        }
+    }
 
-        Action action;
-        action.source = nullptr;
-        action.targets.push_back(&m_heroes[index]);
-        action.weapon = condition;
-        m_actions.push_back(action);
+    {
+        // Deal condition damage to heroes
+        m_condition1.die = Die(0, 0, 0, DamageType::NORMAL);
+        m_condition2.die = Die(0, 0, 0, DamageType::NORMAL);
+        m_condition3.die = Die(0, 0, 0, DamageType::NORMAL);
+        m_condition4.die = Die(0, 0, 0, DamageType::NORMAL);
+        for (int index = 0; index < (int)m_heroes.size(); index++)
+        {
+            // Condition slowly goes away
+            if (m_heroes[index].conditionTurnsLeft != 0)
+                m_heroes[index].conditionTurnsLeft--;
+            if (m_heroes[index].conditionTurnsLeft == 0)
+            {
+                m_heroes[index].condition = Die(0, 0, 0, DamageType::NORMAL);
+                continue;
+            }
 
-        //// Apply condition damage / healing
-        //if (m_heroes[index].condition.die != 0)
-        //{
-        //	int damage = m_heroes[index].condition.Roll();
-        //	if (m_heroes[index].condition.type == DamageType::HEALING)
-        //		damage *= -1;
-        //	m_heroes[index].currentHp -= damage;
-        //	if (m_heroes[index].currentHp > m_heroes[index].totalHp)
-        //		m_heroes[index].currentHp = m_heroes[index].totalHp;
-        //	if (m_heroes[index].currentHp < 0)
-        //		m_heroes[index].currentHp = 0;
-        //}
+            Weapon* condition = nullptr;
+            if (index == 0)
+            {
+                m_condition1.die = m_heroes[index].condition;
+                condition = &m_condition1;
+            }
+            if (index == 1)
+            {
+                m_condition2.die = m_heroes[index].condition;
+                condition = &m_condition2;
+            }
+            if (index == 2)
+            {
+                m_condition3.die = m_heroes[index].condition;
+                condition = &m_condition3;
+            }
+            if (index == 3)
+            {
+                m_condition4.die = m_heroes[index].condition;
+                condition = &m_condition4;
+            }
+
+            Action action;
+            action.source = nullptr;
+            action.targets.push_back(&m_heroes[index]);
+            action.weapon = condition;
+            m_actions.push_back(action);
+
+            //// Apply condition damage / healing
+            //if (m_heroes[index].condition.die != 0)
+            //{
+            //	int damage = m_heroes[index].condition.Roll();
+            //	if (m_heroes[index].condition.type == DamageType::HEALING)
+            //		damage *= -1;
+            //	m_heroes[index].currentHp -= damage;
+            //	if (m_heroes[index].currentHp > m_heroes[index].totalHp)
+            //		m_heroes[index].currentHp = m_heroes[index].totalHp;
+            //	if (m_heroes[index].currentHp < 0)
+            //		m_heroes[index].currentHp = 0;
+            //}
+        }
     }
 }
 

@@ -29,12 +29,6 @@ public:
 	/// Whether its the heroes turn
 	bool isTurn = false;
 
-	/// The damage condition sate
-	Die condition = Die(0, 0, 0);
-
-	/// Turns left to apply condition
-	int conditionTurnsLeft = 0;
-
 	/// Disabled animation
 	Animation disabled;
 

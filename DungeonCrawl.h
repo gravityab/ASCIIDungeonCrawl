@@ -392,6 +392,18 @@ private:
     /// Condition on player 4
     Weapon m_condition4;
 
+    /// Condition on player 1
+    Weapon m_mcondition1;
+
+    /// Condition on player 2
+    Weapon m_mcondition2;
+
+    /// Condition on player 3
+    Weapon m_mcondition3;
+
+    /// Condition on player 4
+    Weapon m_mcondition4;
+
     /// The passives screen cursor
     Animation m_passivesCursor;
 
