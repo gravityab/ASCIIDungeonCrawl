@@ -2297,9 +2297,10 @@ Die DungeonCrawl::CalculateDamageDie(Actor* actor, Weapon* weapon, bool baseDama
     if (actor->GetType() == ActorType::ACTOR_MONSTER)
         return damageDie;
 
-    // Add level bonus to damage die
-    damageDie.multiplier += actor->level / 3;
-    damageDie.constant += actor->level;
+    // Add level bonus to damage die. Steeper than before (mult /3 -> /2, constant *1 -> *1.2)
+    // so player DPS keeps pace with the monster scaling curve through mid-game.
+    damageDie.multiplier += actor->level / 2;
+    damageDie.constant   += (actor->level * 6) / 5; // integer-math version of level * 1.2
 
     // Apply passive bonuses
     if (OwnsPassive(PassiveType::GREATSWORD_HEAVYSWING))

@@ -55,8 +55,12 @@ void DungeonEx::Reset()
 
 void DungeonEx::GetNextFloor(Floor&& floor)
 {
-    // Roll floor characteristics
+    // Roll floor characteristics. Cap floor-rarity difficulty at 3 (Epic) until floor 20
+    // so Legendary floors only appear once the player has earned the "great run" threshold.
+    // Above floor 20 the natural progression continues into rarity 4 (Legendary floors).
     int difficulty = GetDifficulty();
+    if (m_floor < 20 && difficulty > 3)
+        difficulty = 3;
     Rarity rarity = RollFloorRarity(difficulty);
     DamageType attribute = RollAttribute();
     MonsterFamily family = RollMonsterFamily();
@@ -175,15 +179,21 @@ MonsterFamily DungeonEx::RollMonsterFamily()
 
 Rarity DungeonEx::RollRarity(Rarity rarity)
 {
-    //             Room Rarity 
-    //             1   2   3   4
-    //         1  73% 61% 50% 41%
-    //  Door   2  19% 20% 21% 25%
-    //  Rarity 3  6%  14% 24% 18%
-    //         4  2%  5%  5%  16%
+    //  Approximate distribution after the rebalance (mean = 0.50 + rarity*0.50,
+    //  sigma = 0.40 + rarity*0.10).  Floor rarity 1 (Common floors) almost never
+    //  produces Legendary; Legendary content only opens up once the floor rarity
+    //  itself reaches 3 or 4 (which is capped to floor 20+ via the difficulty
+    //  cap in GetNextFloor()).
+    //
+    //              Floor Rarity
+    //              1     2     3     4
+    //         1  ~95%  ~50%  ~15%   ~3%
+    //  Roll   2   ~4%  ~40%  ~50%  ~30%
+    //         3   ~1%  ~10%  ~30%  ~45%
+    //         4   ~0%   ~0%   ~5%  ~22%
 
-    const double mean = 0.80 + (int)rarity * .20;
-    const double standardDeviation = 0.75 + (int)rarity * .25;
+    const double mean              = 0.50 + (int)rarity * 0.50;
+    const double standardDeviation = 0.40 + (int)rarity * 0.10;
     return (Rarity)GetNormalValue((int)Rarity::COMMON, (int)Rarity::LEGENDARY, mean, standardDeviation);
 }
 
@@ -212,8 +222,12 @@ State DungeonEx::RollState()
 
 Monster DungeonEx::RollMonster(DamageType type, Rarity rarity, MonsterFamily family, bool dead)
 {
+    // Monster power = (5 + rarity) * (floor/5)^1.5 + rarity
+    // The 1.5 exponent (was 2.0) softens the O(floor^2) ramp - a floor 15
+    // Legendary now lands around expected-damage 47 instead of 85, leaving room
+    // for a typical hero with Rare gear to actually fight back.
     const double part1 = 5 + (double(rarity) * 1);
-    const double part2 = std::pow(double(double(int(m_floor) / 5)), double(2));
+    const double part2 = std::pow(double(double(int(m_floor) / 5)), 1.5);
     const double part3 = double(rarity);
     const double result = (part1 * part2) + part3;
     const int expectedDamage = int(result);
