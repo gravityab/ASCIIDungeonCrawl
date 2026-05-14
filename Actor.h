@@ -47,6 +47,9 @@ public:
     /// The level of the actor
     int level = 1;
 
+    /// Number of attacks received this rounda
+    int damageTaken = 0;
+
     /// The idle animation
     Animation idle;
 

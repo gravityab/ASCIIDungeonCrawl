@@ -1705,6 +1705,7 @@ void DungeonCrawl::ProcessInput()
             action.source = m_ui.GetContext().source;
             action.weapon = m_ui.GetContext().weapon;
             action.targets.push_back(&m_currentRoom->monsters[m_ui.GetCursorIndex()]);
+            const size_t actionsBegin = m_actions.size();
             m_actions.push_back(action);
 
             // Apply passives
@@ -1738,13 +1739,39 @@ void DungeonCrawl::ProcessInput()
                 if (enabled)
                 {
                     m_actions.pop_back(); // Replace attack with attacking with both daggers/swords
+
                     action.weapon = &action.source->weapon1;
                     m_actions.push_back(action);
+
                     action.weapon = &action.source->weapon2;
                     m_actions.push_back(action);
                 }
             }
-            
+
+            // DAGGER_MULTIATTACK: each queued dagger swing happens twice
+            if (OwnsPassive(PassiveType::DAGGER_MULTIATTACK))
+            {
+                const size_t end = m_actions.size();
+                for (size_t index = actionsBegin; index < end; index++)
+                {
+                    if (m_actions[index].weapon && m_actions[index].weapon->weaponType == WeaponType::DAGGER)
+                        m_actions.push_back(m_actions[index]);
+                }
+            }
+
+            // WAND_FINESSE: each queued wand swing has a 25% chance of attacking again
+            if (OwnsPassive(PassiveType::WAND_FINESSE))
+            {
+                const size_t end = m_actions.size();
+                for (size_t index = actionsBegin; index < end; index++)
+                {
+                    if (m_actions[index].weapon && m_actions[index].weapon->weaponType == WeaponType::WAND)
+                    {
+                        if (GetRandomValue(0, 3) == 0)
+                            m_actions.push_back(m_actions[index]);
+                    }
+                }
+            }
 
             m_ui.PopBackTo(2);
             NextHero();
@@ -2260,6 +2287,13 @@ Die DungeonCrawl::CalculateDamageDie(Actor* actor, Weapon* weapon, bool baseDama
         else if (hasRobe && EquippingWeapon(actor, WeaponType::STAFF, 1) && weapon->weaponType == WeaponType::STAFF)
             damageDie.multiplier += (actor->level * (int)weapon->rarity);
     }
+    if (OwnsPassive(PassiveType::GREATSWORD_HURT))
+    {
+        if (weapon->weaponType == WeaponType::GREATSWORD)
+        {
+            damageDie.multiplier += actor->damageTaken;
+        }
+    }
 
     return damageDie;
 }
@@ -2370,6 +2404,7 @@ void DungeonCrawl::UseWeapon(Action action)
         // Reduce or increase damage to if resistant or weak
         if (isDamaging || isDraining)
         {
+            bool ignoreResistance = false;
             bool hasWeakness = false;
             bool hasResistance = false;
             for (int res = 0; res < (int)actor->armor.resistances.size(); res++)
@@ -2385,7 +2420,15 @@ void DungeonCrawl::UseWeapon(Action action)
                     break;
                 }
             }
-            if (hasResistance)
+            if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
+            {
+                if (OwnsPassive(PassiveType::STAFF_IGNOREELEMENT) && action.weapon->weaponType == WeaponType::STAFF)
+                {
+                    ignoreResistance = true;
+                }
+            }
+
+            if (hasResistance && !ignoreResistance)
                 damage = int(damage / 2);
             if (hasWeakness)
                 damage = int(damage * 2);
@@ -2425,6 +2468,34 @@ void DungeonCrawl::UseWeapon(Action action)
             m_damageAttribute = 0x0001; // Blue
         }
 
+        bool parry = false;
+        bool reposte = false;
+        if (action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
+        {
+            if (OwnsPassive(PassiveType::SWORD_PARRY) && EquippingWeapon(actor, WeaponType::SWORD, 1))
+            {
+                if (GetRandomValue(0, 3) == 0)
+                    parry = true;
+            }
+            if (OwnsPassive(PassiveType::SWORD_RIPOSTE) && EquippingWeapon(actor, WeaponType::SWORD, 1))
+            {
+                if (GetRandomValue(0, 3) == 0)
+                    reposte = true;
+            }
+
+            if (OwnsPassive(PassiveType::GREATSWORD_HURT) && EquippingWeapon(actor, WeaponType::GREATSWORD, 1))
+            {
+                actor->damageTaken++;
+            }
+        }
+
+        // Parry negates the hit; reflect that in the damage popup
+        if (parry)
+        {
+            m_damageFinal = 0;
+            m_damageOriginal = 0;
+        }
+
         // Apply damage/healing to actor
         if (isRestoring || isDraining)
         {
@@ -2436,11 +2507,37 @@ void DungeonCrawl::UseWeapon(Action action)
         }
         else
         {
-            actor->currentHp -= damage;
+            if (!parry)
+                actor->currentHp -= damage;
             if (actor->currentHp < 0)
                 actor->currentHp = 0;
             if (actor->currentHp > actor->totalHp)
                 actor->currentHp = actor->totalHp;
+
+            if (reposte)
+            {
+                // Find an equipped sword and counter-attack with its rolled damage
+                Weapon* sword = nullptr;
+                if (actor->weapon1.weaponType == WeaponType::SWORD)
+                    sword = &actor->weapon1;
+                else if (actor->weapon2.weaponType == WeaponType::SWORD)
+                    sword = &actor->weapon2;
+                else if (actor->weapon3.weaponType == WeaponType::SWORD)
+                    sword = &actor->weapon3;
+                else if (actor->weapon4.weaponType == WeaponType::SWORD)
+                    sword = &actor->weapon4;
+
+                if (sword)
+                {
+                    Die riposteDie = CalculateDamageDie(actor, sword, false);
+                    int riposteDamage = riposteDie.Roll();
+                    action.source->currentHp -= riposteDamage;
+                    if (action.source->currentHp < 0)
+                        action.source->currentHp = 0;
+                    if (action.source->currentHp > action.source->totalHp)
+                        action.source->currentHp = action.source->totalHp;
+                }
+            }
         }
 
         if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
@@ -2455,6 +2552,12 @@ void DungeonCrawl::UseWeapon(Action action)
                 if (OwnsPassive(PassiveType::DAGGER_BLEED) && action.weapon->weaponType == WeaponType::DAGGER)
                 {
                     monster->condition = damageDie;
+                }
+                if (OwnsPassive(PassiveType::GLOVES_PICKPOCKET)
+                    && action.weapon->weaponType == WeaponType::GLOVES
+                    && EquippingWeapon(action.source, WeaponType::LEATHER, 1))
+                {
+                    m_gold += ((int)monster->rarity + (int)action.weapon->rarity - 1);
                 }
             }
         }
@@ -2711,6 +2814,7 @@ void DungeonCrawl::SetState(State state)
             m_heroes[index].weapon2.selected = false;
             m_heroes[index].weapon3.selected = false;
             m_heroes[index].weapon4.selected = false;
+            m_heroes[index].damageTaken = 0;
         }
 
         //ApplyCondition();
