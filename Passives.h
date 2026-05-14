@@ -28,21 +28,21 @@ enum class PassiveType : int32_t
     GREATSWORD_HEAVYSWING,  // [x] Great sword speed decreased, great axes deal extra multi per level
     GREATSWORD_ALONE,       // [x] Having only a great sword deals 2 times multi damage
     GREATSWORD_HURT,        // [x] Every attack received this turn to hero equipping great swords doubles multi
-    WAND_QUICKSPELL,        // [ ] Wands and Staves gain -2 speed
+    WAND_QUICKSPELL,        // [x] Wands and Staves gain -2 speed
     WAND_ELEMENTALMASTER,   // [x] Wands add 2x level to multi when eqipped with Robe
     WAND_FINESSE,           // [x] Wands have chance to attack twice
-    STAFF_ELEMENTALMASTER,  // [ ] Staffs deal twice as much multi but are slower
+    STAFF_ELEMENTALMASTER,  // [x] Staffs deal twice as much multi but are slower
     STAFF_IGNOREELEMENT,    // [x] Staffs ignore elemental weaknesses
-    STAFF_MAGICSHIELD,      // [ ] Equipping robes with staff adds staff damage to mitigation as protective bubble
-    PLATE_TAUNT,            // [ ] Add higher chance for monsters to aim for plate wearers
-    PLATE_HPBOOST,          // [ ] Double the heroes hp per level when equipped with plate
-    PLATE_IGNOREDAMAGE,     // [ ] Chance to ignore damage when equipping plate
-    LEATHER_GOLD,           // [ ] Add X gold per monster slain. X is rarity of leather equipped
-    LEATHER_SCOUT,          // [ ] See behind doors depending on how many heroes equip leather [1:Shop, 2:Traps, 4:Fountains and Monsters]
+    STAFF_MAGICSHIELD,      // [x] Equipping robes with staff adds staff damage to mitigation as protective bubble
+    PLATE_TAUNT,            // [x] Add higher chance for monsters to aim for plate wearers
+    PLATE_HPBOOST,          // [x] Double the heroes hp per level when equipped with plate
+    PLATE_IGNOREDAMAGE,     // [x] Chance to ignore damage when equipping plate
+    LEATHER_GOLD,           // [x] Add X gold per monster slain. X is rarity of leather equipped
+    LEATHER_SCOUT,          // [x] See behind doors depending on how many heroes equip leather [1:Shop, 2:Traps, 4:Fountains and Monsters]
     LEATHER_DAMAGE,         // [x] Daggers and Swords deal X extra multi. X is Level times Rarity.
-    ROBE_BACKLINE,          // [ ] Robes make the wearer less threatening to monsters
+    ROBE_BACKLINE,          // [x] Robes make the wearer less threatening to monsters
     ROBE_GLASSCANNON,       // [x] Magical damage is doubled. Damage recieved is doubled.
-    ROBE_MPCOST,            // [ ] Magical cost is reduced by X. X is Rarity.
+    ROBE_MPCOST,            // [x] Magical cost is reduced by X. X is Rarity.
     COUNT,
 };
 

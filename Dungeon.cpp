@@ -616,7 +616,7 @@ Monster DungeonEx::ToMonster(Rarity rarity, DamageType type, MonsterFamily famil
     monster.weapon1 = MWEAPON("attack_primary");
     monster.weapon1.die = primaryDie;
     monster.weapon2 = MWEAPON("attack_secondary");
-    monster.weapon1.die = secondaryDie;
+    monster.weapon2.die = secondaryDie;
 
     monster.name = type == DamageType::NORMAL ? monster.name : ToString(type) + " " + monster.name;
     monster.family = family;

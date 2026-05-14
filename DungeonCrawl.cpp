@@ -591,15 +591,18 @@ void DungeonCrawl::DrawDoors(Time delta)
         }
         else
         {
-            // Calculate sight count
+            // LEATHER_SCOUT: gates leather-based door previews
             int sightCount = 0;
-            for (int heroIndex = 0; heroIndex < (int)m_heroes.size(); heroIndex++)
+            if (OwnsPassive(PassiveType::LEATHER_SCOUT))
             {
-                if (m_heroes[heroIndex].armor.target == Target::PLAYERAC_SPEED
-                    && m_heroes[heroIndex].armor.rarity >= Rarity::COMMON
-                    && m_heroes[heroIndex].currentHp > 0)
+                for (int heroIndex = 0; heroIndex < (int)m_heroes.size(); heroIndex++)
                 {
-                    sightCount++;
+                    if (m_heroes[heroIndex].armor.target == Target::PLAYERAC_SPEED
+                        && m_heroes[heroIndex].armor.rarity >= Rarity::COMMON
+                        && m_heroes[heroIndex].currentHp > 0)
+                    {
+                        sightCount++;
+                    }
                 }
             }
 
@@ -1325,7 +1328,27 @@ void DungeonCrawl::DrawAction(Time delta)
                     if (!action.source || action.source->currentHp > 0)
                     {
                         UseWeapon(action);
-                        m_damageTimeLeft = ToMilliseconds(1000);
+
+                        // If the next queued action is a continuation of this
+                        // one (same source hitting the same primary target),
+                        // shorten the damage popup and the next swing's
+                        // wind-up so multi-attacks (e.g. BOXER) feel snappy.
+                        auto next = iter + 1;
+                        const bool chainsToNext = next != m_actions.end()
+                            && next->source == action.source
+                            && !next->targets.empty()
+                            && !action.targets.empty()
+                            && next->targets[0] == action.targets[0];
+
+                        if (chainsToNext)
+                        {
+                            m_damageTimeLeft = ToMilliseconds(350);
+                            next->timeLeft = ToMilliseconds(200);
+                        }
+                        else
+                        {
+                            m_damageTimeLeft = ToMilliseconds(1000);
+                        }
                     }
                     else
                     {
@@ -1715,12 +1738,17 @@ void DungeonCrawl::ProcessInput()
                 {
                     m_actions.pop_back(); // Replace attack with attacking with both gloves per level
 
-                    const int attacks = (action.source->level / 4) + 1;
+                    // Slower scaling than the original (level/4)+1 formula so
+                    // high-level Boxer doesn't drown the round in attacks.
+                    const int attacks = (action.source->level / 8) + 1;
+                    bool firstSwing = true;
                     for (int index = 0; index < attacks; index++)
                     {
                         action.weapon = &action.source->weapon1;
+                        action.canStun = firstSwing; firstSwing = false;
                         m_actions.push_back(action);
                         action.weapon = &action.source->weapon2;
+                        action.canStun = false;
                         m_actions.push_back(action);
                     }
                 }
@@ -2121,6 +2149,10 @@ void DungeonCrawl::GetUniquePassive()
 
 void DungeonCrawl::ReceiveXP(Hero& hero)
 {
+    // LEATHER_GOLD: each leather-wearer adds rarity gold per defeated monster
+    const bool leatherGold = OwnsPassive(PassiveType::LEATHER_GOLD)
+        && hero.armor.target == Target::PLAYERAC_SPEED;
+
     for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
     {
         Monster& monster = m_currentRoom->monsters[index];
@@ -2129,6 +2161,9 @@ void DungeonCrawl::ReceiveXP(Hero& hero)
         hero.experience -= monster.experience;
         if (hero.experience <= 0)
             LevelUp(hero);
+
+        if (leatherGold)
+            m_gold += (int)hero.armor.rarity;
     }
 }
 
@@ -2148,7 +2183,10 @@ void DungeonCrawl::LevelUp(Hero& hero)
     if (hero.armor.target == Target::PLAYERAC_SLOW)
     {
         // If you equip PLATE you gain more HP during levels
-        hero.totalHp += ROLL(multHigh, 10, hero.level + 1);
+        int hpGain = ROLL(multHigh, 10, hero.level + 1);
+        if (OwnsPassive(PassiveType::PLATE_HPBOOST))
+            hpGain *= 2; // PLATE_HPBOOST: doubles HP gained per level when wearing plate
+        hero.totalHp += hpGain;
         hero.totalMp += ROLL(multLow, 10, hero.level + 1);
         hero.bonusAC += (int)hero.armor.rarity + (hero.level / 2) + 1;
     }
@@ -2292,6 +2330,13 @@ Die DungeonCrawl::CalculateDamageDie(Actor* actor, Weapon* weapon, bool baseDama
         if (weapon->weaponType == WeaponType::GREATSWORD)
         {
             damageDie.multiplier += actor->damageTaken;
+        }
+    }
+    if (OwnsPassive(PassiveType::STAFF_ELEMENTALMASTER))
+    {
+        if (weapon->weaponType == WeaponType::STAFF)
+        {
+            damageDie.multiplier *= 2;
         }
     }
 
@@ -2444,6 +2489,29 @@ void DungeonCrawl::UseWeapon(Action action)
                 damage -= hero->bonusAC;
             }
 
+            // STAFF_MAGICSHIELD: robe + staff absorbs incoming damage by a staff roll
+            if (actor->GetType() == ActorType::ACTOR_HERO
+                && action.source && action.source->GetType() == ActorType::ACTOR_MONSTER
+                && OwnsPassive(PassiveType::STAFF_MAGICSHIELD)
+                && actor->armor.target == Target::PLAYERAC_SPELL)
+            {
+                Weapon* staff = nullptr;
+                if (actor->weapon1.weaponType == WeaponType::STAFF)
+                    staff = &actor->weapon1;
+                else if (actor->weapon2.weaponType == WeaponType::STAFF)
+                    staff = &actor->weapon2;
+                else if (actor->weapon3.weaponType == WeaponType::STAFF)
+                    staff = &actor->weapon3;
+                else if (actor->weapon4.weaponType == WeaponType::STAFF)
+                    staff = &actor->weapon4;
+
+                if (staff)
+                {
+                    Die shieldDie = CalculateDamageDie(actor, staff, false);
+                    damage -= shieldDie.Roll();
+                }
+            }
+
             if (damage <= 0)
                 damage = 1;
 
@@ -2470,6 +2538,7 @@ void DungeonCrawl::UseWeapon(Action action)
 
         bool parry = false;
         bool reposte = false;
+        bool ignored = false;
         if (action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
         {
             if (OwnsPassive(PassiveType::SWORD_PARRY) && EquippingWeapon(actor, WeaponType::SWORD, 1))
@@ -2487,10 +2556,19 @@ void DungeonCrawl::UseWeapon(Action action)
             {
                 actor->damageTaken++;
             }
+
+            // PLATE_IGNOREDAMAGE: plate wearers have a 25% chance to ignore a hit
+            if (OwnsPassive(PassiveType::PLATE_IGNOREDAMAGE)
+                && actor->GetType() == ActorType::ACTOR_HERO
+                && actor->armor.target == Target::PLAYERAC_SLOW)
+            {
+                if (GetRandomValue(0, 3) == 0)
+                    ignored = true;
+            }
         }
 
-        // Parry negates the hit; reflect that in the damage popup
-        if (parry)
+        // Parry or ignore negates the hit; reflect that in the damage popup
+        if (parry || ignored)
         {
             m_damageFinal = 0;
             m_damageOriginal = 0;
@@ -2507,7 +2585,7 @@ void DungeonCrawl::UseWeapon(Action action)
         }
         else
         {
-            if (!parry)
+            if (!parry && !ignored)
                 actor->currentHp -= damage;
             if (actor->currentHp < 0)
                 actor->currentHp = 0;
@@ -2545,7 +2623,7 @@ void DungeonCrawl::UseWeapon(Action action)
             Monster* monster = static_cast<Monster*>(actor);
             if (GetRandomValue(0, 3) == 0)
             {
-                if (OwnsPassive(PassiveType::GLOVES_BASH) && action.weapon->weaponType == WeaponType::GLOVES)
+                if (OwnsPassive(PassiveType::GLOVES_BASH) && action.weapon->weaponType == WeaponType::GLOVES && action.canStun)
                 {
                     monster->stunned = true;
                 }
@@ -2964,6 +3042,27 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
         || weapon->target == Target::MONSTER_CONDITION
         || weapon->target == Target::MONSTER_DRAINMP)
     {
+        // ROBE_BACKLINE: robe wearers are not targeted if a non-robe hero is alive
+        if (OwnsPassive(PassiveType::ROBE_BACKLINE))
+        {
+            bool hasNonRobe = false;
+            for (int index = 0; index < (int)m_heroes.size(); index++)
+            {
+                if (m_heroes[index].currentHp > 0
+                    && m_heroes[index].armor.target != Target::PLAYERAC_SPELL)
+                {
+                    hasNonRobe = true;
+                    break;
+                }
+            }
+            if (hasNonRobe)
+            {
+                targets.erase(std::remove_if(targets.begin(), targets.end(),
+                    [](Actor* a) { return a->armor.target == Target::PLAYERAC_SPELL; }),
+                    targets.end());
+            }
+        }
+
         // If we are selecting 1 target, weight it by who has Plate (tank)
         for (int index = 0; index < (int)m_heroes.size(); index++)
         {
@@ -2979,6 +3078,19 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
                     targets.push_back(&m_heroes[index]);
                 if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
                     targets.push_back(&m_heroes[index]);
+
+                // PLATE_TAUNT: additional weighting on plate wearers
+                if (OwnsPassive(PassiveType::PLATE_TAUNT))
+                {
+                    if (m_heroes[index].armor.rarity >= Rarity::COMMON)
+                        targets.push_back(&m_heroes[index]);
+                    if (m_heroes[index].armor.rarity >= Rarity::RARE)
+                        targets.push_back(&m_heroes[index]);
+                    if (m_heroes[index].armor.rarity >= Rarity::EPIC)
+                        targets.push_back(&m_heroes[index]);
+                    if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
+                        targets.push_back(&m_heroes[index]);
+                }
             }
         }
 
@@ -2997,7 +3109,7 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
 
 void DungeonCrawl::SortActions()
 {
-    std::sort(m_actions.begin(), m_actions.end(), [](const Action& left, const Action& right)
+    std::sort(m_actions.begin(), m_actions.end(), [this](const Action& left, const Action& right)
     {
         int leftSpeed = left.weapon->speed;
         int rightSpeed = right.weapon->speed;
@@ -3014,6 +3126,27 @@ void DungeonCrawl::SortActions()
         if (right.source->armor.target == Target::PLAYERAC_SPEED)
             rightSpeed -= right.source->armor.speed;
 
+        const bool leftIsHero  = left.source  && left.source->GetType()  == ActorType::ACTOR_HERO;
+        const bool rightIsHero = right.source && right.source->GetType() == ActorType::ACTOR_HERO;
+
+        // WAND_QUICKSPELL: hero wand/staff swings cast faster
+        if (OwnsPassive(PassiveType::WAND_QUICKSPELL))
+        {
+            if (leftIsHero && (left.weapon->weaponType == WeaponType::WAND || left.weapon->weaponType == WeaponType::STAFF))
+                leftSpeed -= 2;
+            if (rightIsHero && (right.weapon->weaponType == WeaponType::WAND || right.weapon->weaponType == WeaponType::STAFF))
+                rightSpeed -= 2;
+        }
+
+        // STAFF_ELEMENTALMASTER: staffs hit harder but are slower
+        if (OwnsPassive(PassiveType::STAFF_ELEMENTALMASTER))
+        {
+            if (leftIsHero && left.weapon->weaponType == WeaponType::STAFF)
+                leftSpeed += 4;
+            if (rightIsHero && right.weapon->weaponType == WeaponType::STAFF)
+                rightSpeed += 4;
+        }
+
         return leftSpeed < rightSpeed;
     });
 }
@@ -3021,9 +3154,20 @@ void DungeonCrawl::SortActions()
 void DungeonCrawl::UseSelectedItem()
 {
     CursorContext& context = m_ui.GetContext();
-    
+
     // Pay the cost
-    context.source->currentMp -= context.weapon->mpCost;
+    int mpCost = context.weapon->mpCost;
+
+    // ROBE_MPCOST: robe wearer pays less to cast (reduced by robe rarity)
+    if (OwnsPassive(PassiveType::ROBE_MPCOST)
+        && context.source->armor.target == Target::PLAYERAC_SPELL)
+    {
+        mpCost -= (int)context.source->armor.rarity;
+        if (mpCost < 0)
+            mpCost = 0;
+    }
+
+    context.source->currentMp -= mpCost;
     
     // Apply robe buff to wand / staff weapon
     Die die = context.weapon->die;
