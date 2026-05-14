@@ -59,10 +59,14 @@ public:
     /// Check whether a button has been released this frame
     bool Released(Button button);
 
+    /// True if the user closed the BearLibTerminal window since the last Poll.
+    bool GetWindowClosed() const { return m_closed; }
+
 private:
     /// Poll the current button state
     void PollButtonState(ButtonState& state);
 
 private:
     ButtonState m_buttons[s_ButtonCount] = {};
+    bool m_closed = false;
 };

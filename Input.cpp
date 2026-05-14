@@ -7,6 +7,9 @@
 
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#undef WIN32_LEAN_AND_MEAN
+
+#include "BearLibTerminal.h"
 
 // --------------------------------------------------------------------------------------------------------------------
 ButtonState::ButtonState()
@@ -20,6 +23,7 @@ ButtonState::ButtonState(int map_)
 // --------------------------------------------------------------------------------------------------------------------
 void Input::Initialize()
 {
+    m_closed = false;
     m_buttons[(int)Button::BUTTON_UP].map = VK_UP;
     m_buttons[(int)Button::BUTTON_DOWN].map = VK_DOWN;
     m_buttons[(int)Button::BUTTON_LEFT].map = VK_LEFT;
@@ -37,6 +41,23 @@ void Input::Poll()
     {
         PollButtonState(m_buttons[index]);
     }
+
+    // Drain BearLibTerminal's event queue so window close / OS events propagate. We only need
+    // TK_CLOSE here; keystrokes are still read via GetAsyncKeyState above to preserve the original
+    // behaviour. Other events are discarded.
+    while (terminal_has_input())
+    {
+        int value = terminal_read();
+        if (value == TK_CLOSE)
+        {
+            m_closed = true;
+        }
+    }
+
+    // (Previously had a GetForegroundWindow/PID guard here to ignore inputs when the window isn't
+    //  in focus. It was incorrectly returning "not active" for the BearLibTerminal window, which
+    //  blocked all input. Removed; phantom inputs from background focus are a minor issue we can
+    //  add back later if it bites.)
 }
 
 bool Input::Pressed(Button button)

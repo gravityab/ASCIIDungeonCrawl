@@ -32,8 +32,8 @@ public:
     /// Destructor
     ~DungeonCrawl();
 
-    /// Initialize a dungeon crawler game
-    bool Initialize(HANDLE handle, int frameLimit);
+    /// Initialize a dungeon crawler game. (BearLibTerminal must be opened by the caller first.)
+    bool Initialize(int frameLimit);
 
     /// Shutdown a dungeon crawler game
     void Shutdown();
@@ -270,9 +270,6 @@ private:
 
     /// Timer for frame limiter
     Time m_frameTimeLimit;
-
-    /// The console handle
-    HANDLE m_handle = nullptr;
 
     /// The console entity representing a frame to render
     ConsoleEntity m_console;

@@ -27,10 +27,8 @@ DungeonCrawl::DungeonCrawl()
 DungeonCrawl::~DungeonCrawl()
 {}
 
-bool DungeonCrawl::Initialize(HANDLE handle, int frameLimit)
+bool DungeonCrawl::Initialize(int frameLimit)
 {
-    m_handle = handle;
-
     if (frameLimit > 0)
         m_frameTimeLimit = ToSeconds(1.f / static_cast<float>(frameLimit));
     else
@@ -65,6 +63,8 @@ bool DungeonCrawl::RunLoop()
         }
 
         m_input.Poll();
+        if (m_input.GetWindowClosed())
+            m_shutdown = true;
         m_console.SetData(' ', 0, 0, 120, 30, 0x0007);
 
         switch (m_state)
@@ -111,7 +111,7 @@ bool DungeonCrawl::RunLoop()
         // Draw the restart confirmation dialog
         DrawRestart(delta);
 
-        m_console.Draw(m_handle);
+        m_console.Draw(nullptr);
     }
 
     return true;
@@ -3543,10 +3543,17 @@ void DungeonCrawl::PushRewardHero()
 
 void DungeonCrawl::PushRewardHeroItem()
 {
-    // Check if the reward is armor
-    if (m_currentRoom->rewardWeapon.target == Target::PLAYERAC_SLOW
-        || m_currentRoom->rewardWeapon.target == Target::PLAYERAC_SPEED
-        || m_currentRoom->rewardWeapon.target == Target::PLAYERAC_SPELL)
+    // Rewards that don't need to occupy a weapon slot apply directly to the selected hero:
+    //   - Armor (PLAYERAC_*) overwrites the hero's armor slot
+    //   - New Hero / Level Up / Level Up 5 just modify the hero / party; no slot picker needed
+    // For these, jump straight to PurchaseItem() and pop the UI back to the reward screen.
+    const Target target = m_currentRoom->rewardWeapon.target;
+    if (target == Target::PLAYERAC_SLOW
+        || target == Target::PLAYERAC_SPEED
+        || target == Target::PLAYERAC_SPELL
+        || target == Target::NEWHERO
+        || target == Target::PLAYERLEVEL
+        || target == Target::PLAYERLEVEL5)
     {
         m_ui.GetContext().source = &m_heroes[m_ui.GetCursorIndex()];
         m_ui.GetContext().target = &m_heroes[m_ui.GetCursorIndex()];
