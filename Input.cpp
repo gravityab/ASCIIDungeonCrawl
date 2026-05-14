@@ -43,14 +43,44 @@ void Input::Poll()
     }
 
     // Drain BearLibTerminal's event queue so window close / OS events propagate. We only need
-    // TK_CLOSE here; keystrokes are still read via GetAsyncKeyState above to preserve the original
-    // behaviour. Other events are discarded.
+    // TK_CLOSE and TK_RESIZED here; keystrokes are still read via GetAsyncKeyState above to
+    // preserve the original behavior. Other events are discarded.
     while (terminal_has_input())
     {
         int value = terminal_read();
         if (value == TK_CLOSE)
         {
             m_closed = true;
+        }
+        else if (value == TK_RESIZED)
+        {
+            // Keep the game's 120x30 logical grid by rescaling glyph cells to exactly fill the
+            // user's new window size. terminal_state(TK_WIDTH/HEIGHT) reports the new grid in
+            // cells (BearLibTerminal grew/shrank it to fit the dragged window at the old cell
+            // pixel size); multiply by the current pixel-per-cell to get the raw pixel
+            // dimensions of the window, then divide by 120x30 to get the new cell pixel size.
+            //
+            // Important: setting window.cellsize alone keeps the cell *area* large but lets the
+            // (bitmap) glyph stay small. To actually scale the glyph we re-set the TTF font at
+            // the new size; BearLibTerminal renders the TTF at whatever cell size we request.
+            const int cellsW   = terminal_state(TK_WIDTH);
+            const int cellsH   = terminal_state(TK_HEIGHT);
+            const int cellPxW  = terminal_state(TK_CELL_WIDTH);
+            const int cellPxH  = terminal_state(TK_CELL_HEIGHT);
+            const int pixelW   = cellsW * cellPxW;
+            const int pixelH   = cellsH * cellPxH;
+
+            int desiredCellW = pixelW / 120;
+            int desiredCellH = pixelH / 30;
+            if (desiredCellW < 2) desiredCellW = 2;
+            if (desiredCellH < 2) desiredCellH = 2;
+
+            char buf[128];
+            _snprintf_s(buf, _TRUNCATE,
+                "font: Resources/Consolas-Regular.ttf, size=%dx%d",
+                desiredCellW, desiredCellH);
+            terminal_set(buf);
+            terminal_set("window.size=120x30");
         }
     }
 

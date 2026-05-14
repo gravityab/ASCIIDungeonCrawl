@@ -81,11 +81,10 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)BearLibTerminal\Windows32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BearLibTerminal.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BearLibTerminal.lib;Delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>BearLibTerminal.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalOptions>/DELAYLOAD:BearLibTerminal.dll %(AdditionalOptions)</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)BearLibTerminal\Windows32\BearLibTerminal.dll" "$(OutDir)"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -96,13 +95,15 @@
       <AdditionalIncludeDirectories>$(ProjectDir)BearLibTerminal\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
     <Link>
       <AdditionalLibraryDirectories>$(ProjectDir)BearLibTerminal\Windows64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BearLibTerminal.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BearLibTerminal.lib;Delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>BearLibTerminal.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalOptions>/DELAYLOAD:BearLibTerminal.dll %(AdditionalOptions)</AdditionalOptions>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)BearLibTerminal\Windows64\BearLibTerminal.dll" "$(OutDir)"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -119,13 +120,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)BearLibTerminal\Windows32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BearLibTerminal.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BearLibTerminal.lib;Delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>BearLibTerminal.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalOptions>/DELAYLOAD:BearLibTerminal.dll %(AdditionalOptions)</AdditionalOptions>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)BearLibTerminal\Windows32\BearLibTerminal.dll" "$(OutDir)"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -138,17 +138,19 @@
       <AdditionalIncludeDirectories>$(ProjectDir)BearLibTerminal\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WIN64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(ProjectDir)BearLibTerminal\Windows64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>BearLibTerminal.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>BearLibTerminal.lib;Delayimp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>BearLibTerminal.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <AdditionalOptions>/DELAYLOAD:BearLibTerminal.dll %(AdditionalOptions)</AdditionalOptions>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
-    <PostBuildEvent>
-      <Command>xcopy /Y /D "$(ProjectDir)BearLibTerminal\Windows64\BearLibTerminal.dll" "$(OutDir)"</Command>
-    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
@@ -158,6 +160,7 @@
     <ClCompile Include="Database.cpp" />
     <ClCompile Include="Die.cpp" />
     <ClCompile Include="Dungeon.cpp" />
+    <ClCompile Include="DllLoader.cpp" />
     <ClCompile Include="DungeonCrawl.cpp" />
     <ClCompile Include="EngineColor.cpp" />
     <ClCompile Include="Entity.cpp" />
@@ -185,6 +188,7 @@
     <ClInclude Include="Database.h" />
     <ClInclude Include="Die.h" />
     <ClInclude Include="Dungeon.h" />
+    <ClInclude Include="DllLoader.h" />
     <ClInclude Include="DungeonCrawl.h" />
     <ClInclude Include="EngineColor.h" />
     <ClInclude Include="Entity.h" />

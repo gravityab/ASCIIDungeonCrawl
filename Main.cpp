@@ -10,6 +10,7 @@
 
 /// BearLibTerminal Headers
 #include "BearLibTerminal.h"
+#include "DllLoader.h"
 
 /// Standard Template Library Headers
 #include <clocale>
@@ -41,6 +42,35 @@ int main()
     SeedRandomizer();
     std::setlocale(LC_ALL, "en_US.UTF-8");
 
+    // BearLibTerminal is embedded in this .exe as RCDATA and delay-loaded. Extract next to the
+    // .exe + LoadLibrary here so the delay-load thunks find an already-loaded module on the first
+    // terminal_* call.
+    const char* loaderError = nullptr;
+    if (!LoadEmbeddedBearLibTerminal(&loaderError))
+    {
+        char buf[512];
+        snprintf(buf, sizeof(buf),
+            "Failed to load embedded BearLibTerminal.dll:\n\n%s",
+            loaderError ? loaderError : "(no detail)");
+        ReportError(buf);
+        return 1;
+    }
+
+    // The TTF font is embedded too. Extract to <exe-dir>/Resources/Consolas-Regular.ttf so
+    // terminal_set("font: Resources/Consolas-Regular.ttf, ...") finds it without us shipping
+    // a separate Resources/ folder. Non-fatal if it fails - BearLibTerminal will fall back to
+    // its built-in bitmap font (glyphs just won't scale smoothly on window resize).
+    const char* fontError = nullptr;
+    if (!ExtractEmbeddedFont(&fontError))
+    {
+        // Warn but don't abort.
+        char buf[512];
+        snprintf(buf, sizeof(buf),
+            "Failed to extract embedded Consolas-Regular.ttf (continuing with default font):\n\n%s",
+            fontError ? fontError : "(no detail)");
+        ReportError(buf);
+    }
+
     // Open the BearLibTerminal window. The original game ran in a 120x30 console buffer, so
     // we ask for the same cell grid. Font is left at BearLibTerminal's built-in default for now;
     // copy a TTF into a Resources/ folder and add `terminal_set("font: Resources/Foo.ttf, size=8x16")`
@@ -54,9 +84,12 @@ int main()
     // Configure the window. Each call returns 0 on failure; track so we can report which one fails.
     const char* failed = nullptr;
     if (!terminal_set("window.size=120x30"))                 failed = "window.size";
-    if (!terminal_set("window.cellsize=auto"))               failed = "window.cellsize";
     if (!terminal_set("window.title='ASCII Dungeon Crawl'")) failed = "window.title";
-    // Include 'system' so TK_CLOSE arrives when the user clicks X (it isn't in the default filter).
+    if (!terminal_set("window.resizeable=true"))             failed = "window.resizeable";
+    // Use a TTF so glyphs scale smoothly when the user resizes the window. Sized 8x16 initially.
+    // The TK_RESIZED handler in Input.cpp re-applies this font at a new size on every resize.
+    if (!terminal_set("font: Resources/Consolas-Regular.ttf, size=8x16")) failed = "font (Resources/Consolas-Regular.ttf missing?)";
+    // Include 'system' for TK_CLOSE and TK_RESIZED (neither is in the default filter).
     if (!terminal_set("input.filter={keyboard, system}"))    failed = "input.filter";
     if (failed)
     {
