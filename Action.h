@@ -23,8 +23,9 @@ struct Action
 	/// The amount of time to animate attacks
 	Time timeLeft = ToMilliseconds(500);
 
-	/// Whether this action is eligible to roll one-per-turn on-hit passives
-	/// (e.g. GLOVES_BASH). Set false on follow-up swings produced by
-	/// passives that replicate actions (BOXER), so only the first swing rolls.
-	bool canStun = true;
+	/// Whether this action is the hero's first swing of the turn against the
+	/// target. One-per-turn on-hit passives (e.g. GLOVES_BASH, DAGGER_BLEED)
+	/// only roll when this is true. Passives that replicate actions (BOXER,
+	/// DUALWIELD, MULTIATTACK, FINESSE) clear it on their follow-up swings.
+	bool firstSwing = true;
 };

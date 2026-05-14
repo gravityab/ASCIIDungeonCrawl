@@ -788,7 +788,7 @@ void DungeonCrawl::DrawHero(Time delta)
                 0,
                 hero.level);
 
-            if (hero.currentMp >= hero.weapon1.mpCost)
+            if (hero.currentMp >= GetEffectiveMpCost(&hero, &hero.weapon1))
             {
                 m_console.WriteData(x + 2, y + 3,
                     hero.weapon1.selected ? BLINK(ToAttribute(hero.weapon1.rarity)) : ToAttribute(hero.weapon1.rarity),
@@ -815,7 +815,7 @@ void DungeonCrawl::DrawHero(Time delta)
                 }
             }
 
-            if (hero.currentMp >= hero.weapon2.mpCost)
+            if (hero.currentMp >= GetEffectiveMpCost(&hero, &hero.weapon2))
             {
                 m_console.WriteData(x + 2, y + 5,
                     hero.weapon2.selected ? BLINK(ToAttribute(hero.weapon2.rarity)) : ToAttribute(hero.weapon2.rarity),
@@ -1380,14 +1380,31 @@ void DungeonCrawl::DrawAction(Time delta)
             SetState(State::STATE_COMBAT);
         if (heroesAlive && !monstersAlive)
         {
-            bool givePassive = false;
+            // Accumulate Passive XP per defeated monster:
+            //   Rare = 1, Epic = 2, Legendary = 4, Dragon = +1 extra
+            // Every 4 XP spent at end of combat awards one passive selection.
+            // Cap one award per combat; leftover XP carries to the next fight.
+            int xpEarned = 0;
             for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
             {
-                if ((int)m_currentRoom->monsters[index].rarity >= (int)Rarity::RARE)
-                    givePassive = true;
+                const Monster& m = m_currentRoom->monsters[index];
+                if (m.rarity == Rarity::RARE)
+                    xpEarned += 1;
+                else if (m.rarity == Rarity::EPIC)
+                    xpEarned += 2;
+                else if (m.rarity == Rarity::LEGENDARY)
+                    xpEarned += 4;
+
+                if (m.family == MonsterFamily::DRAGON && (int)m.rarity >= (int)Rarity::RARE)
+                    xpEarned += 1;
             }
-            if (givePassive)
+            m_passiveXP += xpEarned;
+
+            if (m_passiveXP >= 4)
+            {
+                m_passiveXP -= 4;
                 SetState(State::STATE_PASSIVE);
+            }
             else
                 SetState(State::STATE_TREASURE);
         }
@@ -1745,10 +1762,10 @@ void DungeonCrawl::ProcessInput()
                     for (int index = 0; index < attacks; index++)
                     {
                         action.weapon = &action.source->weapon1;
-                        action.canStun = firstSwing; firstSwing = false;
+                        action.firstSwing = firstSwing; firstSwing = false;
                         m_actions.push_back(action);
                         action.weapon = &action.source->weapon2;
-                        action.canStun = false;
+                        action.firstSwing = false;
                         m_actions.push_back(action);
                     }
                 }
@@ -1769,21 +1786,28 @@ void DungeonCrawl::ProcessInput()
                     m_actions.pop_back(); // Replace attack with attacking with both daggers/swords
 
                     action.weapon = &action.source->weapon1;
+                    action.firstSwing = true;
                     m_actions.push_back(action);
 
                     action.weapon = &action.source->weapon2;
+                    action.firstSwing = false;
                     m_actions.push_back(action);
                 }
             }
 
-            // DAGGER_MULTIATTACK: each queued dagger swing happens twice
+            // DAGGER_MULTIATTACK: each queued dagger swing happens twice (the
+            // duplicates can't re-trigger first-swing on-hit passives)
             if (OwnsPassive(PassiveType::DAGGER_MULTIATTACK))
             {
                 const size_t end = m_actions.size();
                 for (size_t index = actionsBegin; index < end; index++)
                 {
                     if (m_actions[index].weapon && m_actions[index].weapon->weaponType == WeaponType::DAGGER)
-                        m_actions.push_back(m_actions[index]);
+                    {
+                        Action copy = m_actions[index];
+                        copy.firstSwing = false;
+                        m_actions.push_back(copy);
+                    }
                 }
             }
 
@@ -1796,7 +1820,11 @@ void DungeonCrawl::ProcessInput()
                     if (m_actions[index].weapon && m_actions[index].weapon->weaponType == WeaponType::WAND)
                     {
                         if (GetRandomValue(0, 3) == 0)
-                            m_actions.push_back(m_actions[index]);
+                        {
+                            Action copy = m_actions[index];
+                            copy.firstSwing = false;
+                            m_actions.push_back(copy);
+                        }
                     }
                 }
             }
@@ -2149,7 +2177,9 @@ void DungeonCrawl::GetUniquePassive()
 
 void DungeonCrawl::ReceiveXP(Hero& hero)
 {
-    // LEATHER_GOLD: each leather-wearer adds rarity gold per defeated monster
+    // LEATHER_GOLD: each leather-wearer's payout per defeated monster scales
+    // with both leather rarity and the monster's rarity, so tougher kills feel
+    // meaningfully more rewarding.
     const bool leatherGold = OwnsPassive(PassiveType::LEATHER_GOLD)
         && hero.armor.target == Target::PLAYERAC_SPEED;
 
@@ -2163,7 +2193,7 @@ void DungeonCrawl::ReceiveXP(Hero& hero)
             LevelUp(hero);
 
         if (leatherGold)
-            m_gold += (int)hero.armor.rarity;
+            m_gold += (int)hero.armor.rarity * (int)monster.rarity;
     }
 }
 
@@ -2478,6 +2508,16 @@ void DungeonCrawl::UseWeapon(Action action)
             if (hasWeakness)
                 damage = int(damage * 2);
 
+            // ROBE_GLASSCANNON: wearer of robe + wand/staff takes doubled damage
+            // (paired tradeoff to the doubled magical damage that the same passive grants)
+            if (OwnsPassive(PassiveType::ROBE_GLASSCANNON)
+                && actor->GetType() == ActorType::ACTOR_HERO
+                && actor->armor.target == Target::PLAYERAC_SPELL
+                && (EquippingWeapon(actor, WeaponType::WAND, 1) || EquippingWeapon(actor, WeaponType::STAFF, 1)))
+            {
+                damage = int(damage * 2);
+            }
+
             // Subtract armor class
             damage -= actor->armor.armorClass;
 
@@ -2623,11 +2663,11 @@ void DungeonCrawl::UseWeapon(Action action)
             Monster* monster = static_cast<Monster*>(actor);
             if (GetRandomValue(0, 3) == 0)
             {
-                if (OwnsPassive(PassiveType::GLOVES_BASH) && action.weapon->weaponType == WeaponType::GLOVES && action.canStun)
+                if (OwnsPassive(PassiveType::GLOVES_BASH) && action.weapon->weaponType == WeaponType::GLOVES && action.firstSwing)
                 {
                     monster->stunned = true;
                 }
-                if (OwnsPassive(PassiveType::DAGGER_BLEED) && action.weapon->weaponType == WeaponType::DAGGER)
+                if (OwnsPassive(PassiveType::DAGGER_BLEED) && action.weapon->weaponType == WeaponType::DAGGER && action.firstSwing)
                 {
                     monster->condition = damageDie;
                 }
@@ -2833,6 +2873,7 @@ void DungeonCrawl::SetState(State state)
         m_passivesY = 0;
         m_passivesTab = false;
         m_passivesTabIndex = 0;
+        m_passiveXP = 0;
     }
     else if (state == State::STATE_NEXT_FLOOR)
     {
@@ -3151,23 +3192,42 @@ void DungeonCrawl::SortActions()
     });
 }
 
+int DungeonCrawl::GetEffectiveMpCost(Actor* actor, const Weapon* weapon)
+{
+    int cost = weapon->mpCost;
+
+    // ROBE_MPCOST: cost reduced by robe rarity
+    if (OwnsPassive(PassiveType::ROBE_MPCOST)
+        && actor->armor.target == Target::PLAYERAC_SPELL)
+    {
+        cost -= (int)actor->armor.rarity;
+    }
+
+    // ROBE_GLASSCANNON: spells cost more (paired with the doubled-damage bonus)
+    if (OwnsPassive(PassiveType::ROBE_GLASSCANNON)
+        && actor->armor.target == Target::PLAYERAC_SPELL
+        && (weapon->weaponType == WeaponType::WAND || weapon->weaponType == WeaponType::STAFF))
+    {
+        cost += 5;
+    }
+
+    // STAFF_ELEMENTALMASTER: staff casts cost more (paired with doubled multi)
+    if (OwnsPassive(PassiveType::STAFF_ELEMENTALMASTER) && weapon->weaponType == WeaponType::STAFF)
+    {
+        cost += 5;
+    }
+
+    if (cost < 0)
+        cost = 0;
+    return cost;
+}
+
 void DungeonCrawl::UseSelectedItem()
 {
     CursorContext& context = m_ui.GetContext();
 
     // Pay the cost
-    int mpCost = context.weapon->mpCost;
-
-    // ROBE_MPCOST: robe wearer pays less to cast (reduced by robe rarity)
-    if (OwnsPassive(PassiveType::ROBE_MPCOST)
-        && context.source->armor.target == Target::PLAYERAC_SPELL)
-    {
-        mpCost -= (int)context.source->armor.rarity;
-        if (mpCost < 0)
-            mpCost = 0;
-    }
-
-    context.source->currentMp -= mpCost;
+    context.source->currentMp -= GetEffectiveMpCost(context.source, context.weapon);
     
     // Apply robe buff to wand / staff weapon
     Die die = context.weapon->die;
@@ -3543,7 +3603,7 @@ void DungeonCrawl::PushCombatSelection()
         weapon = &m_heroes[m_heroIndex].weapon4;
 
     // Replace attack with unarmed if there isn't enough MP
-    if (m_heroes[m_heroIndex].currentMp < weapon->mpCost)
+    if (m_heroes[m_heroIndex].currentMp < GetEffectiveMpCost(&m_heroes[m_heroIndex], weapon))
         weapon = &WEAPON("Unarmed");
 
     // If we can create an action already 
@@ -3682,7 +3742,7 @@ void DungeonCrawl::PushUseItem()
         currentWeapon = &prevContext.source->weapon4;
 
     // Cannot afford to cast this
-    if (prevContext.source->currentMp < currentWeapon->mpCost)
+    if (prevContext.source->currentMp < GetEffectiveMpCost(prevContext.source, currentWeapon))
         return;
 
     // Staff doesn't require a target can go strait to using item

@@ -156,6 +156,9 @@ private:
     /// Calculate the final damage die with bonuses
     Die CalculateDamageDie(Actor* actor, Weapon* weapon, bool baseDamage);
 
+    /// Compute the MP cost of a weapon for a given actor with current passives
+    int GetEffectiveMpCost(Actor* actor, const Weapon* weapon);
+
     /// Use the weapon on the target
     void UseWeapon(Action action);
 
@@ -424,6 +427,10 @@ private:
 
     /// List of passive options after combat
     std::vector<Passive> m_passiveOptions;
+
+    /// Accumulated Passive XP. Spent in chunks of 4 to award a passive selection
+    /// after combat (carries over between fights; at most one award per combat).
+    int m_passiveXP = 0;
 
     /// The tiles for the dungeon map
     std::vector<Animation> m_tiles;

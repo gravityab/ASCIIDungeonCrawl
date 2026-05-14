@@ -15,34 +15,34 @@
 enum class PassiveType : int32_t
 {
     INVALID = -1,
-    GLOVES_BASH,            // [x] Gloves have change to stun opponent
-    GLOVES_PICKPOCKET,      // [x] Gloves have chance to steal gold on hit when equipped with leather
-    GLOVES_BOXER,           // [x] Gloves swing once per level if equipped with two gloves
-    DAGGER_DUALWIELD,       // [x] Swing with both weapons so as long as they are both swords or daggers or any combination
-    DAGGER_BLEED,           // [x] Daggers have chance to bleed
-    DAGGER_MULTIATTACK,     // [x] Daggers swing twice
-    SWORD_PARRY,            // [x] Swords have chance to parry incoming attacks
-    SWORD_RIPOSTE,          // [x] Use equipped swords when attacked
-    //SWORD_SHIELD,         // [ ] Swords deal twice as much damage with a shield
-    SWORD_BATTLEWIZARD,     // [x] Equiping sword with staff deals additional damage
-    GREATSWORD_HEAVYSWING,  // [x] Great sword speed decreased, great axes deal extra multi per level
-    GREATSWORD_ALONE,       // [x] Having only a great sword deals 2 times multi damage
-    GREATSWORD_HURT,        // [x] Every attack received this turn to hero equipping great swords doubles multi
-    WAND_QUICKSPELL,        // [x] Wands and Staves gain -2 speed
-    WAND_ELEMENTALMASTER,   // [x] Wands add 2x level to multi when eqipped with Robe
-    WAND_FINESSE,           // [x] Wands have chance to attack twice
-    STAFF_ELEMENTALMASTER,  // [x] Staffs deal twice as much multi but are slower
-    STAFF_IGNOREELEMENT,    // [x] Staffs ignore elemental weaknesses
-    STAFF_MAGICSHIELD,      // [x] Equipping robes with staff adds staff damage to mitigation as protective bubble
-    PLATE_TAUNT,            // [x] Add higher chance for monsters to aim for plate wearers
-    PLATE_HPBOOST,          // [x] Double the heroes hp per level when equipped with plate
-    PLATE_IGNOREDAMAGE,     // [x] Chance to ignore damage when equipping plate
-    LEATHER_GOLD,           // [x] Add X gold per monster slain. X is rarity of leather equipped
-    LEATHER_SCOUT,          // [x] See behind doors depending on how many heroes equip leather [1:Shop, 2:Traps, 4:Fountains and Monsters]
-    LEATHER_DAMAGE,         // [x] Daggers and Swords deal X extra multi. X is Level times Rarity.
-    ROBE_BACKLINE,          // [x] Robes make the wearer less threatening to monsters
-    ROBE_GLASSCANNON,       // [x] Magical damage is doubled. Damage recieved is doubled.
-    ROBE_MPCOST,            // [x] Magical cost is reduced by X. X is Rarity.
+    GLOVES_BASH,            // [x] Glove hits have a chance to stun (first swing per turn)
+    GLOVES_PICKPOCKET,      // [x] Glove + leather: chance to steal gold on hit
+    GLOVES_BOXER,           // [x] Two gloves: extra swings per turn that scale with level
+    DAGGER_DUALWIELD,       // [x] Dual-wield daggers, swords, or a mix to swing both weapons
+    DAGGER_BLEED,           // [x] Dagger hits have a chance to apply bleed (first swing per turn)
+    DAGGER_MULTIATTACK,     // [x] Each queued dagger swing happens twice
+    SWORD_PARRY,            // [x] Equipped sword: chance to negate an incoming hit
+    SWORD_RIPOSTE,          // [x] Equipped sword: chance to counter-attack with a sword roll
+    //SWORD_SHIELD,         // [ ] Sword + shield: doubles damage
+    SWORD_BATTLEWIZARD,     // [x] Sword + staff equipped: doubles damage of both
+    GREATSWORD_HEAVYSWING,  // [x] Great swords deal +(Level * Rarity) extra multi
+    GREATSWORD_ALONE,       // [x] Wielding only a great sword doubles its multi
+    GREATSWORD_HURT,        // [x] Each hit taken this turn adds +1 multi to your next great sword swing
+    WAND_QUICKSPELL,        // [x] Wand and Staff casts are 2 speed faster
+    WAND_ELEMENTALMASTER,   // [x] Wand or Staff worn with Robe adds +(Level * Rarity) to multi
+    WAND_FINESSE,           // [x] Each queued wand swing has a 25% chance to attack again
+    STAFF_ELEMENTALMASTER,  // [x] Staffs deal double multi but are slower and cost extra MP
+    STAFF_IGNOREELEMENT,    // [x] Staff attacks ignore enemy elemental resistance
+    STAFF_MAGICSHIELD,      // [x] Robe + Staff: incoming damage reduced by a staff roll
+    PLATE_TAUNT,            // [x] Monsters favor plate wearers in single-target picks
+    PLATE_HPBOOST,          // [x] Plate wearer doubles HP gained on level up
+    PLATE_IGNOREDAMAGE,     // [x] Plate wearer has a chance to fully ignore incoming damage
+    LEATHER_GOLD,           // [x] Leather wearer earns (Leather Rarity * Monster Rarity) gold per kill
+    LEATHER_SCOUT,          // [x] Leather wearers reveal door contents (1:Shop, 2:Trap, 4:Fountain/Monsters)
+    LEATHER_DAMAGE,         // [x] Leather + dual daggers/swords/mix: +(Level * Rarity) multi
+    ROBE_BACKLINE,          // [x] Robe wearers are skipped by single-target monster picks when others are alive
+    ROBE_GLASSCANNON,       // [x] Robe + Wand/Staff: deal double damage and take double damage; spells cost more MP
+    ROBE_MPCOST,            // [x] Spell cost reduced by Robe Rarity
     COUNT,
 };
 
