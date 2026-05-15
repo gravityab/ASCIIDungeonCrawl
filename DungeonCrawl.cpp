@@ -584,22 +584,34 @@ void DungeonCrawl::DrawHighScoreList(Time delta)
         return;
     }
 
-    int x = 20;
+    int x = 22;
     int y = 2;
 
+    Image& background = IMAGE("main");
+    background.SetAttribute(0x0008);
+    background.WriteData(m_console, 0, 0);
+    for (int i = 20; i < 97; i++)
+    {
+        for (int j = 2; j < 22; j++)
+        {
+            m_console.SetData(L" ", i, j, 1, 1, 0x0008);
+        }
+    }
+
     // Draw a black backdrop block behind the table so it pops over the menu art.
-    m_console.SetData(' ', x - 2, y, 80, 26, 0x0007);
+    //m_console.SetData('#', x, y, 5, 5, 0x0008);
 
     m_console.WriteData(x + 25, y++, 0x000E, "H I G H   S C O R E S");
     y++;
 
-    m_console.WriteData(x,      y, 0x000F, "RANK");
-    m_console.WriteData(x +  6, y, 0x000F, "INI");
-    m_console.WriteData(x + 12, y, 0x000F, "FLOOR");
-    m_console.WriteData(x + 20, y, 0x000F, "KILLS");
-    m_console.WriteData(x + 30, y, 0x000F, "HERO LVL");
+    m_console.WriteData(x,      y, 0x000F, "Rank");
+    m_console.WriteData(x +  6, y, 0x000F, "Tag");
+    m_console.WriteData(x + 12, y, 0x000F, "Floor");
+    m_console.WriteData(x + 20, y, 0x000F, "Kills");
+    m_console.WriteData(x + 36, y, 0x000F, "Hero Lvl");
+    m_console.WriteData(x + 57, y, 0x000F, "Max Damage");
     y++;
-    m_console.WriteData(x, y++, 0x0008, "------------------------------------------------------------");
+    m_console.WriteData(x, y++, 0x0008, "------------------------------------------------------------------------");
 
     const auto& scores = m_highScores.GetAll();
     for (int i = 0; i < HighScoreFile::kMaxScores; i++)
@@ -611,8 +623,19 @@ void DungeonCrawl::DrawHighScoreList(Time delta)
             m_console.WriteData(x,      y, attr, "%2d.",  i + 1);
             m_console.WriteData(x +  6, y, attr, "%s",    s.initials.c_str());
             m_console.WriteData(x + 12, y, attr, "%d",    s.floor);
-            m_console.WriteData(x + 20, y, attr, "%d",    s.TotalKills());
-            m_console.WriteData(x + 30, y, attr, "%d",    s.MaxLevel());
+            m_console.WriteData(x + 20, y, ToAttribute(Rarity::COMMON), "%2d", s.killsCommon);
+            m_console.WriteData(x + 23, y, ToAttribute(Rarity::RARE), "%2d", s.killsRare);
+            m_console.WriteData(x + 26, y, ToAttribute(Rarity::EPIC), "%2d", s.killsEpic);
+            m_console.WriteData(x + 29, y, ToAttribute(Rarity::LEGENDARY), "%2d", s.killsLegendary);
+            if (s.heroLevels.size() > 0)
+                m_console.WriteData(x + 36, y, attr, "%d",    s.heroLevels[0]);
+            if (s.heroLevels.size() > 1)
+                m_console.WriteData(x + 39, y, attr, "%d",    s.heroLevels[1]);
+            if (s.heroLevels.size() > 2)
+                m_console.WriteData(x + 42, y, attr, "%d",    s.heroLevels[2]);
+            if (s.heroLevels.size() > 3)
+                m_console.WriteData(x + 45, y, attr, "%d",    s.heroLevels[3]);
+            m_console.WriteData(x + 57, y, attr, "%2d", s.maxDamage);
         }
         else
         {
@@ -678,11 +701,11 @@ void DungeonCrawl::DrawDragonModifierDialog(Time delta)
     IMAGE("passive_dialog_short").WriteData(m_console, x, y);
 
     // Header + up to 2 modifier rows.
-    m_console.WriteData(x + 2, y + 1, 0x000E, "DRAGON MODIFIERS");
+    m_console.WriteData(x + 2, y, 0x000E, "Dragon Modifiers");
     for (size_t i = 0; i < monster.modifiers.size() && i < 2; ++i)
     {
         const std::string text = ToString(monster.modifiers[i]);
-        m_console.WriteData(x + 2, y + 2 + (int)i, 0x000F, "%s", text.c_str());
+        m_console.WriteData(x + 2, y + 1 + (int)i, 0x000F, "%s", text.c_str());
     }
 
     // For ElementImmune, append the immune element name on the same line as that modifier so the
@@ -2884,8 +2907,10 @@ void DungeonCrawl::UseWeapon(Action action)
                 damage = int(damage * 2);
             }
 
-            // Boss-dragon challenge modifiers: when the target is a monster with modifiers, fold
-            // in element/weapon-class resistances and the first-turn / element immunities.
+            // Boss-dragon resistance modifiers: halve damage for matching weapon classes.
+            // (The full-immunity modifiers - FirstTurnImmune and ElementImmune - are applied
+            //  *after* the min-1 damage clamp further down, otherwise the clamp would push 0
+            //  damage back up to 1 and the dragon would take chip damage on round 1.)
             if (actor->GetType() == ActorType::ACTOR_MONSTER && !static_cast<Monster*>(actor)->modifiers.empty())
             {
                 const Monster* boss = static_cast<Monster*>(actor);
@@ -2893,12 +2918,6 @@ void DungeonCrawl::UseWeapon(Action action)
                 {
                     return std::find(boss->modifiers.begin(), boss->modifiers.end(), m) != boss->modifiers.end();
                 };
-
-                if (hasMod(BossModifier::FirstTurnImmune) && boss->firstTurnImmune)
-                    damage = 0;
-
-                if (hasMod(BossModifier::ElementImmune) && damageType == boss->immuneElement)
-                    damage = 0;
 
                 if (hasMod(BossModifier::ResistMelee) && action.weapon)
                 {
@@ -2959,6 +2978,21 @@ void DungeonCrawl::UseWeapon(Action action)
             {
                 actor->protect = false;
                 damage = 0;
+            }
+
+            // Boss-dragon full immunities applied AFTER the min-1 clamp so they actually zero
+            // out the hit (Phasing/FirstTurnImmune on round 1, ElementImmune on matching element).
+            if (actor->GetType() == ActorType::ACTOR_MONSTER && !static_cast<Monster*>(actor)->modifiers.empty())
+            {
+                const Monster* boss = static_cast<Monster*>(actor);
+                auto hasMod = [&](BossModifier m)
+                {
+                    return std::find(boss->modifiers.begin(), boss->modifiers.end(), m) != boss->modifiers.end();
+                };
+                if (hasMod(BossModifier::FirstTurnImmune) && boss->firstTurnImmune)
+                    damage = 0;
+                if (hasMod(BossModifier::ElementImmune) && damageType == boss->immuneElement)
+                    damage = 0;
             }
         }
 
