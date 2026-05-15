@@ -34,6 +34,9 @@ bool DungeonCrawl::Initialize(int frameLimit)
     else
         m_frameTimeLimit = Time::Zero;
 
+    // Load persisted high scores from %LOCALAPPDATA%\ASCIIDungeonCrawl\highscores.txt.
+    m_highScores.Load();
+
     SetState(State::STATE_MAIN);
 
     return true;
@@ -97,6 +100,9 @@ bool DungeonCrawl::RunLoop()
             case State::STATE_TRAP:
                 DrawTrapRoom(delta);
                 break;
+            case State::STATE_HIGHSCORE:
+                DrawHighScoreEntry(delta);
+                break;
         }
 
         // Draw the dungeon tiles
@@ -110,6 +116,9 @@ bool DungeonCrawl::RunLoop()
 
         // Draw the restart confirmation dialog
         DrawRestart(delta);
+
+        // Draw the high-score list overlay (gated on cursor state HIGHSCORE_LIST).
+        DrawHighScoreList(delta);
 
         m_console.Draw(nullptr);
     }
@@ -143,11 +152,22 @@ void DungeonCrawl::DrawMainScreen(Time delta)
     IMAGE("main").WriteData(m_console, 0, 0);
     m_console.WriteData(title.data(), 20, 4, 81, 12, 0x0006);
     m_console.WriteData(pressEnter.data(), 27, 23, 66, 4, m_blink ? 0x0008 : 0x000B);
+    m_console.WriteData(2, 28, 0x0008, "Press Ctrl for high scores");
+
+    // Only respond to top-level input when no overlay is up. If e.g. the high-score list is
+    // showing, m_ui.GetState() will be HIGHSCORE_LIST and we let that overlay own the input.
+    if (m_ui.GetState() != CursorState::ROOT)
+        return;
 
     if (m_input.Released(Button::BUTTON_SELECT))
     {
         SetState(State::STATE_SHOP);
         //SetState(State::STATE_PASSIVE);
+    }
+    // Ctrl (BUTTON_PASSIVES = RCtrl) opens the high-score list overlay.
+    if (m_input.Released(Button::BUTTON_PASSIVES))
+    {
+        PushHighScoreList();
     }
 }
 
@@ -456,6 +476,172 @@ void DungeonCrawl::DrawRestart(Time delta)
     IMAGE("menu_restart_dialog").WriteData(m_console, x, y);
     m_console.WriteData(x + 6, y + 6, m_ui.GetCursorIndex() == 0 ? BLINK(0x0007) : 0x0007, " NO ");
     m_console.WriteData(x + 21, y + 6, m_ui.GetCursorIndex() == 1 ? BLINK(0x0007) : 0x0007, " YES " );
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+// High-score: initials entry shown after a party wipe.
+// --------------------------------------------------------------------------------------------------------------------
+void DungeonCrawl::DrawHighScoreEntry(Time delta)
+{
+    // Drive the input here so this screen is self-contained.
+    // Up/Down: cycle letter at the current position. Left/Right: move position. Enter: confirm
+    // all three letters and return to main. Backspace: rewind position.
+    if (m_ui.GetState() == CursorState::HIGHSCORE_INITIALS)
+    {
+        auto cycle = [](char c, int delta) -> char
+        {
+            // Wrap A..Z inclusive.
+            int v = (c - 'A' + delta + 26) % 26;
+            return (char)('A' + v);
+        };
+        if (m_input.Released(Button::BUTTON_UP))
+            m_initials[m_initialsPosition] = cycle(m_initials[m_initialsPosition], +1);
+        if (m_input.Released(Button::BUTTON_DOWN))
+            m_initials[m_initialsPosition] = cycle(m_initials[m_initialsPosition], -1);
+        if (m_input.Released(Button::BUTTON_RIGHT) && m_initialsPosition < 2)
+            m_initialsPosition++;
+        if (m_input.Released(Button::BUTTON_LEFT) && m_initialsPosition > 0)
+            m_initialsPosition--;
+        if (m_input.Released(Button::BUTTON_BACK) && m_initialsPosition > 0)
+            m_initialsPosition--;
+
+        if (m_input.Released(Button::BUTTON_SELECT))
+        {
+            // Commit the typed initials into the inserted record and persist.
+            const std::string initials(m_initials, 3);
+            m_highScores.SetInitialsAt(m_lastRank, initials);
+            m_currentRun.initials = initials;
+            m_highScores.Save();
+            SetState(State::STATE_MAIN);
+            return;
+        }
+    }
+
+    // Render. Use a plain background and draw stat lines plus an editable initials field.
+    DrawBackground(delta, 2, 0x0004);
+
+    int x = 30;
+    int y = 4;
+    m_console.WriteData(x, y++, 0x000C, "G A M E   O V E R");
+    y++;
+
+    if (m_lastRank > 0)
+        m_console.WriteData(x, y++, 0x000E, "NEW HIGH SCORE - RANK %d", m_lastRank);
+    else
+        m_console.WriteData(x, y++, 0x0008, "(didn't make the top %d)", HighScoreFile::kMaxScores);
+    y++;
+
+    m_console.WriteData(x, y++, 0x0007, "Floor reached    : %d", m_currentRun.floor);
+    m_console.WriteData(x, y++, 0x0007, "Monsters killed  : %d", m_currentRun.TotalKills());
+    m_console.WriteData(x, y++, 0x0008, "  Common    : %d", m_currentRun.killsCommon);
+    m_console.WriteData(x, y++, 0x0008, "  Rare      : %d", m_currentRun.killsRare);
+    m_console.WriteData(x, y++, 0x0008, "  Epic      : %d", m_currentRun.killsEpic);
+    m_console.WriteData(x, y++, 0x0008, "  Legendary : %d", m_currentRun.killsLegendary);
+    y++;
+    m_console.WriteData(x, y++, 0x0007, "Hero levels      : ");
+    for (size_t i = 0; i < m_currentRun.heroLevels.size(); i++)
+        m_console.WriteData(x + 19 + (int)i * 4, y - 1, 0x000F, "%d  ", m_currentRun.heroLevels[i]);
+    y++;
+
+    m_console.WriteData(x, y++, 0x000F, "Enter your initials:");
+    int ix = x + 22;
+    for (int i = 0; i < 3; i++)
+    {
+        uint16_t attr = (i == m_initialsPosition) ? BLINK(0x000E) : 0x0007;
+        char buf[2] = { m_initials[i], 0 };
+        m_console.WriteData(ix + i * 2, y - 1, attr, "%s", buf);
+    }
+    y += 2;
+    m_console.WriteData(x, y++, 0x0008, "UP/DOWN: letter   LEFT/RIGHT: position   ENTER: save");
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+// High-score: read-only list overlay, shown from the main menu by pressing Ctrl.
+// --------------------------------------------------------------------------------------------------------------------
+void DungeonCrawl::DrawHighScoreList(Time delta)
+{
+    if (m_ui.GetState() != CursorState::HIGHSCORE_LIST)
+        return;
+
+    // Any of these closes the overlay and returns to the main menu. Note we intentionally do
+    // NOT close on BUTTON_PASSIVES (Ctrl) here, because that's the same key that opened the
+    // overlay - DrawMainScreen consumes the Released event to push the list, then this draw
+    // would consume the same event to pop it off in the same frame.
+    if (m_input.Released(Button::BUTTON_BACK)
+        || m_input.Released(Button::BUTTON_SELECT)
+        || m_input.Released(Button::BUTTON_MENU))
+    {
+        m_ui.PopBack(1);
+        return;
+    }
+
+    int x = 20;
+    int y = 2;
+
+    // Draw a black backdrop block behind the table so it pops over the menu art.
+    m_console.SetData(' ', x - 2, y, 80, 26, 0x0007);
+
+    m_console.WriteData(x + 25, y++, 0x000E, "H I G H   S C O R E S");
+    y++;
+
+    m_console.WriteData(x,      y, 0x000F, "RANK");
+    m_console.WriteData(x +  6, y, 0x000F, "INI");
+    m_console.WriteData(x + 12, y, 0x000F, "FLOOR");
+    m_console.WriteData(x + 20, y, 0x000F, "KILLS");
+    m_console.WriteData(x + 30, y, 0x000F, "HERO LVL");
+    y++;
+    m_console.WriteData(x, y++, 0x0008, "------------------------------------------------------------");
+
+    const auto& scores = m_highScores.GetAll();
+    for (int i = 0; i < HighScoreFile::kMaxScores; i++)
+    {
+        uint16_t attr = ((i + 1) == m_lastRank) ? 0x000E : 0x0007;
+        if (i < (int)scores.size())
+        {
+            const RunStats& s = scores[i];
+            m_console.WriteData(x,      y, attr, "%2d.",  i + 1);
+            m_console.WriteData(x +  6, y, attr, "%s",    s.initials.c_str());
+            m_console.WriteData(x + 12, y, attr, "%d",    s.floor);
+            m_console.WriteData(x + 20, y, attr, "%d",    s.TotalKills());
+            m_console.WriteData(x + 30, y, attr, "%d",    s.MaxLevel());
+        }
+        else
+        {
+            m_console.WriteData(x,      y, 0x0008, "%2d.", i + 1);
+            m_console.WriteData(x +  6, y, 0x0008, "---");
+        }
+        y++;
+    }
+    y++;
+    //m_console.WriteData(x, y, 0x0008, "Press BACK / ENTER / ESC to close");
+}
+
+void DungeonCrawl::PushHighScoreEntry()
+{
+    CursorContext context;
+    context.state = CursorState::HIGHSCORE_INITIALS;
+    context.cursor = ANIMATION("select_nothing");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
+    context.index = 0;
+    context.maxIndex = 0;
+    context.minIndex = 0;
+    context.direction = CursorIndexDirection::HORIZONTAL;
+    m_ui.PushBack(context);
+}
+
+void DungeonCrawl::PushHighScoreList()
+{
+    CursorContext context;
+    context.state = CursorState::HIGHSCORE_LIST;
+    context.cursor = ANIMATION("select_nothing");
+    context.cursor.SetAttributes(0, 0x0007);
+    context.cursor.SetAttributes(1, 0x0008);
+    context.index = 0;
+    context.maxIndex = 0;
+    context.minIndex = 0;
+    context.direction = CursorIndexDirection::VERTICAL;
+    m_ui.PushBack(context);
 }
 
 void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
@@ -1410,11 +1596,30 @@ void DungeonCrawl::DrawAction(Time delta)
         }
         if (!heroesAlive)
         {
-            // Game over. Display the screen until the player presses start
-            if (m_input.Released(Button::BUTTON_SELECT))
+            // Party wipe. Capture end-of-run stats (hero levels + inventory snapshot), insert into
+            // the high-score table, then enter the initials-entry state.
+            m_currentRun.floor = m_floor;
+            m_currentRun.heroLevels.clear();
+            m_currentRun.inventory.clear();
+            for (int index = 0; index < (int)m_heroes.size(); index++)
             {
-                SetState(State::STATE_MAIN);
+                m_currentRun.heroLevels.push_back(m_heroes[index].level);
+                std::string slot;
+                slot.reserve(64);
+                slot += m_heroes[index].weapon1.name; slot += '/';
+                slot += m_heroes[index].weapon2.name; slot += '/';
+                slot += m_heroes[index].weapon3.name; slot += '/';
+                slot += m_heroes[index].weapon4.name; slot += '/';
+                slot += m_heroes[index].armor.name;
+                m_currentRun.inventory.push_back(slot);
             }
+            // Default initials are AAA; the player will edit them in the HIGHSCORE state.
+            m_currentRun.initials = "AAA";
+            m_initials[0] = m_initials[1] = m_initials[2] = 'A';
+            m_initialsPosition = 0;
+            m_lastRank = m_highScores.Insert(m_currentRun);
+
+            SetState(State::STATE_HIGHSCORE);
         }
     }
 }
@@ -1706,7 +1911,8 @@ void DungeonCrawl::ProcessInput()
             passive.bNew = true;
             passive.owned = true;
             m_passives.push_back(passive);
-            
+            m_currentRun.passiveNames.push_back(passive.name);
+
             SetState(State::STATE_TREASURE);
             return;
         }
@@ -2662,6 +2868,22 @@ void DungeonCrawl::UseWeapon(Action action)
         if (action.source && action.source->GetType() == ActorType::ACTOR_HERO)
         {
             Monster* monster = static_cast<Monster*>(actor);
+
+            // Run-stat tracking: highest single-hit damage and per-rarity kill counter.
+            if (m_damageFinal > m_currentRun.maxDamage)
+                m_currentRun.maxDamage = m_damageFinal;
+            if (monster->currentHp == 0)
+            {
+                switch (monster->rarity)
+                {
+                case Rarity::COMMON:    m_currentRun.killsCommon++;    break;
+                case Rarity::RARE:      m_currentRun.killsRare++;      break;
+                case Rarity::EPIC:      m_currentRun.killsEpic++;      break;
+                case Rarity::LEGENDARY: m_currentRun.killsLegendary++; break;
+                default: break;
+                }
+            }
+
             if (GetRandomValue(0, 3) == 0)
             {
                 if (OwnsPassive(PassiveType::GLOVES_BASH) && action.weapon->weaponType == WeaponType::GLOVES && action.firstSwing)
@@ -2875,12 +3097,19 @@ void DungeonCrawl::SetState(State state)
         m_passivesTab = false;
         m_passivesTabIndex = 0;
         m_passiveXP = 0;
+
+        // Reset live run-stat tracking for the new game.
+        m_currentRun = RunStats();
+        m_initials[0] = m_initials[1] = m_initials[2] = 'A';
+        m_initialsPosition = 0;
+        m_lastRank = 0;
     }
     else if (state == State::STATE_NEXT_FLOOR)
     {
         m_stairs = ANIMATION("stairs");
         m_timeLeft = ToMilliseconds(2000);
         m_floor++;
+        m_currentRun.floor = m_floor;
         //m_currentFloor = &m_dungeon.GetFloor(m_floor);
         m_dungeonEx.GetNextFloor(std::move(m_currentFloor));
         m_currentFloorPtr = &m_currentFloor;
@@ -2898,6 +3127,8 @@ void DungeonCrawl::SetState(State state)
     }
     else if (state == State::STATE_SHOP)
     {
+        m_currentRun.shopsFound++;
+
         // At max heroes, "New Hero" items are converted to "Level Up 5" items
         if (m_heroes.size() == 4)
         {
@@ -3000,9 +3231,14 @@ void DungeonCrawl::SetState(State state)
     }
     else if (state == State::STATE_TRAP)
     {
+        m_currentRun.trapsFound++;
         m_trapInitiated = false;
         m_trapTriggered = false;
         PushTrap();
+    }
+    else if (state == State::STATE_HIGHSCORE)
+    {
+        PushHighScoreEntry();
     }
 
     UpdateTiles();

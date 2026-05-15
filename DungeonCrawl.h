@@ -15,6 +15,7 @@
 #include "Dungeon.h"
 #include "Frame.h"
 #include "Hero.h"
+#include "HighScore.h"
 #include "Image.h"
 #include "Input.h"
 #include "Rarity.h"
@@ -59,6 +60,16 @@ private:
 
     /// Draw the passive selection screen
     void DrawPassiveScreen(Time delta);
+
+    /// Draw the high-score entry screen (3-letter initials + stat readout) on party wipe.
+    void DrawHighScoreEntry(Time delta);
+
+    /// Draw the read-only high-score list (accessed from the main menu via Ctrl).
+    void DrawHighScoreList(Time delta);
+
+    /// Push UI cursor states for high-score input / display.
+    void PushHighScoreEntry();
+    void PushHighScoreList();
 
     /// Draw the fountain room
     void DrawFountain(Time delta);
@@ -435,4 +446,20 @@ private:
     /// List of fairies
     struct Fairy { Animation fairy; Animation dust; int dir; int x; int y; int x_dust; int y_dust; Time timeLeft; };
     std::vector<Fairy> m_fairies;
+
+    /// Live stats for the current run; finalised and inserted into m_highScores on party wipe.
+    RunStats m_currentRun;
+
+    /// Persisted top-10 high scores (load from disk on startup, save on insert).
+    HighScoreFile m_highScores;
+
+    /// 3-letter initials buffer used by the HIGHSCORE_INITIALS state.
+    char m_initials[3] = { 'A', 'A', 'A' };
+
+    /// Which initial position the cursor is on (0..2).
+    int m_initialsPosition = 0;
+
+    /// 1-based rank of the run just inserted (0 if it didn't make the top 10). Highlighted in the
+    /// HIGHSCORE_INITIALS view so the player can see where they landed.
+    int m_lastRank = 0;
 };

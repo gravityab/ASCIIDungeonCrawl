@@ -40,7 +40,9 @@ enum class CursorState
     PASSIVE_SELECT, /// Passive selection screen
     MENU,        ///< Menu dialog
     MENU_CREDITS, ///< Menu credits dialog
-    MENU_RESTART ///< Menu restart confirmation dialog
+    MENU_RESTART, ///< Menu restart confirmation dialog
+    HIGHSCORE_INITIALS, ///< Entering 3-letter initials after a run
+    HIGHSCORE_LIST     ///< Viewing the saved high scores from the main menu
 };
 
 enum class CursorIndexDirection

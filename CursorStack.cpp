@@ -174,6 +174,8 @@ std::string ToString(CursorState state)
         case CursorState::TRAP_INITIATED: return "Leave";
         case CursorState::ITEM_USED: return "Item Used";
         case CursorState::PASSIVE_SELECT: return "Select Passive";
+        case CursorState::HIGHSCORE_INITIALS: return "Enter Initials";
+        case CursorState::HIGHSCORE_LIST: return "High Scores";
         default:
             return "Unknown";
     }

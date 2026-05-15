@@ -21,5 +21,6 @@ enum class State : uint8_t
     STATE_FOUNTAIN,    ///< Display fairy room
     STATE_TRAP,        ///< Display a room with a trap
     STATE_PASSIVE,     ///< Display passive selection
+    STATE_HIGHSCORE,   ///< Enter initials after a run (party wipe), then return to main
 };
 
