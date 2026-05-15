@@ -27,6 +27,38 @@
 // Link against Version.lib for GetFileVersionInfo / VerQueryValue.
 #pragma comment(lib, "Version.lib")
 
+// BearLibTerminal owns the game window after terminal_open(), so it shows BLT's default icon
+// rather than the MAINICON we embedded for the .exe (Explorer / shortcut icon still works).
+// Locate BLT's window in our process and apply MAINICON as both the small (title-bar) and
+// big (taskbar / Alt-Tab) icons via WM_SETICON.
+static HWND       s_dcWindow = nullptr;
+static BOOL CALLBACK FindOurWindow(HWND hwnd, LPARAM)
+{
+    DWORD pid = 0;
+    GetWindowThreadProcessId(hwnd, &pid);
+    if (pid != GetCurrentProcessId()) return TRUE;
+    if (!IsWindowVisible(hwnd))       return TRUE;
+    // Skip windows that have an owner (dialogs, tooltips); BLT's main window is top-level.
+    if (GetWindow(hwnd, GW_OWNER))    return TRUE;
+    s_dcWindow = hwnd;
+    return FALSE; // stop enumeration
+}
+
+static void ApplyWindowIcon()
+{
+    HMODULE hMod = GetModuleHandleA(nullptr);
+    if (!hMod) return;
+    HICON hSmall = (HICON)LoadImageA(hMod, "MAINICON", IMAGE_ICON, 16, 16, LR_DEFAULTCOLOR);
+    HICON hBig   = (HICON)LoadImageA(hMod, "MAINICON", IMAGE_ICON, 32, 32, LR_DEFAULTCOLOR);
+    if (!hSmall && !hBig) return;
+
+    s_dcWindow = nullptr;
+    EnumWindows(FindOurWindow, 0);
+    if (!s_dcWindow) return;
+    if (hSmall) SendMessageA(s_dcWindow, WM_SETICON, ICON_SMALL, reinterpret_cast<LPARAM>(hSmall));
+    if (hBig)   SendMessageA(s_dcWindow, WM_SETICON, ICON_BIG,   reinterpret_cast<LPARAM>(hBig));
+}
+
 // Read the FileVersion string from our own .exe's VERSIONINFO resource (defined in
 // DungeonCrawl.rc). Returns an empty string on failure so the caller can fall back.
 static std::string GetFileVersion()
@@ -166,6 +198,10 @@ int main()
     // inside RunLoop didn't bring the window forward; an explicit refresh here ensures it does.
     terminal_clear();
     terminal_refresh();
+
+    // Replace BLT's default window icon with our embedded MAINICON. Must run after the first
+    // refresh so the window is actually visible and EnumWindows can find it.
+    ApplyWindowIcon();
 
     DungeonCrawl dungeon;
     if (!dungeon.Initialize(60))

@@ -41,6 +41,24 @@ void Weapon::Randomize()
     die = dice.GetDie();
     avgGold = dice.GetAvg();
 
+    // Scale wand / staff MP cost by rarity so higher-tier spell weapons demand a deeper mana
+    // pool. A level 1 hero rarely affords a Legendary staff cast - they have to level up first.
+    // The scaled cost is baked into mpCost itself, so anywhere that reads weapon->mpCost
+    // (shop display, GetEffectiveMpCost, hover panels) shows the rarity-adjusted value.
+    //   Common: x1.0   Rare: x1.3   Epic: x2.6   Legendary: x3.0
+    if (mpCost > 0 && (weaponType == WeaponType::WAND || weaponType == WeaponType::STAFF))
+    {
+        double mult = 1.0;
+        switch (rarity)
+        {
+            case Rarity::RARE:      mult = 1.3; break;
+            case Rarity::EPIC:      mult = 2.6; break;
+            case Rarity::LEGENDARY: mult = 3.0; break;
+            default:                mult = 1.0; break;
+        }
+        mpCost = int(double(mpCost) * mult + 0.5);
+    }
+
     std::vector<DamageType> damageTypes = { DamageType::COLD, DamageType::FIRE, DamageType::LIGHTNING, DamageType::NECROTIC, DamageType::POISON, DamageType::PSYCHIC };
     if (rarity == Rarity::LEGENDARY)
         resistances.push_back(ROLLTABLE(damageTypes));

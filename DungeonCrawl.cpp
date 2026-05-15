@@ -2105,6 +2105,21 @@ void DungeonCrawl::ProcessInput()
             action.source = m_ui.GetContext().source;
             action.weapon = m_ui.GetContext().weapon;
             action.targets.push_back(&m_currentRoom->monsters[m_ui.GetCursorIndex()]);
+
+            // Charge MP now that the action is actually being queued (was previously charged
+            // at weapon-select time, which leaked MP when the player hit Back). Duplicate-
+            // attack passives below (WAND_FINESSE, DAGGER_MULTIATTACK) clone this action and
+            // do NOT pay extra MP.
+            {
+                const int cost = GetEffectiveMpCost(action.source, action.weapon);
+                if (cost > 0)
+                {
+                    action.source->currentMp -= cost;
+                    if (action.source->currentMp < 0)
+                        action.source->currentMp = 0;
+                }
+            }
+
             const size_t actionsBegin = m_actions.size();
             m_actions.push_back(action);
 
@@ -2200,6 +2215,18 @@ void DungeonCrawl::ProcessInput()
             action.source = m_ui.GetContext().source;
             action.weapon = m_ui.GetContext().weapon;
             action.targets.push_back(&m_heroes[m_ui.GetCursorIndex()]);
+
+            // Charge MP now (deferred from weapon-select). See COMBAT_MONSTERS path above.
+            {
+                const int cost = GetEffectiveMpCost(action.source, action.weapon);
+                if (cost > 0)
+                {
+                    action.source->currentMp -= cost;
+                    if (action.source->currentMp < 0)
+                        action.source->currentMp = 0;
+                }
+            }
+
             m_actions.push_back(action);
 
             m_ui.PopBackTo(2);
@@ -4172,23 +4199,28 @@ void DungeonCrawl::PushCombatSelection()
     if (m_heroes[m_heroIndex].currentMp < GetEffectiveMpCost(&m_heroes[m_heroIndex], weapon))
         weapon = &WEAPON("Unarmed");
 
-    // Charge the MP cost of the chosen combat weapon. (Previously combat went straight to action
-    // queuing without ever spending MP - UseSelectedItem only fires for the out-of-combat "Use
-    // Item" menu - so wands, staves, and Protect staves all cast for free. Now deducted here for
-    // every weapon path: ENEMY, ALLENEMIES, ALLPLAYERSHP, PLAYER_PROTECT, PLAYER_PROTECTALL.)
+    // MP is charged at the moment an action is actually queued, NOT at weapon-select time.
+    // For weapons that fire immediately below (ALLENEMIES / ALLPLAYERSHP / PLAYER_PROTECTALL)
+    // we charge here. For single-target weapons (ENEMY / PLAYER) the charge happens in the
+    // COMBAT_MONSTERS / COMBAT_HERO confirm handlers so pressing Back refunds nothing
+    // (because nothing was spent). Duplicate-attack passives like WAND_FINESSE and
+    // DAGGER_MULTIATTACK clone the queued action rather than re-routing through this function,
+    // so charging once here covers all duplicates for free.
+    auto chargeMp = [this](Weapon* w)
     {
-        const int cost = GetEffectiveMpCost(&m_heroes[m_heroIndex], weapon);
+        const int cost = GetEffectiveMpCost(&m_heroes[m_heroIndex], w);
         if (cost > 0)
         {
             m_heroes[m_heroIndex].currentMp -= cost;
             if (m_heroes[m_heroIndex].currentMp < 0)
                 m_heroes[m_heroIndex].currentMp = 0;
         }
-    }
+    };
 
     // If we can create an action already
     if (weapon->target == Target::ALLENEMIES)
     {
+        chargeMp(weapon);
         Action action;
         action.source = &m_heroes[m_heroIndex];
         action.weapon = weapon;
@@ -4202,6 +4234,7 @@ void DungeonCrawl::PushCombatSelection()
     }
     if (weapon->target == Target::ALLPLAYERSHP)
     {
+        chargeMp(weapon);
         Action action;
         action.source = &m_heroes[m_heroIndex];
         action.weapon = weapon;
@@ -4215,6 +4248,7 @@ void DungeonCrawl::PushCombatSelection()
     }
     if (weapon->target == Target::PLAYER_PROTECTALL)
     {
+        chargeMp(weapon);
         Action action;
         action.source = &m_heroes[m_heroIndex];
         action.weapon = weapon;
