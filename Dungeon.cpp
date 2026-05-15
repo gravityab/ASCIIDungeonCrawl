@@ -204,22 +204,24 @@ State DungeonEx::RollState()
     if (IsBossFloor())
         return State::STATE_COMBAT;
 
-    // Weighted room-type table. The previous distribution (50/25/16/7) had shops at 25% which
-    // felt way too frequent in practice. Adjusted target distribution (per door roll):
-    //   Combat   : 60%  (30 entries)
-    //   Trap     : 18%  ( 9 entries)
-    //   Shop     : 12%  ( 6 entries)   <-- was 25%
-    //   Fountain : 10%  ( 5 entries)
-    // Easy to tune by adjusting the entry counts below; total isn't required to be 50 or any
+    // Weighted room-type table. With 3 doors rolled per non-boss floor, the fountain entry
+    // gives an expected fountain about once per 30 floors (1/91 per door * 3 doors = 1/30.3
+    // per floor). Fountains are meant to feel like a real treat, not a regular pit stop.
+    // Target distribution (per door roll):
+    //   Combat   : ~66%  (60 entries)
+    //   Trap     : ~20%  (18 entries)
+    //   Shop     : ~13%  (12 entries)
+    //   Fountain : ~1.1% ( 1 entry)   <-- was 10%
+    // Easy to tune by adjusting the entry counts below; total isn't required to be any
     // specific number, just keep the ratios you want.
     static const std::vector<State> table = []
     {
         std::vector<State> v;
-        v.reserve(50);
-        for (int i = 0; i < 30; ++i) v.push_back(State::STATE_COMBAT);
-        for (int i = 0; i <  9; ++i) v.push_back(State::STATE_TRAP);
-        for (int i = 0; i <  6; ++i) v.push_back(State::STATE_SHOP);
-        for (int i = 0; i <  5; ++i) v.push_back(State::STATE_FOUNTAIN);
+        v.reserve(91);
+        for (int i = 0; i < 60; ++i) v.push_back(State::STATE_COMBAT);
+        for (int i = 0; i < 18; ++i) v.push_back(State::STATE_TRAP);
+        for (int i = 0; i < 12; ++i) v.push_back(State::STATE_SHOP);
+        for (int i = 0; i <  1; ++i) v.push_back(State::STATE_FOUNTAIN);
         return v;
     }();
     return ROLLTABLE(table);
@@ -228,13 +230,31 @@ State DungeonEx::RollState()
 Monster DungeonEx::RollMonster(DamageType type, Rarity rarity, MonsterFamily family, bool dead)
 {
     // Monster power = (5 + rarity) * (floor/5)^1.5 + rarity
-    // The 1.5 exponent (was 2.0) softens the O(floor^2) ramp - a floor 15
-    // Legendary now lands around expected-damage 47 instead of 85, leaving room
-    // for a typical hero with Rare gear to actually fight back.
+    // The 1.5 exponent shapes the mid-game (floors 5-19) into a reasonable curve. Three cliffs
+    // ramp the late game:
+    //   floor 20: power steps up 1.6x (first hard wall - the player must have upgraded by here)
+    //   floor 30: power steps up another 1.6x (second wall - peak gear required)
+    //   floor 30+: exponential multiplier on top of both steps (doubles every 20 floors)
+    // Net multipliers applied to base curve:
+    //   floor 19: 1.0x
+    //   floor 20: 1.6x    <-- first cliff
+    //   floor 29: 1.6x
+    //   floor 30: 2.56x   <-- second cliff (1.6 * 1.6)
+    //   floor 50: 5.12x   (* 2)
+    //   floor 70: 10.24x  (* 4)
+    //   floor 90: 20.48x  (* 8)
+    //   floor 110: 40.96x (* 16)
+    // This applies to both damage and HP (both derive from `constant` below).
     const double part1 = 5 + (double(rarity) * 1);
     const double part2 = std::pow(double(double(int(m_floor) / 5)), 1.5);
     const double part3 = double(rarity);
-    const double result = (part1 * part2) + part3;
+    double result = (part1 * part2) + part3;
+    if (m_floor >= 20)
+        result *= 1.6;
+    if (m_floor >= 30)
+        result *= 1.6;
+    if (m_floor > 30)
+        result *= std::pow(2.0, double(m_floor - 30) / 20.0);
     const int expectedDamage = int(result);
 
     int constant  = expectedDamage / 2;

@@ -440,7 +440,7 @@ private:
     /// List of passive options after combat
     std::vector<Passive> m_passiveOptions;
 
-    /// Accumulated Passive XP. Spent in chunks of 4 to award a passive selection
+    /// Accumulated Passive XP. Spent in chunks of 5 to award a passive selection
     /// after combat (carries over between fights; at most one award per combat).
     int m_passiveXP = 0;
 

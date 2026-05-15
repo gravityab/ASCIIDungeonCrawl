@@ -1699,9 +1699,9 @@ void DungeonCrawl::DrawAction(Time delta)
             }
             m_passiveXP += xpEarned;
 
-            if (m_passiveXP >= 4)
+            if (m_passiveXP >= 5)
             {
-                m_passiveXP -= 4;
+                m_passiveXP -= 5;
                 SetState(State::STATE_PASSIVE);
             }
             else
@@ -2581,15 +2581,19 @@ void DungeonCrawl::LevelUp(Hero& hero)
         if (OwnsPassive(PassiveType::PLATE_HPBOOST))
             hpGain *= 2; // PLATE_HPBOOST: doubles HP gained per level when wearing plate
         hero.totalHp += hpGain;
-        mpGain = ROLL(multLow, 10, hero.level + 1);
+        // MP pool grows half as fast - mages who multiclass into plate shouldn't get a fat pool too.
+        mpGain = ROLL(multLow, 10, hero.level + 1) / 2;
         hero.totalMp += mpGain;
-        hero.bonusAC += (int)hero.armor.rarity + (hero.level / 2) + 1;
+        // AC growth was the dominant late-game scaling. Was rarity + level/2 + 1 per level
+        // (~180 at level 20 legendary). Now grows roughly half that, capped by rarity tier.
+        hero.bonusAC += ((int)hero.armor.rarity + 1) / 2 + ((hero.level % 2) == 0 ? 1 : 0);
     }
     else if (hero.armor.target == Target::PLAYERAC_SPELL)
     {
-        // If you equip ROBES you gain more MP during levels
+        // If you equip ROBES you gain more MP during levels (still the mage class)
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
-        mpGain = ROLL(multHigh, 10, hero.level + 1);
+        // Halved so the player actually has to budget casts. Was ~65/level avg at level 20.
+        mpGain = ROLL(multHigh, 10, hero.level + 1) / 2;
         hero.totalMp += mpGain;
     }
     else if (hero.armor.target == Target::PLAYERAC_SPEED)
@@ -2597,15 +2601,16 @@ void DungeonCrawl::LevelUp(Hero& hero)
         // If you equip LEATHER you lower the amount required for levels
         hero.experience /= 2;
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
-        mpGain = ROLL(multLow, 10, hero.level + 1);
+        mpGain = ROLL(multLow, 10, hero.level + 1) / 2;
         hero.totalMp += mpGain;
-        hero.bonusAC += (int)hero.armor.rarity;
+        // Was rarity per level (~60 at level 20 legendary). Now only counts higher rarities.
+        hero.bonusAC += (int)hero.armor.rarity / 2;
     }
     else
     {
         // Equiping no ARMOR makes you gain little HP / MP for levels
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
-        mpGain = ROLL(multLow, 10, hero.level + 1);
+        mpGain = ROLL(multLow, 10, hero.level + 1) / 2;
         hero.totalMp += mpGain;
     }
 
@@ -3381,21 +3386,24 @@ void DungeonCrawl::SetState(State state)
         m_dungeonEx.GetNextFloor(std::move(m_currentFloor));
         m_currentFloorPtr = &m_currentFloor;
 
-        // Per-floor MP regen so a mage can keep using staff/wand throughout a run without the
-        // pool feeling like a one-time budget. Robe wearers (the mage archetype) regen twice as
-        // much, giving robes a clear "mage class" advantage on top of their existing per-level
-        // MP boost.
-        for (int index = 0; index < (int)m_heroes.size(); index++)
+        // MP regen now only happens at attribute-change boundaries (every 5 floors) instead of
+        // every floor. Previous 25%/50% per-floor regen meant the pool effectively topped off
+        // constantly and MP weapons felt free. Now it's a small refuel between elemental arcs -
+        // mages still need to budget casts across 5 floors and can't rely on it alone.
+        if ((m_floor % 5) == 0)
         {
-            auto& hero = m_heroes[index];
-            if (hero.currentHp == 0)
-                continue;
-            int regen = hero.totalMp / 4;                                // 25% baseline
-            if (hero.armor.target == Target::PLAYERAC_SPELL)
-                regen = hero.totalMp / 2;                                // 50% for robe wearers
-            hero.currentMp += regen;
-            if (hero.currentMp > hero.totalMp)
-                hero.currentMp = hero.totalMp;
+            for (int index = 0; index < (int)m_heroes.size(); index++)
+            {
+                auto& hero = m_heroes[index];
+                if (hero.currentHp == 0)
+                    continue;
+                int regen = hero.totalMp / 10;                               // 10% baseline (was 25%)
+                if (hero.armor.target == Target::PLAYERAC_SPELL)
+                    regen = hero.totalMp / 5;                                // 20% for robe wearers (was 50%)
+                hero.currentMp += regen;
+                if (hero.currentMp > hero.totalMp)
+                    hero.currentMp = hero.totalMp;
+            }
         }
 
         // No longer display any passives as new
