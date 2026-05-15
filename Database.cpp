@@ -5218,7 +5218,11 @@ void Database::Initialize()
         //                                        mult  die   const speed mp    ac    cost
         m_dieRangeDb["weapon_unarmed"] = DieRange(0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, Die(0, 0, 0), DamageType::NORMAL);
         m_dieRangeDb["weapon_gloves"]  = DieRange(1, 2, 4, 4, 1, 3, 0, 0, 0, 0, 0, 0, Die(2, 4, 4));
-        m_dieRangeDb["weapon_wand"]    = DieRange(2, 4, 4, 4, 1, 5, 2, 5, 4, 5, 0, 0, Die(2, 4, 4));
+        // Wand: bumped die from d4 to d6 so per-hit damage averages ~13.5 (was ~10.5), putting
+        // it slightly above sword's ~12 average. Justifies the MP cost; pairs with the lower
+        // speed/MP-cost positioning vs staff (which still hits harder + multi-target but is slower
+        // and pricier per cast).
+        m_dieRangeDb["weapon_wand"]    = DieRange(2, 4, 6, 6, 1, 5, 2, 5, 4, 5, 0, 0, Die(2, 4, 4));
         m_dieRangeDb["weapon_staff"]   = DieRange(3, 5, 8, 8, 1, 10, 8, 10, 8, 15, 0, 0, Die(2, 8, 8));
         m_dieRangeDb["weapon_dagger"]  = DieRange(1, 3, 4, 4, 1, 10, 1, 4, 0, 0, 0, 0, Die(2, 4, 4));
         m_dieRangeDb["weapon_sword"]   = DieRange(1, 4, 6, 6, 1, 6, 3, 6, 0, 0, 0, 0, Die(2, 6, 6));

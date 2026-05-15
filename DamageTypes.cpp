@@ -37,6 +37,7 @@ DamageType ToWeakness(DamageType type)
         case DamageType::FIRE:      return DamageType::WATER;
         case DamageType::LIGHTNING: return DamageType::COLD;
         case DamageType::NECROTIC:  return DamageType::HOLY;
+        case DamageType::NORMAL:    return DamageType::POISON;  // Poison beats Normal (per DamageTypes.h cycle)
         case DamageType::POISON:    return DamageType::STEEL;
         case DamageType::PSYCHIC:   return DamageType::DARK;
         case DamageType::HEALING:   return DamageType::HEALING;
@@ -58,6 +59,7 @@ DamageType ToStrength(DamageType type)
         case DamageType::FIRE:      return DamageType::COLD;
         case DamageType::LIGHTNING: return DamageType::WATER;
         case DamageType::NECROTIC:  return DamageType::HOLY;
+        case DamageType::NORMAL:    return DamageType::STEEL;    // Normal beats Steel (per DamageTypes.h cycle)
         case DamageType::POISON:    return DamageType::NORMAL;
         case DamageType::PSYCHIC:   return DamageType::DARK;
         case DamageType::HEALING:   return DamageType::HEALING;

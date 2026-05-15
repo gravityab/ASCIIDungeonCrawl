@@ -15,12 +15,62 @@
 /// Standard Template Library Headers
 #include <clocale>
 #include <stdio.h>
+#include <string>
+#include <vector>
 
 // Windows Library Headers.
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #endif
+
+// Link against Version.lib for GetFileVersionInfo / VerQueryValue.
+#pragma comment(lib, "Version.lib")
+
+// Read the FileVersion string from our own .exe's VERSIONINFO resource (defined in
+// DungeonCrawl.rc). Returns an empty string on failure so the caller can fall back.
+static std::string GetFileVersion()
+{
+    char exePath[MAX_PATH] = { 0 };
+    if (GetModuleFileNameA(nullptr, exePath, MAX_PATH) == 0)
+        return std::string();
+
+    DWORD handle = 0;
+    DWORD size   = GetFileVersionInfoSizeA(exePath, &handle);
+    if (size == 0)
+        return std::string();
+
+    std::vector<char> data(size);
+    if (!GetFileVersionInfoA(exePath, handle, size, data.data()))
+        return std::string();
+
+    // Walk the translation list to find which language/codepage block is present, then read
+    // the FileVersion string entry from that block. We default to the first translation found.
+    struct LangCp { WORD lang; WORD codePage; };
+    LangCp* translations = nullptr;
+    UINT    translationsBytes = 0;
+    if (!VerQueryValueA(data.data(), "\\VarFileInfo\\Translation",
+                        reinterpret_cast<LPVOID*>(&translations), &translationsBytes)
+        || translations == nullptr || translationsBytes < sizeof(LangCp))
+    {
+        return std::string();
+    }
+
+    char subBlock[64];
+    _snprintf_s(subBlock, _TRUNCATE,
+        "\\StringFileInfo\\%04x%04x\\FileVersion",
+        translations[0].lang, translations[0].codePage);
+
+    char* versionStr   = nullptr;
+    UINT  versionBytes = 0;
+    if (!VerQueryValueA(data.data(), subBlock,
+                        reinterpret_cast<LPVOID*>(&versionStr), &versionBytes)
+        || versionStr == nullptr)
+    {
+        return std::string();
+    }
+    return std::string(versionStr);
+}
 
 // --------------------------------------------------------------------------------------------------------------------
 // Subsystem:
@@ -84,7 +134,20 @@ int main()
     // Configure the window. Each call returns 0 on failure; track so we can report which one fails.
     const char* failed = nullptr;
     if (!terminal_set("window.size=120x30"))                 failed = "window.size";
-    if (!terminal_set("window.title='ASCII Dungeon Crawl'")) failed = "window.title";
+
+    // Compose the window title with the version pulled from our embedded VERSIONINFO resource.
+    // Falls back to the bare game name if the lookup fails for any reason.
+    std::string title = "window.title='ASCII Dungeon Crawl";
+    {
+        std::string ver = GetFileVersion();
+        if (!ver.empty())
+        {
+            title += " v";
+            title += ver;
+        }
+        title += "'";
+    }
+    if (!terminal_set(title.c_str()))                        failed = "window.title";
     if (!terminal_set("window.resizeable=true"))             failed = "window.resizeable";
     // Use a TTF so glyphs scale smoothly when the user resizes the window. Sized 8x16 initially.
     // The TK_RESIZED handler in Input.cpp re-applies this font at a new size on every resize.

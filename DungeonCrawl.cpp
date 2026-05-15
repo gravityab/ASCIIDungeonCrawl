@@ -486,7 +486,10 @@ void DungeonCrawl::DrawHighScoreEntry(Time delta)
     // Drive the input here so this screen is self-contained.
     // Up/Down: cycle letter at the current position. Left/Right: move position. Enter: confirm
     // all three letters and return to main. Backspace: rewind position.
-    if (m_ui.GetState() == CursorState::HIGHSCORE_INITIALS)
+    if (m_highScoreInputCooldown > Time::Zero)
+        m_highScoreInputCooldown -= delta;
+
+    if (m_ui.GetState() == CursorState::HIGHSCORE_INITIALS && m_highScoreInputCooldown <= Time::Zero)
     {
         auto cycle = [](char c, int delta) -> char
         {
@@ -878,7 +881,13 @@ void DungeonCrawl::DrawHero(Time delta)
         if (hero.currentHp == 0)
             borderColor = 0x0004;
 
-        bool hasResist = false;
+        // Show the hero an at-a-glance preview of how the currently-targeted monster's element
+        // will land on their armor:
+        //   GREEN border + "RESIST"   -> armor element beats the monster element (0.5x incoming)
+        //   RED   border + "WEAKNESS" -> armor element is beaten by the monster element (2x incoming)
+        // (Previously the two flags were swapped relative to the damage formula, and the labels
+        //  were painted in the element's own color which made resist/weakness look identical.)
+        bool hasResist   = false;
         bool hasWeakness = false;
         if (m_ui.GetState() == CursorState::COMBAT_MONSTERS)
         {
@@ -888,13 +897,15 @@ void DungeonCrawl::DrawHero(Time delta)
             {
                 if (hero.armor.resistances[res] == ToStrength(type))
                 {
-                    hasResist = true;
-                    borderColor = ToAttribute(ToStrength(type));
+                    // monster's element is what this damage type is STRONG against -> hero is WEAK
+                    hasWeakness = true;
+                    borderColor = 0x000C; // red
                 }
                 if (hero.armor.resistances[res] == ToWeakness(type))
                 {
-                    hasWeakness = true;
-                    borderColor = ToAttribute(ToWeakness(type));
+                    // monster's element is what this damage type is WEAK against -> hero RESISTS
+                    hasResist = true;
+                    borderColor = 0x000A; // green
                 }
             }
         }
@@ -908,9 +919,9 @@ void DungeonCrawl::DrawHero(Time delta)
         if (hero.condition.die != 0)
             m_console.WriteData(x + 6, y, ToAttribute(hero.condition.type), " %s ", ToConditionString(hero.condition.type).c_str());
         if (hasResist)
-            m_console.WriteData(x + 2, y + 7, borderColor, " RESIST ");
+            m_console.WriteData(x +  2, y + 7, 0x000A, " RESIST ");   // green
         if (hasWeakness)
-            m_console.WriteData(x + 13, y + 7, borderColor, " WEAKNESS ");
+            m_console.WriteData(x + 13, y + 7, 0x000C, " WEAKNESS "); // red
 
         // Animate selection
         if (m_ui.GetState() == CursorState::HERO
@@ -1083,17 +1094,25 @@ void DungeonCrawl::DrawMonsters(Time delta)
         {
             DamageType type = m_ui.GetContext().weapon->type;
 
+            // Tint the targeting cursor by elemental matchup so the player gets a clear
+            // good/bad signal:
+            //   GREEN  -> attack is super-effective (target's element is one this weapon beats)
+            //   RED    -> attack is resisted        (target's element is one that beats this weapon)
+            // Previously the cursor was tinted in the matched element's own color, which made
+            // weakness and resistance look identical (e.g. Water target showed as blue either way).
             for (int res = 0; res < (int)monster.armor.resistances.size(); res++)
             {
                 if (monster.armor.resistances[res] == ToStrength(type))
                 {
-                    m_ui.GetAnimation().SetAttributes(0, ToAttribute(ToStrength(type)));
-                    m_ui.GetAnimation().SetAttributes(1, SOLID(ToAttribute(ToStrength(type))));
+                    const uint16_t green = 0x000A;
+                    m_ui.GetAnimation().SetAttributes(0, green);
+                    m_ui.GetAnimation().SetAttributes(1, SOLID(green));
                 }
                 if (monster.armor.resistances[res] == ToWeakness(type))
                 {
-                    m_ui.GetAnimation().SetAttributes(0, ToAttribute(ToWeakness(type)));
-                    m_ui.GetAnimation().SetAttributes(1, SOLID(ToAttribute(ToWeakness(type))));
+                    const uint16_t red = 0x000C;
+                    m_ui.GetAnimation().SetAttributes(0, red);
+                    m_ui.GetAnimation().SetAttributes(1, SOLID(red));
                 }
             }
 
@@ -2416,6 +2435,10 @@ void DungeonCrawl::LevelUp(Hero& hero)
     int multLow = (hero.level / 3) + 1;
     int multHigh = (hero.level / 3) + 2;
 
+    // Track this level's MP gain separately so we can do a partial-refill (rather than a full
+    // refill) of current MP below. Otherwise MP weapons feel free because levels top off the pool.
+    int mpGain = 0;
+
     if (hero.armor.target == Target::PLAYERAC_SLOW)
     {
         // If you equip PLATE you gain more HP during levels
@@ -2423,34 +2446,42 @@ void DungeonCrawl::LevelUp(Hero& hero)
         if (OwnsPassive(PassiveType::PLATE_HPBOOST))
             hpGain *= 2; // PLATE_HPBOOST: doubles HP gained per level when wearing plate
         hero.totalHp += hpGain;
-        hero.totalMp += ROLL(multLow, 10, hero.level + 1);
+        mpGain = ROLL(multLow, 10, hero.level + 1);
+        hero.totalMp += mpGain;
         hero.bonusAC += (int)hero.armor.rarity + (hero.level / 2) + 1;
     }
     else if (hero.armor.target == Target::PLAYERAC_SPELL)
     {
         // If you equip ROBES you gain more MP during levels
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
-        hero.totalMp += ROLL(multHigh, 10, hero.level + 1);
+        mpGain = ROLL(multHigh, 10, hero.level + 1);
+        hero.totalMp += mpGain;
     }
     else if (hero.armor.target == Target::PLAYERAC_SPEED)
     {
         // If you equip LEATHER you lower the amount required for levels
         hero.experience /= 2;
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
-        hero.totalMp += ROLL(multLow, 10, hero.level + 1);
+        mpGain = ROLL(multLow, 10, hero.level + 1);
+        hero.totalMp += mpGain;
         hero.bonusAC += (int)hero.armor.rarity;
     }
     else
     {
         // Equiping no ARMOR makes you gain little HP / MP for levels
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
-        hero.totalMp += ROLL(multLow, 10, hero.level + 1);
+        mpGain = ROLL(multLow, 10, hero.level + 1);
+        hero.totalMp += mpGain;
     }
 
     hero.levelUpTimeLeft = ToMilliseconds(1500);
 
+    // HP still fully refills (standard RPG convention; not what the player complained about).
+    // MP only gains back the rolled increase - no free refill - so mages have to budget casts.
     hero.currentHp = hero.totalHp;
-    hero.currentMp = hero.totalMp;
+    hero.currentMp += mpGain;
+    if (hero.currentMp > hero.totalMp)
+        hero.currentMp = hero.totalMp;
 }
 
 bool DungeonCrawl::OwnsPassive(PassiveType type)
@@ -2683,22 +2714,32 @@ void DungeonCrawl::UseWeapon(Action action)
             continue;
         }
 
-        // Reduce or increase damage to if resistant or weak
+        // Reduce or increase damage if the target's element makes it resistant or weak.
+        //
+        // Semantics:
+        //   actor->armor.resistances[] holds the target's own elemental type(s).
+        //   ToStrength(damageType) = the element the damage is STRONG against
+        //     -> if the target IS that element, the damage hits it for double  (weakness).
+        //   ToWeakness(damageType) = the element the damage is WEAK against
+        //     -> if the target IS that element, the damage is halved          (resistance).
+        //
+        // (Prior to this fix the two assignments were swapped, doubling damage on resists and
+        //  halving damage on weaknesses.)
         if (isDamaging || isDraining)
         {
             bool ignoreResistance = false;
-            bool hasWeakness = false;
+            bool hasWeakness   = false;
             bool hasResistance = false;
             for (int res = 0; res < (int)actor->armor.resistances.size(); res++)
             {
                 if (actor->armor.resistances[res] == ToStrength(damageType))
                 {
-                    hasResistance = true;
+                    hasWeakness = true;
                     break;
                 }
                 if (actor->armor.resistances[res] == ToWeakness(damageType))
                 {
-                    hasWeakness = true;
+                    hasResistance = true;
                     break;
                 }
             }
@@ -3114,6 +3155,23 @@ void DungeonCrawl::SetState(State state)
         m_dungeonEx.GetNextFloor(std::move(m_currentFloor));
         m_currentFloorPtr = &m_currentFloor;
 
+        // Per-floor MP regen so a mage can keep using staff/wand throughout a run without the
+        // pool feeling like a one-time budget. Robe wearers (the mage archetype) regen twice as
+        // much, giving robes a clear "mage class" advantage on top of their existing per-level
+        // MP boost.
+        for (int index = 0; index < (int)m_heroes.size(); index++)
+        {
+            auto& hero = m_heroes[index];
+            if (hero.currentHp == 0)
+                continue;
+            int regen = hero.totalMp / 4;                                // 25% baseline
+            if (hero.armor.target == Target::PLAYERAC_SPELL)
+                regen = hero.totalMp / 2;                                // 50% for robe wearers
+            hero.currentMp += regen;
+            if (hero.currentMp > hero.totalMp)
+                hero.currentMp = hero.totalMp;
+        }
+
         // No longer display any passives as new
         //for (auto&& passive : m_passives)
         //{
@@ -3238,6 +3296,10 @@ void DungeonCrawl::SetState(State state)
     }
     else if (state == State::STATE_HIGHSCORE)
     {
+        // Ignore input for a brief moment so the killing-blow Enter (or any mashed input from
+        // combat) doesn't auto-submit the default "AAA" initials before the player even sees
+        // the screen.
+        m_highScoreInputCooldown = ToMilliseconds(500);
         PushHighScoreEntry();
     }
 
@@ -3656,39 +3718,56 @@ void DungeonCrawl::PushTrap()
 
 void DungeonCrawl::PushTrapInitiated()
 {
-    // Calculate total player speed. Lower the better
-    int totalHeroes = 0;
-    int totalSpeed = 0;
+    // Trap evasion is driven by an armor-based "dexterity" score for the alive party.
+    // LOWER score = better chance of slipping past unharmed.
+    //   LEATHER (rogue):  -(4 + rarity*2)   stacks per rogue, so a 4-rogue party is nearly immune
+    //   PLATE   (tank):   +(4 + rarity*2)   stacks per plate, so a heavy party is nearly always hit
+    //   ROBE    (mage):    0                 neutral - mages perform "average" regardless of staves
+    //   no armor:         +2                 small clumsiness penalty
+    // Weapon speeds are deliberately NOT factored in - they're a combat-pacing stat, and including
+    // them made staff-wielding mages feel as slow as plate, which the rebalance set out to fix.
+    int dexterity  = 0;
+    int aliveCount = 0;
     for (int index = 0; index < (int)m_heroes.size(); index++)
     {
-        if (m_heroes[index].currentHp > 0)
+        const Hero& hero = m_heroes[index];
+        if (hero.currentHp == 0)
+            continue;
+        aliveCount++;
+
+        const int r = (int)hero.armor.rarity;
+        switch (hero.armor.target)
         {
-            totalHeroes++;
-            totalSpeed += m_heroes[index].weapon1.speed;
-            totalSpeed += m_heroes[index].weapon2.speed;
-            totalSpeed += m_heroes[index].weapon3.speed;
-            totalSpeed += m_heroes[index].weapon4.speed;
-            if (m_heroes[index].armor.target == Target::PLAYERAC_SPEED)
-                totalSpeed -= m_heroes[index].armor.speed;
-            if (m_heroes[index].armor.target == Target::PLAYERAC_SLOW)
-                totalSpeed += m_heroes[index].armor.speed;
+        case Target::PLAYERAC_SPEED: dexterity -= (4 + r * 2); break; // leather: rogue bonus
+        case Target::PLAYERAC_SLOW:  dexterity += (4 + r * 2); break; // plate: tank penalty
+        case Target::PLAYERAC_SPELL:                           break; // robe: neutral
+        default:                     dexterity += 2;           break; // no armor: small penalty
         }
     }
-    totalSpeed /= totalHeroes;
+    if (aliveCount == 0)
+        aliveCount = 1;
 
-    // Calculate the trap DC
-    int min = std::max<int>(5 - (m_floor / 5), 0);
-    int max = std::max<int>(25 - (m_floor / 5), 0);
-    int speedRollDC = GetRandomValue(min, max);
+    // DC tightens with depth: at floor 0 it sits around +10 (any party with positive dex is at
+    // risk), at floor 20 it crashes to ~+3 (only rogue-leaning parties expect to pass), and at
+    // floor 25+ it dips negative (only heavy rogue stacks pass reliably).
+    const int min = std::max<int>( 0 - (m_floor / 3), -20);
+    const int max = std::max<int>(20 - (m_floor / 3),   0);
+    const int speedRollDC = GetRandomValue(min, max);
 
-    m_trapDC = speedRollDC;
-    m_trapRoll = totalSpeed;
+    m_trapDC   = speedRollDC;
+    m_trapRoll = dexterity;
 
-    // If the roll fails, damage everyone
-    if (totalSpeed > speedRollDC)
+    // If the party can't beat the DC, the trap fires and damages everyone (alive or dead). Damage
+    // scales harder than before so traps stay scary at the floor depths where the party HP pool
+    // is large.  Per-hero damage at representative depths:
+    //   floor  0 : 1d6+0  avg 3.5
+    //   floor 10 : 3d6+3  avg 13.5
+    //   floor 20 : 6d6+6  avg 27
+    //   floor 25 : 7d6+8  avg 32.5
+    if (dexterity > speedRollDC)
     {
         m_trapTriggered = true;
-        int damage = ROLL((m_floor / 5) + 1, 4, (m_floor / 5));
+        int damage = ROLL((m_floor / 4) + 1, 6, (m_floor / 3));
         for (int index = 0; index < (int)m_heroes.size(); index++)
         {
             m_heroes[index].currentHp -= damage;

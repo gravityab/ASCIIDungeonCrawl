@@ -462,4 +462,8 @@ private:
     /// 1-based rank of the run just inserted (0 if it didn't make the top 10). Highlighted in the
     /// HIGHSCORE_INITIALS view so the player can see where they landed.
     int m_lastRank = 0;
+
+    /// Short input grace period when entering the high-score screen. Prevents the killing-blow
+    /// Enter (or any mashed input) from instantly submitting the default "AAA" initials.
+    Time m_highScoreInputCooldown = Time::Zero;
 };

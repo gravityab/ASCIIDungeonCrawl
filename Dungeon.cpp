@@ -202,22 +202,25 @@ State DungeonEx::RollState()
     if (IsBossFloor())
         return State::STATE_COMBAT;
 
-    double mean = 1.35;
-    double standardDevition = 1.2;
-    int value = GetNormalValue(1, 4, mean, standardDevition);
-    switch (value)
+    // Weighted room-type table. The previous distribution (50/25/16/7) had shops at 25% which
+    // felt way too frequent in practice. Adjusted target distribution (per door roll):
+    //   Combat   : 60%  (30 entries)
+    //   Trap     : 18%  ( 9 entries)
+    //   Shop     : 12%  ( 6 entries)   <-- was 25%
+    //   Fountain : 10%  ( 5 entries)
+    // Easy to tune by adjusting the entry counts below; total isn't required to be 50 or any
+    // specific number, just keep the ratios you want.
+    static const std::vector<State> table = []
     {
-        case 1:
-            return State::STATE_COMBAT; // 50%
-        case 2:
-            return State::STATE_SHOP; // 25%
-        case 3:
-            return State::STATE_TRAP; // 16%
-        case 4:
-            return State::STATE_FOUNTAIN; // 7%
-        default:
-            return State::STATE_COMBAT;
-    }
+        std::vector<State> v;
+        v.reserve(50);
+        for (int i = 0; i < 30; ++i) v.push_back(State::STATE_COMBAT);
+        for (int i = 0; i <  9; ++i) v.push_back(State::STATE_TRAP);
+        for (int i = 0; i <  6; ++i) v.push_back(State::STATE_SHOP);
+        for (int i = 0; i <  5; ++i) v.push_back(State::STATE_FOUNTAIN);
+        return v;
+    }();
+    return ROLLTABLE(table);
 }
 
 Monster DungeonEx::RollMonster(DamageType type, Rarity rarity, MonsterFamily family, bool dead)
