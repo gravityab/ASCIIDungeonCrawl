@@ -489,7 +489,7 @@ void DungeonCrawl::DrawHighScoreEntry(Time delta)
     if (m_highScoreInputCooldown > Time::Zero)
         m_highScoreInputCooldown -= delta;
 
-    if (m_ui.GetState() == CursorState::HIGHSCORE_INITIALS && m_highScoreInputCooldown <= Time::Zero)
+    if (m_ui.GetState() == CursorState::HIGHSCORE_INITIALS && !(m_highScoreInputCooldown > Time::Zero))
     {
         auto cycle = [](char c, int delta) -> char
         {
