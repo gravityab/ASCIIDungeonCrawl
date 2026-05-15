@@ -67,8 +67,10 @@ struct Room
     /// The reward type for beating the monsters
     Reward reward;
 
-    /// The reward weapon
-    Weapon rewardWeapon;
+    /// The reward weapons (up to 2). When size == 1 the reward is drawn at the original
+    /// "single-slot" position (x=21). When size == 2 the first is drawn at x=2 and the second
+    /// at x=21, with the exit cursor moving from index 1 to index 2.
+    std::vector<Weapon> rewardWeapons;
 
     /// The reward gold
     int gold = 0;
@@ -111,45 +113,6 @@ struct Floor
     std::vector<Door*> doors;
 };
 
-/*
-/// Class representing a full playable dungeon
-class Dungeon
-{
-public:
-    /// Constructor for a dungeon
-    Dungeon();
-
-    /// Ininitalize the dungeo
-    void Initialize();
-
-    /// Generate a new dungeon
-    void Generate();
-
-    /// Reset the dungeon and the database
-    void Reset();
-
-    /// The size of the dungeon
-    int Size();
-
-    /// Get a floor within a dungeon
-    Floor& GetFloor(int floor);
-
-    /// Get an instance of the database
-    Database& GetDatabase();
-
-private:
-    /// Generate a floor at an index
-    Floor GenerateFloor(int floor, DamageType attribute, MonsterFamily family, Rarity rarity, bool boss, bool shop);
-
-private:
-    /// The number of floors
-    std::vector<Floor> m_dungeon;
-
-    /// The database
-    Database m_db;
-};
-*/
-
 class DungeonEx
 {
 public:
@@ -177,6 +140,11 @@ public:
 
     /// Get an instance of the database
     Database& GetDatabase();
+
+    /// Roll a fresh bonus weapon from the same rarity tier as the given Reward enum.
+    /// Returns an unrandomized default Weapon if `reward` is not one of the *_WEAPON variants.
+    /// Used by the MULTI_REWARD passive to fill rewardWeapons[1] with a second pickable item.
+    Weapon GenerateBonusWeapon(Reward reward);
 
 private:
     /// Get the difficulty value of the floor

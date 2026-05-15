@@ -314,6 +314,11 @@ private:
     /// The currently selected room
     Room* m_currentRoom = nullptr;
 
+    /// Which reward slot the player picked on the Reward screen (0 or 1). Set when the
+    /// REWARD cursor confirms a weapon and read by PushRewardHero / PushRewardHeroItem to
+    /// route the chosen weapon through to PurchaseItem.
+    int m_selectedRewardIndex = 0;
+
     /// The parties current gold
     int m_gold;
 

@@ -2076,6 +2076,231 @@ void Database::Initialize()
             ".  ........... ." \
             "................",
             0, 0, 16, 10, 0x000F);
+
+        m_imageDb["passive_haggle_bottle"] = Image(
+            "................" \
+            ".              ." \
+            ".   ||     .   ." \
+            ".  / \    ..   ." \
+            ". |...|  ..    ." \
+            ".  --- \.._    ." \
+            ".      //   .  ." \
+            ".         .... ." \
+            ".        . .   ." \
+            "................",
+            0, 0, 16, 10, 0x0001);
+        m_imageDb["passive_haggle_potion"] = Image(
+            "................" \
+            ".              ." \
+            ".   ..     .   ." \
+            ".  . .    ..   ." \
+            ". .###.  ..    ." \
+            ".  ... ....    ." \
+            ".      ..   .  ." \
+            ".         .... ." \
+            ".        . .   ." \
+            "................",
+            0, 0, 16, 10, 0x0001);
+        m_imageDb["passive_haggle_blade"] = Image(
+            "................" \
+            ".              ." \
+            ".   ..     -   ." \
+            ".  ...    /|   ." \
+            ". .....  /|    ." \
+            ".  ... ./|.    ." \
+            ".      ..   .  ." \
+            ".         .... ." \
+            ".        . .   ." \
+            "................",
+            0, 0, 16, 10, 0x0002);
+        m_imageDb["passive_haggle_gold"] = Image(
+            "................" \
+            ".              ." \
+            ".   ..     .   ." \
+            ".  ...    ..   ." \
+            ". .....  ..    ." \
+            ".  ... ....    ." \
+            ".      ..   $  ." \
+            ".         %%$# ." \
+            ".        # %   ." \
+            "................",
+            0, 0, 16, 10, 0x000E);
+        m_imageDb["passive_haggle"] = Image(
+            "................" \
+            ".              ." \
+            ".   ||     -   ." \
+            ".  / \\    /|   ." \
+            ". |   |  /|    ." \
+            ".  --- \\/|_    ." \
+            ".      //   $  ." \
+            ".         %%$# ." \
+            ".        # %   ." \
+            "................",
+            0, 0, 16, 10, 0x000F);
+
+        m_imageDb["passive_improved_trap_disarm"] = Image(
+            "................" \
+            "..^..^.^.^..^..." \
+            "^.|^.|.|.|.^|.^." \
+            "|.||^|.^.|^||.|." \
+            "|.||||.|.||||.|." \
+            "|.||||.|.||||.|." \
+            "|.o||o.|.o||o.|." \
+            "...o|..|..|o...." \
+            "....o..o..o....." \
+            "................",
+            0, 0, 16, 10, 0x0007);
+
+        m_imageDb["passive_boss_reward_head"] = Image(
+            "................" \
+            "................" \
+            "..............,;" \
+            ".../|......|\\' ," \
+            "...`,'(__)-'' ` " \
+            "....|%    %|  ` " \
+            ".../   __   \\   " \
+            "...\\\\ ^__^ /;``," \
+            "....._`__-_,' ,'" \
+            ".....((^^,__(...",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["passive_boss_reward_eyes"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            ".....%....%....." \
+            "................" \
+            "................" \
+            ".......__......." \
+            "................",
+            0, 0, 16, 10, 0x0002);
+
+        m_imageDb["passive_skeleton_slayer_head"] = Image(
+            "................" \
+            "................" \
+            "...... - ......." \
+            "..... (o,o) ...." \
+            "...... |=| ....." \
+            "..... __|__ ...." \
+            "... //:=|=:\\\\ .." \
+            ".. //.:=|=:.\\\\ ." \
+            ".. \\\\.:=|=:.// ." \
+            ".. /\\.(_=_)./\\ .",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["passive_skeleton_slayer_eyes"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            ".......o.o......" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0002);
+
+        m_imageDb["passive_blob_slayer_head"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "..... _-__ ....." \
+            ".... /.  .\\ ...." \
+            "...|   ..   |..." \
+            "...\\________/..." \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["passive_blob_slayer_eyes"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "......O..O......" \
+            ".......__......." \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0002);
+
+        m_imageDb["passive_bat_slayer_head"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            ".... _ ... __ .." \
+            "... |(_,,_/_( .." \
+            "... `-.**-`` ..." \
+            "...... ;; ......" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["passive_bat_slayer_eyes"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            ".......**......." \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0002);
+
+        m_imageDb["passive_spider_slayer_head"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            ". /\\.. __ . /\\ ." \
+            " / .\\/....\\/. \\ " \
+            "/ / |  ..  | \\ \\" \
+            " / . \\____/ . \\ " \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["passive_spider_slayer_eyes"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "......oooo......" \
+            ".......VV......." \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0002);
+
+        m_imageDb["passive_multi_reward_chest"] = Image(
+            "................" \
+            "...----------..." \
+            "./.----------.\." \
+            "..\........../.." \
+            "../..........\.." \
+            "./.__________.\." \
+            ".|....|__|....|." \
+            ".|............|." \
+            ".+------------+." \
+            "................",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["passive_multi_reward_gold"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "......@$$#......" \
+            "....*#$$*&#$...." \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0006);
+
         m_imageDb["hero_card"] = Image(
             "................" \
             ".# # # # # # # ." \
@@ -4865,6 +5090,15 @@ void Database::Initialize()
         m_frameDb["level_up_5_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_3"] });
         m_frameDb["level_up_5_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["hero_card"], m_imageDb["level_up_5"], m_imageDb["epic_4"] });
         m_frameDb["exit"] = Frame({ m_imageDb["weapon_border"], m_imageDb["exit"] });
+
+        m_frameDb["passive_multi_reward"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_multi_reward_chest"], m_imageDb["passive_multi_reward_gold"], });
+        m_frameDb["passive_haggler"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_haggle_bottle"], m_imageDb["passive_haggle_potion"], m_imageDb["passive_haggle_blade"], m_imageDb["passive_haggle_gold"] });
+        m_frameDb["passive_improved_trap_disarm"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_improved_trap_disarm"] });
+        m_frameDb["passive_boss_reward"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_boss_reward_head"], m_imageDb["passive_boss_reward_eyes"] });
+        m_frameDb["passive_skeleton_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_skeleton_slayer_head"], m_imageDb["passive_skeleton_slayer_eyes"] });
+        m_frameDb["passive_blob_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_blob_slayer_head"], m_imageDb["passive_blob_slayer_eyes"] });
+        m_frameDb["passive_bat_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_bat_slayer_head"], m_imageDb["passive_bat_slayer_eyes"] });
+        m_frameDb["passive_spider_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_spider_slayer_head"], m_imageDb["passive_spider_slayer_eyes"] });
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -5210,6 +5444,31 @@ void Database::Initialize()
         m_animationDb["exit"].SetData(
             { m_frameDb["exit"] },
             200, false, true, false);
+
+        m_animationDb["passive_multi_reward"].SetData(
+            { m_frameDb["passive_multi_reward"] },
+            200, false, true, false);
+        m_animationDb["passive_haggler"].SetData(
+            { m_frameDb["passive_haggler"] },
+            200, false, true, false);
+        m_animationDb["passive_improved_trap_disarm"].SetData(
+            { m_frameDb["passive_improved_trap_disarm"] },
+            200, false, true, false);
+        m_animationDb["passive_boss_reward"].SetData(
+            { m_frameDb["passive_boss_reward"] },
+            200, false, true, false);
+        m_animationDb["passive_skeleton_slayer"].SetData(
+            { m_frameDb["passive_skeleton_slayer"] },
+            200, false, true, false);
+        m_animationDb["passive_blob_slayer"].SetData(
+            { m_frameDb["passive_blob_slayer"] },
+            200, false, true, false);
+        m_animationDb["passive_bat_slayer"].SetData(
+            { m_frameDb["passive_bat_slayer"] },
+            200, false, true, false);
+        m_animationDb["passive_spider_slayer"].SetData(
+            { m_frameDb["passive_spider_slayer"] },
+            200, false, true, false);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -5524,7 +5783,15 @@ void Database::Initialize()
         m_passiveDb[PassiveType::ROBE_BACKLINE]         = Passive("Camouflage",        Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x0006, 0x000D),         0, 1, 2, "Robe wearers are skipped by single-target monster picks as long as another hero is alive.");
         m_passiveDb[PassiveType::ROBE_GLASSCANNON]      = Passive("Glass Cannon",      Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x0008, 0x000E),         1, 1, 2, "Robe + Wand/Staff: deal double damage and take double damage; spells cost more MP.");
         m_passiveDb[PassiveType::ROBE_MPCOST]           = Passive("Budget Spellcraft", Rarity::COMMON, m_animationDb["armor_robe"].As(0x0007, 0x000E, 0x000F),         2, 1, 2, "Robe wearers pay less MP to cast (reduced by robe rarity).");
-
+        m_passiveDb[PassiveType::MULTI_REWARD]          = Passive("Double Drop",       Rarity::COMMON, m_animationDb["passive_multi_reward"],                          0, 0, 3, "Weapon reward rooms have a 50% chance to spawn a second weapon to choose from.");
+        m_passiveDb[PassiveType::ARCANE_BATTERY]        = Passive("Arcane Battery",    Rarity::COMMON, m_animationDb["magic_potion"],                                  1, 0, 3, "Per-attribute-floor MP regen gains +5% of max MP per 5 hero levels (up to +20% at level 20).");
+        m_passiveDb[PassiveType::HAGGLER]               = Passive("Haggler",           Rarity::COMMON, m_animationDb["passive_haggler"],                               2, 0, 3, "All shop items cost 10% less gold.");
+        m_passiveDb[PassiveType::TRAP_DISARMER]         = Passive("Trap Disarmer",     Rarity::COMMON, m_animationDb["passive_improved_trap_disarm"],                  3, 0, 3, "Improves your chance of disarming traps by 20%. Successful disarms also award a small gold reward.");
+        m_passiveDb[PassiveType::SKELETON_SLAYER]       = Passive("Skeleton Slayer",   Rarity::COMMON, m_animationDb["passive_skeleton_slayer"],                       0, 1, 3, "Party deals +1 Multi to UNDEAD targets. +1 Passive XP per Rare/Epic/Legendary undead defeated.");
+        m_passiveDb[PassiveType::BLOB_SLAYER]           = Passive("Blob Slayer",       Rarity::COMMON, m_animationDb["passive_blob_slayer"],                           1, 1, 3, "Party deals +1 Multi to GELATINOUS targets. +1 Passive XP per Rare/Epic/Legendary blob defeated.");
+        m_passiveDb[PassiveType::BAT_SLAYER]            = Passive("Bat Slayer",        Rarity::COMMON, m_animationDb["passive_bat_slayer"],                            2, 1, 3, "Party deals +1 Multi to RODENT targets. +1 Passive XP per Rare/Epic/Legendary bat defeated.");
+        m_passiveDb[PassiveType::SPIDER_SLAYER]         = Passive("Spider Slayer",     Rarity::COMMON, m_animationDb["passive_spider_slayer"],                         3, 1, 3, "Party deals +1 Multi to ARACHNID targets. +1 Passive XP per Rare/Epic/Legendary spider defeated.");
+        m_passiveDb[PassiveType::DRAGON_SLAYER]         = Passive("Dragon Slayer",     Rarity::COMMON, m_animationDb["passive_boss_reward"],                           4, 1, 3, "Defeating a boss awards +2 extra Passive XP on top of its normal rewards.");
 
         //m_passiveDb[PassiveType::SWORD_SHIELD]          = Passive("Shield Training",   Rarity::COMMON, m_animationDb["weapon_sword"].As(0x000A),       2, 1, 0, "Swords deal twice as much damage with a shield.");
 

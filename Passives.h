@@ -43,6 +43,15 @@ enum class PassiveType : int32_t
     ROBE_BACKLINE,          // [x] Robe wearers are skipped by single-target monster picks when others are alive
     ROBE_GLASSCANNON,       // [x] Robe + Wand/Staff: deal double damage and take double damage; spells cost more MP
     ROBE_MPCOST,            // [x] Spell cost reduced by Robe Rarity
+    MULTI_REWARD,           // [x] Weapon reward rooms: 50% chance to spawn a second reward to pick from
+    ARCANE_BATTERY,         // [x] Attribute-floor MP regen gains +5% per 5 hero levels (caps at +20% at lvl 20)
+    HAGGLER,                // [x] Shop items cost 10% less (offsets the baseline 10% markup)
+    TRAP_DISARMER,          // [x] +20% chance to evade a trap that would have fired; small gold reward on success
+    DRAGON_SLAYER,          // [x] Killing a boss (dragon) awards +2 extra Passive XP on top of its normal rewards
+    SKELETON_SLAYER,        // [x] All attacks deal +1 Multi vs UNDEAD; +1 Passive XP per Rare/Epic/Legendary undead kill
+    BLOB_SLAYER,            // [x] All attacks deal +1 Multi vs GELATINOUS; +1 Passive XP per Rare/Epic/Legendary blob kill
+    BAT_SLAYER,             // [x] All attacks deal +1 Multi vs RODENT; +1 Passive XP per Rare/Epic/Legendary bat kill
+    SPIDER_SLAYER,          // [x] All attacks deal +1 Multi vs ARACHNID; +1 Passive XP per Rare/Epic/Legendary spider kill
     COUNT,
 };
 

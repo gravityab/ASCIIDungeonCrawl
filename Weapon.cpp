@@ -41,6 +41,12 @@ void Weapon::Randomize()
     die = dice.GetDie();
     avgGold = dice.GetAvg();
 
+    // Baseline 10% markup on all rolled prices. Reward weapons reset gold to 0 after
+    // Randomize() so they're unaffected; only shop / starter-screen items keep this bump.
+    // The HAGGLER passive applies a reciprocal 10% discount at shop entry time.
+    if (gold > 0)
+        gold = (gold * 11) / 10;
+
     // Scale wand / staff MP cost by rarity so higher-tier spell weapons demand a deeper mana
     // pool. A level 1 hero rarely affords a Legendary staff cast - they have to level up first.
     // The scaled cost is baked into mpCost itself, so anywhere that reads weapon->mpCost

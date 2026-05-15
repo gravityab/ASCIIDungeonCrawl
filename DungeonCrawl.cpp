@@ -1248,14 +1248,23 @@ void DungeonCrawl::DrawReward(Time delta)
         {}
         else
         {
-            int x = 21;
-            int y = 4;
-            DrawItem(delta, &m_currentRoom->rewardWeapon, x, y);
-
-            if (m_ui.GetState() == CursorState::REWARD)
+            // Single reward: original slot (x=21, right-justified against the chest).
+            // Two rewards: first slot at x=2 (right-justified against the left side of the
+            // chest), second slot at the original x=21. Exit stays at x=62 in either case.
+            const int rewardCount = (int)m_currentRoom->rewardWeapons.size();
+            const int y = 4;
+            int slotX[2] = { 21, 21 };
+            if (rewardCount == 2)
             {
-                if (m_ui.GetCursorIndex() == 0)
-                    m_ui.GetAnimation().WriteData(m_console, delta, x, y, complete);
+                slotX[0] = 2;
+                slotX[1] = 21;
+            }
+            for (int slot = 0; slot < rewardCount; slot++)
+            {
+                DrawItem(delta, &m_currentRoom->rewardWeapons[slot], slotX[slot], y);
+
+                if (m_ui.GetState() == CursorState::REWARD && m_ui.GetCursorIndex() == slot)
+                    m_ui.GetAnimation().WriteData(m_console, delta, slotX[slot], y, complete);
             }
         }
 
@@ -1282,13 +1291,13 @@ void DungeonCrawl::DrawReward(Time delta)
             }
 
             // Money-only rewards have no weapon to highlight, so the exit is the only cursor
-            // slot (index 0). Weapon rewards make the weapon index 0 and the exit index 1.
-            // (Fix: the third entry below was Reward::EPIC_WEAPON, which made Epic Weapon
-            //  rewards put the exit cursor at the same index as the weapon - both lit at once.)
-            int exitIndex = (m_currentRoom->reward == Reward::MONEY
+            // slot (index 0). Weapon rewards put each weapon at indices [0..N-1] and the exit
+            // at index N (so 1 reward -> exit at 1, 2 rewards -> exit at 2).
+            const bool moneyOnly = (m_currentRoom->reward == Reward::MONEY
                 || m_currentRoom->reward == Reward::RARE_MONEY
                 || m_currentRoom->reward == Reward::EPIC_MONEY
-                || m_currentRoom->reward == Reward::LEGENDARY_MONEY) ? 0 : 1;
+                || m_currentRoom->reward == Reward::LEGENDARY_MONEY);
+            int exitIndex = moneyOnly ? 0 : (int)m_currentRoom->rewardWeapons.size();
 
             ANIMATION("exit").WriteData(m_console, delta, x, y, complete);
             m_console.WriteData(x + 8, y + 8, 0x0006, "+o   ");
@@ -1684,6 +1693,11 @@ void DungeonCrawl::DrawAction(Time delta)
             // Every 4 XP spent at end of combat awards one passive selection.
             // Cap one award per combat; leftover XP carries to the next fight.
             int xpEarned = 0;
+            const bool hasDragonSlayer   = OwnsPassive(PassiveType::DRAGON_SLAYER);
+            const bool hasSkeletonSlayer = OwnsPassive(PassiveType::SKELETON_SLAYER);
+            const bool hasBlobSlayer     = OwnsPassive(PassiveType::BLOB_SLAYER);
+            const bool hasBatSlayer      = OwnsPassive(PassiveType::BAT_SLAYER);
+            const bool hasSpiderSlayer   = OwnsPassive(PassiveType::SPIDER_SLAYER);
             for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
             {
                 const Monster& m = m_currentRoom->monsters[index];
@@ -1695,6 +1709,27 @@ void DungeonCrawl::DrawAction(Time delta)
                     xpEarned += 4;
 
                 if (m.family == MonsterFamily::DRAGON && (int)m.rarity >= (int)Rarity::RARE)
+                    xpEarned += 1;
+
+                // DRAGON_SLAYER passive: +2 extra Passive XP per boss kill, regardless of
+                // the dragon's rarity (the floor-10 Common dragon still counts as a boss).
+                if (hasDragonSlayer && m.family == MonsterFamily::DRAGON)
+                    xpEarned += 2;
+
+                // SKELETON_SLAYER / BLOB_SLAYER passives: +1 extra Passive XP per Rare/Epic/
+                // Legendary kill of the matching family. Common kills skipped (matches the
+                // existing Rare-and-up XP cutoff).
+                if (hasSkeletonSlayer && m.family == MonsterFamily::UNDEAD
+                    && (int)m.rarity >= (int)Rarity::RARE)
+                    xpEarned += 1;
+                if (hasBlobSlayer && m.family == MonsterFamily::GELATINOUS
+                    && (int)m.rarity >= (int)Rarity::RARE)
+                    xpEarned += 1;
+                if (hasBatSlayer && m.family == MonsterFamily::RODENT
+                    && (int)m.rarity >= (int)Rarity::RARE)
+                    xpEarned += 1;
+                if (hasSpiderSlayer && m.family == MonsterFamily::ARACHNID
+                    && (int)m.rarity >= (int)Rarity::RARE)
                     xpEarned += 1;
             }
             m_passiveXP += xpEarned;
@@ -2284,6 +2319,22 @@ void DungeonCrawl::ProcessInput()
             m_chest = ANIMATION("chest_opened");
             m_chestClosed = false;
 
+            // MULTI_REWARD passive: weapon reward rooms get a 50% chance for a second weapon
+            // to choose from. Rolled here (chest open) rather than at floor gen so a passive
+            // picked up between floor gen and chest open still counts. Gold-only rewards
+            // don't trigger this - they have no rewardWeapons[0] slot to mirror.
+            if (OwnsPassive(PassiveType::MULTI_REWARD)
+                && m_currentRoom != nullptr
+                && m_currentRoom->rewardWeapons.size() == 1
+                && (m_currentRoom->reward == Reward::RARE_WEAPON
+                    || m_currentRoom->reward == Reward::EPIC_WEAPON
+                    || m_currentRoom->reward == Reward::LEGENDARY_WEAPON)
+                && GetRandomValue(0, 1) == 0)
+            {
+                m_currentRoom->rewardWeapons.push_back(
+                    m_dungeonEx.GenerateBonusWeapon(m_currentRoom->reward));
+            }
+
             m_ui.PopBackTo(2);
             PushReward();
             return;
@@ -2308,31 +2359,36 @@ void DungeonCrawl::ProcessInput()
                 }
             }
 
-            if (m_ui.GetCursorIndex() == 1)
+            // Cursor layout:
+            //   money-only:   [0]=exit
+            //   1 weapon:     [0]=weapon, [1]=exit
+            //   2 weapons:    [0]=weapon, [1]=weapon, [2]=exit
+            const bool moneyOnly = (m_currentRoom->reward == Reward::MONEY
+                || m_currentRoom->reward == Reward::RARE_MONEY
+                || m_currentRoom->reward == Reward::EPIC_MONEY
+                || m_currentRoom->reward == Reward::LEGENDARY_MONEY);
+            const int rewardCount = moneyOnly ? 0 : (int)m_currentRoom->rewardWeapons.size();
+            const int cursor      = m_ui.GetCursorIndex();
+
+            // Exit slot: take gold and leave.
+            if (cursor == rewardCount)
             {
                 m_gold += m_currentRoom->gold + extraGold;
                 SetState(State::STATE_NEXT_FLOOR);
                 return;
             }
 
-            if ((m_currentRoom->reward == Reward::MONEY
-                || m_currentRoom->reward == Reward::RARE_MONEY
-                || m_currentRoom->reward == Reward::EPIC_MONEY
-                || m_currentRoom->reward == Reward::LEGENDARY_MONEY)
-                && m_ui.GetCursorIndex() == 0)
+            // Weapon slot: route to hero picker for whichever reward was selected.
+            // Stash the chosen index so PushRewardHero / PushRewardHeroItem can read it.
+            if (cursor >= 0 && cursor < rewardCount)
             {
-                m_gold += m_currentRoom->gold + extraGold;
-                SetState(State::STATE_NEXT_FLOOR);
-                return;
-            }
-            else
-            {
-                if (!m_currentRoom->rewardWeapon.purchased)
+                m_selectedRewardIndex = cursor;
+                if (!m_currentRoom->rewardWeapons[cursor].purchased)
                 {
                     PushRewardHero();
                 }
-                return;
             }
+            return;
         }
 
         if (m_ui.GetState() == CursorState::REWARD_HERO && m_input.Released(Button::BUTTON_SELECT))
@@ -2867,6 +2923,25 @@ void DungeonCrawl::UseWeapon(Action action)
         damage = m_damageOriginal;
 
         Actor* actor = action.targets[index];
+
+        // Family-slayer passives: hero attacks gain +1 Multi (one extra die roll) against the
+        // matching family. Applied per-target so multi-target spells still get the bonus only
+        // on the relevant targets in the splash. Scales through downstream weakness/resistance
+        // like the rest of base damage.
+        if (isDamaging && action.source && action.source->GetType() == ActorType::ACTOR_HERO
+            && actor && actor->GetType() == ActorType::ACTOR_MONSTER
+            && action.weapon && action.weapon->die.die > 0)
+        {
+            const Monster* mon = static_cast<const Monster*>(actor);
+            if (mon->family == MonsterFamily::UNDEAD && OwnsPassive(PassiveType::SKELETON_SLAYER))
+                damage += GetRandomValue(1, action.weapon->die.die);
+            if (mon->family == MonsterFamily::GELATINOUS && OwnsPassive(PassiveType::BLOB_SLAYER))
+                damage += GetRandomValue(1, action.weapon->die.die);
+            if (mon->family == MonsterFamily::RODENT && OwnsPassive(PassiveType::BAT_SLAYER))
+                damage += GetRandomValue(1, action.weapon->die.die);
+            if (mon->family == MonsterFamily::ARACHNID && OwnsPassive(PassiveType::SPIDER_SLAYER))
+                damage += GetRandomValue(1, action.weapon->die.die);
+        }
 
         // Handle special actions
         if (action.weapon->target == Target::MONSTER_CONDITION)
@@ -3419,6 +3494,9 @@ void DungeonCrawl::SetState(State state)
         // mages still need to budget casts across 5 floors and can't rely on it alone.
         if ((m_floor % 5) == 0)
         {
+            // ARCANE_BATTERY: per-hero bonus regen of +5% max MP per 5 levels, owned party-wide
+            // but scaling off each hero's individual level (caps at +20% at level 20).
+            const bool hasBattery = OwnsPassive(PassiveType::ARCANE_BATTERY);
             for (int index = 0; index < (int)m_heroes.size(); index++)
             {
                 auto& hero = m_heroes[index];
@@ -3427,6 +3505,11 @@ void DungeonCrawl::SetState(State state)
                 int regen = hero.totalMp / 10;                               // 10% baseline (was 25%)
                 if (hero.armor.target == Target::PLAYERAC_SPELL)
                     regen = hero.totalMp / 5;                                // 20% for robe wearers (was 50%)
+                if (hasBattery)
+                {
+                    const int tiers = hero.level / 5;                        // 0..4 (capped at 4 since hero.level <= 20)
+                    regen += (hero.totalMp * 5 * tiers) / 100;               // +5% per tier
+                }
                 hero.currentMp += regen;
                 if (hero.currentMp > hero.totalMp)
                     hero.currentMp = hero.totalMp;
@@ -3460,6 +3543,19 @@ void DungeonCrawl::SetState(State state)
                     m_currentRoom->shop[index].attack.SetStrobe(0, true);
                     m_currentRoom->shop[index].idle.SetStrobe(3, true);
                 }
+            }
+        }
+
+        // HAGGLER passive: 10% off every shop item. Applied once at shop entry (mutating the
+        // stored gold field) so the discount flows through display, hover panels, and the
+        // purchase-affordability check without extra special-casing.
+        if (OwnsPassive(PassiveType::HAGGLER))
+        {
+            for (int index = 0; index < (int)m_currentRoom->shop.size(); index++)
+            {
+                int& g = m_currentRoom->shop[index].gold;
+                if (g > 0)
+                    g = (g * 9) / 10;
             }
         }
 
@@ -4034,7 +4130,17 @@ void DungeonCrawl::PushTrapInitiated()
     //   floor 10 : 3d6+3  avg 13.5
     //   floor 20 : 6d6+6  avg 27
     //   floor 25 : 7d6+8  avg 32.5
-    if (dexterity > speedRollDC)
+    bool willTrigger = (dexterity > speedRollDC);
+
+    // TRAP_DISARMER passive: on a failed dexterity check, a 20% override flips the result back
+    // to a success. This realises the +20% pass-rate intent without coupling to the floor-
+    // dependent DC range. Combined with the gold reward below it makes the passive feel like a
+    // dedicated trap specialist.
+    const bool hasDisarmer = OwnsPassive(PassiveType::TRAP_DISARMER);
+    if (willTrigger && hasDisarmer && GetRandomValue(0, 99) < 20)
+        willTrigger = false;
+
+    if (willTrigger)
     {
         m_trapTriggered = true;
         int damage = ROLL((m_floor / 4) + 1, 6, (m_floor / 3));
@@ -4054,6 +4160,11 @@ void DungeonCrawl::PushTrapInitiated()
                 m_heroes[index].conditionTurnsLeft = GetRandomValue(1, 2);
             }
         }
+    }
+    else if (hasDisarmer)
+    {
+        // Successful disarm with the passive: small gold reward, scales mildly with floor.
+        m_gold += 10 + m_floor;
     }
 
     m_trapInitiated = true;
@@ -4091,13 +4202,16 @@ void DungeonCrawl::PushReward()
     context.cursor.SetAttributes(1, 0x0008);
     context.index = 0; // Start at the exit
 
+    // Money-only rewards: exit at cursor 0 (maxIndex = 0).
+    // Weapon rewards: weapons occupy [0..N-1], exit at N. So maxIndex = N for size-1 (=1)
+    // and maxIndex = 2 for size-2.
     if (m_currentRoom->reward == Reward::MONEY
         || m_currentRoom->reward == Reward::RARE_MONEY
         || m_currentRoom->reward == Reward::EPIC_MONEY
         || m_currentRoom->reward == Reward::LEGENDARY_MONEY)
         context.maxIndex = 0;
     else
-        context.maxIndex = 1;
+        context.maxIndex = (int)m_currentRoom->rewardWeapons.size();
 
     context.direction = CursorIndexDirection::HORIZONTAL;
     m_ui.PushBack(context);
@@ -4129,11 +4243,15 @@ void DungeonCrawl::PushRewardHero()
 
 void DungeonCrawl::PushRewardHeroItem()
 {
+    // Route the reward the player actually selected on the REWARD screen (index 0 or 1) -
+    // not always rewardWeapons[0], which was the old single-reward assumption.
+    Weapon* picked = &m_currentRoom->rewardWeapons[m_selectedRewardIndex];
+
     // Rewards that don't need to occupy a weapon slot apply directly to the selected hero:
     //   - Armor (PLAYERAC_*) overwrites the hero's armor slot
     //   - New Hero / Level Up / Level Up 5 just modify the hero / party; no slot picker needed
     // For these, jump straight to PurchaseItem() and pop the UI back to the reward screen.
-    const Target target = m_currentRoom->rewardWeapon.target;
+    const Target target = picked->target;
     if (target == Target::PLAYERAC_SLOW
         || target == Target::PLAYERAC_SPEED
         || target == Target::PLAYERAC_SPELL
@@ -4143,7 +4261,7 @@ void DungeonCrawl::PushRewardHeroItem()
     {
         m_ui.GetContext().source = &m_heroes[m_ui.GetCursorIndex()];
         m_ui.GetContext().target = &m_heroes[m_ui.GetCursorIndex()];
-        m_ui.GetContext().weapon = &m_currentRoom->rewardWeapon;
+        m_ui.GetContext().weapon = picked;
         PurchaseItem();
         m_ui.PopBackTo(3);
         return;
@@ -4159,7 +4277,7 @@ void DungeonCrawl::PushRewardHeroItem()
     context.source = &m_heroes[m_ui.GetCursorIndex()];
     context.state = CursorState::REWARD_HERO_ITEM;
     context.target = &m_heroes[m_ui.GetCursorIndex()];
-    context.weapon = &m_currentRoom->rewardWeapon;
+    context.weapon = picked;
     context.direction = CursorIndexDirection::VERTICAL;
     m_ui.PushBack(context);
 }
@@ -4511,11 +4629,14 @@ void DungeonCrawl::PrintRoom(int index, Room room)
         room.door.stateLabel.c_str());
     if (room.reward != Reward::INVALID)
     {
-        printf("Rw:%s Gld:%d Wpn:%s %s ",
-            ToString(room.reward).c_str(),
-            room.gold,
-            ToString(room.rewardWeapon.rarity).c_str(),
-            room.rewardWeapon.name.c_str());
+        printf("Rw:%s Gld:%d", ToString(room.reward).c_str(), room.gold);
+        for (size_t i = 0; i < room.rewardWeapons.size(); i++)
+        {
+            printf(" Wpn[%zu]:%s %s", i,
+                ToString(room.rewardWeapons[i].rarity).c_str(),
+                room.rewardWeapons[i].name.c_str());
+        }
+        printf(" ");
     }
     if (room.trap != TrapType::INVALID)
     {

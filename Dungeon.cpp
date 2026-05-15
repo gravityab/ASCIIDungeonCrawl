@@ -204,23 +204,24 @@ State DungeonEx::RollState()
     if (IsBossFloor())
         return State::STATE_COMBAT;
 
-    // Weighted room-type table. With 3 doors rolled per non-boss floor, the fountain entry
-    // gives an expected fountain about once per 30 floors (1/91 per door * 3 doors = 1/30.3
-    // per floor). Fountains are meant to feel like a real treat, not a regular pit stop.
+    // Weighted room-type table. With 3 doors rolled per non-boss floor:
+    //   - 6/90 trap entries means 6.67% per door, so expected 1 trap per 15 doors = 1 per 5 floors.
+    //   - 1/90 fountain entry keeps the "once every ~30 floors" cadence.
+    //   - The remaining 73 combat entries make combat the vast majority of rooms (~81%).
     // Target distribution (per door roll):
-    //   Combat   : ~66%  (60 entries)
-    //   Trap     : ~20%  (18 entries)
-    //   Shop     : ~13%  (12 entries)
-    //   Fountain : ~1.1% ( 1 entry)   <-- was 10%
+    //   Combat   : ~81%  (73 entries)
+    //   Shop     : ~11%  (10 entries)
+    //   Trap     : ~6.7% ( 6 entries)   <-- was 20% (every ~1.7 floors)
+    //   Fountain : ~1.1% ( 1 entry)
     // Easy to tune by adjusting the entry counts below; total isn't required to be any
     // specific number, just keep the ratios you want.
     static const std::vector<State> table = []
     {
         std::vector<State> v;
-        v.reserve(91);
-        for (int i = 0; i < 60; ++i) v.push_back(State::STATE_COMBAT);
-        for (int i = 0; i < 18; ++i) v.push_back(State::STATE_TRAP);
-        for (int i = 0; i < 12; ++i) v.push_back(State::STATE_SHOP);
+        v.reserve(90);
+        for (int i = 0; i < 73; ++i) v.push_back(State::STATE_COMBAT);
+        for (int i = 0; i < 10; ++i) v.push_back(State::STATE_SHOP);
+        for (int i = 0; i <  6; ++i) v.push_back(State::STATE_TRAP);
         for (int i = 0; i <  1; ++i) v.push_back(State::STATE_FOUNTAIN);
         return v;
     }();
@@ -378,6 +379,16 @@ void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, Mo
 
         Monster monster = RollMonster(type, rolledRarity, family, false);
 
+        // Boss dragons get a flat 50% HP boost on top of the normal RollMonster curve so
+        // they feel like a meaningful endurance check at the elemental-arc gate. Applies
+        // to every boss-floor dragon (including the Common floor-10 boss). Stacks
+        // multiplicatively with the ExtraHealth modifier below (1.5x then 2x = 3x total).
+        if (IsBossFloor() && family == MonsterFamily::DRAGON)
+        {
+            monster.totalHp   = (monster.totalHp * 3) / 2;
+            monster.currentHp = monster.totalHp;
+        }
+
         if (IsBossFloor() && family == MonsterFamily::DRAGON && rolledRarity > Rarity::COMMON)
         {
             // Above-Common dragon bosses get a multi-target secondary weapon so they always have
@@ -468,7 +479,35 @@ void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, Mo
         rewardRarity = bossRarity;
     }
     room.reward = RollReward(rewardRarity);
-    GenerateReward(room.rewardWeapon, room.gold, room.reward, room.monsters, rewardRarity, isBoss);
+    // Allocate one slot for the primary weapon reward. The Room::rewardWeapons vector also
+    // supports a second slot (size == 2) for the dual-reward presentation; the secondary
+    // reward is populated by whichever future code path wants to offer two picks.
+    room.rewardWeapons.resize(1);
+    GenerateReward(room.rewardWeapons[0], room.gold, room.reward, room.monsters, rewardRarity, isBoss);
+}
+
+Weapon DungeonEx::GenerateBonusWeapon(Reward reward)
+{
+    Weapon weapon;
+    if (reward == Reward::RARE_WEAPON)
+    {
+        weapon = ROLLTABLE(m_db.m_rareTable);
+        weapon.Randomize();
+        weapon.gold = 0;
+    }
+    else if (reward == Reward::EPIC_WEAPON)
+    {
+        weapon = ROLLTABLE(m_db.m_epicTable);
+        weapon.Randomize();
+        weapon.gold = 0;
+    }
+    else if (reward == Reward::LEGENDARY_WEAPON)
+    {
+        weapon = ROLLTABLE(m_db.m_legendaryTable);
+        weapon.Randomize();
+        weapon.gold = 0;
+    }
+    return weapon;
 }
 
 void DungeonEx::GenerateReward(Weapon& weapon, int& gold, Reward reward, const std::vector<Monster>& monsters, Rarity rarity, bool isBoss)
