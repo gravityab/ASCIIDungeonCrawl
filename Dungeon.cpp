@@ -7,6 +7,8 @@
 /// Dungeon Crawl Library Headers
 #include "Dungeon.h"
 
+#include <algorithm>
+
 /// Standard Template Library Headers
 #include <list>
 
@@ -346,7 +348,78 @@ void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, Mo
     int numMonsters = room.door.monsterCount;
     while (numMonsters-- > 0)
     {
-        Monster monster = RollMonster(type, RollRarity(rarity), family, false);
+        // Boss-floor dragons use their own rarity table and pick challenge modifiers from the
+        // persistent pool. Everything else uses the normal floor-rarity roll.
+        Rarity rolledRarity;
+        if (IsBossFloor() && family == MonsterFamily::DRAGON)
+            rolledRarity = RollBossDragonRarity();
+        else
+            rolledRarity = RollRarity(rarity);
+
+        Monster monster = RollMonster(type, rolledRarity, family, false);
+
+        if (IsBossFloor() && family == MonsterFamily::DRAGON && rolledRarity > Rarity::COMMON)
+        {
+            // Above-Common dragon bosses get a multi-target secondary weapon so they always have
+            // a single-target + multi-target choice (per design spec).
+            monster.weapon2 = m_monsterWeapons["attack_all"];
+            monster.weapon2.die = monster.weapon2.die; // die was already set in RollMonster
+            // Restore the half-damage secondary die (overwritten by the assignment above).
+            // We re-derive it from the primary die's multiplier so it stays consistent.
+            Die secondaryDie = monster.weapon1.die;
+            secondaryDie.multiplier = std::max<int>(1, secondaryDie.multiplier / 2);
+            monster.weapon2.die = secondaryDie;
+
+            // Pick challenge modifiers. Legendary dragons roll two; everyone else rolls one.
+            const int numModifiers = (rolledRarity == Rarity::LEGENDARY) ? 2 : 1;
+            for (int i = 0; i < numModifiers; ++i)
+            {
+                BossModifier mod = RollBossModifier();
+                // For Legendary, prevent duplicate selection if the second pull happened to be
+                // the same modifier just selected (possible if the pool refilled in between).
+                if (i > 0 && std::find(monster.modifiers.begin(), monster.modifiers.end(), mod) != monster.modifiers.end())
+                {
+                    mod = RollBossModifier();
+                }
+                monster.modifiers.push_back(mod);
+
+                // Apply modifiers that need spawn-time setup.
+                if (mod == BossModifier::ExtraHealth)
+                {
+                    monster.totalHp   *= 2;
+                    monster.currentHp  = monster.totalHp;
+                }
+                else if (mod == BossModifier::FirstTurnImmune)
+                {
+                    monster.firstTurnImmune = true;
+                }
+                else if (mod == BossModifier::ElementImmune)
+                {
+                    static const std::vector<DamageType> elements = {
+                        DamageType::NORMAL, DamageType::COLD, DamageType::FIRE,
+                        DamageType::LIGHTNING, DamageType::WATER, DamageType::NECROTIC,
+                        DamageType::PSYCHIC, DamageType::DARK, DamageType::POISON,
+                        DamageType::STEEL, DamageType::HOLY
+                    };
+                    monster.immuneElement = ROLLTABLE(elements);
+                }
+            }
+
+            // Prefix modifier adjectives onto the dragon's name in the order rolled.
+            // e.g. ExtraHealth + ElementImmune(Cold) on a Frost Dragon -> "Sturdy Frosty Frost Dragon"
+            std::string prefix;
+            for (BossModifier mod : monster.modifiers)
+            {
+                std::string adj = ToShortName(mod, monster.immuneElement);
+                if (!adj.empty())
+                {
+                    prefix += adj;
+                    prefix += ' ';
+                }
+            }
+            monster.name = prefix + monster.name;
+        }
+
         room.monsters.push_back(monster);
     }
 
@@ -361,12 +434,24 @@ void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, Mo
         }
     }
     
-    // Generate the reward from the encounter
-    room.reward = RollReward(rarity);
-    GenerateReward(room.rewardWeapon, room.gold, room.reward, room.monsters, rarity);
+    // Generate the reward from the encounter. Boss rooms get a meaningful loot upgrade:
+    //   * Reward rarity uses the boss dragon's own rolled rarity (clamped to >= RARE so even
+    //     a Common dragon at floor 10 still has a weapon-drop chance).
+    //   * Gold rewards are tripled for boss kills (see GenerateReward).
+    Rarity rewardRarity = rarity;
+    const bool isBoss = IsBossFloor();
+    if (isBoss && !room.monsters.empty())
+    {
+        Rarity bossRarity = room.monsters[0].rarity;
+        if (bossRarity < Rarity::RARE)
+            bossRarity = Rarity::RARE;
+        rewardRarity = bossRarity;
+    }
+    room.reward = RollReward(rewardRarity);
+    GenerateReward(room.rewardWeapon, room.gold, room.reward, room.monsters, rewardRarity, isBoss);
 }
 
-void DungeonEx::GenerateReward(Weapon& weapon, int& gold, Reward reward, const std::vector<Monster>& monsters, Rarity rarity)
+void DungeonEx::GenerateReward(Weapon& weapon, int& gold, Reward reward, const std::vector<Monster>& monsters, Rarity rarity, bool isBoss)
 {
     const int numMonsters = monsters.size();
 
@@ -406,10 +491,15 @@ void DungeonEx::GenerateReward(Weapon& weapon, int& gold, Reward reward, const s
     {
         gold = ROLL((m_floor / 5) + ((5 + mod) * numMonsters), 4, (m_floor / 5) + 5 + numMonsters);
     }
-    else if (reward == Reward::LEGENDARY_WEAPON)
+    else if (reward == Reward::LEGENDARY_MONEY)   // fix: was duplicate LEGENDARY_WEAPON, so LEGENDARY_MONEY paid 0
     {
         gold = ROLL((m_floor / 5) + ((7 + mod) * numMonsters), 4, (m_floor / 5) + 7 + numMonsters);
     }
+
+    // Boss kills triple any gold drop. Weapon drops are already a high-value reward, so we
+    // only scale the gold branches (not the weapon branches that left gold at 0 on purpose).
+    if (isBoss && gold > 0)
+        gold *= 3;
 }
 
 void DungeonEx::GenerateShop(Room& room, Rarity rarity, DamageType damageType, MonsterFamily family)
@@ -479,6 +569,55 @@ bool DungeonEx::IsBossFloor() const
         return false;
 
     return (m_floor % BossCount == 0);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+// Boss-dragon rarity and modifiers
+// --------------------------------------------------------------------------------------------------------------------
+Rarity DungeonEx::RollBossDragonRarity() const
+{
+    // Per the boss-tuning spec:
+    //   Floor 10 : 50% Common, 50% Rare
+    //   Floor 20 : 100% Rare
+    //   Floor 30 : 50% Rare,   50% Epic
+    //   Floor 40 : 75% Epic,   25% Legendary
+    //   Floor 50+: 75% Legendary, 25% Epic
+    const int floor = m_floor;
+    const int roll  = GetRandomValue(0, 99);
+
+    if (floor <= 10)
+        return (roll < 50) ? Rarity::COMMON : Rarity::RARE;
+    if (floor <= 20)
+        return Rarity::RARE;
+    if (floor <= 30)
+        return (roll < 50) ? Rarity::RARE : Rarity::EPIC;
+    if (floor <= 40)
+        return (roll < 75) ? Rarity::EPIC : Rarity::LEGENDARY;
+    // floor 50+
+    return (roll < 75) ? Rarity::LEGENDARY : Rarity::EPIC;
+}
+
+BossModifier DungeonEx::RollBossModifier()
+{
+    if (m_bossModifierPool.empty())
+    {
+        m_bossModifierPool = {
+            BossModifier::ResistMelee,
+            BossModifier::ResistMagic,
+            BossModifier::FirstTurnImmune,
+            BossModifier::DotAttacks,
+            BossModifier::AlwaysSecondary,
+            BossModifier::StrongerEachTurn,
+            BossModifier::ExtraHealth,
+            BossModifier::ElementImmune,
+            BossModifier::TauntImmune,
+            BossModifier::RetaliateMelee,
+        };
+    }
+    const int idx = GetRandomValue(0, (int)m_bossModifierPool.size() - 1);
+    const BossModifier mod = m_bossModifierPool[idx];
+    m_bossModifierPool.erase(m_bossModifierPool.begin() + idx);
+    return mod;
 }
 
 int DungeonEx::GetIndex() const

@@ -64,3 +64,58 @@ std::string ToString(MonsterFamily family)
     }
     return "";
 }
+
+std::string ToString(BossModifier modifier)
+{
+    switch (modifier)
+    {
+        case BossModifier::ResistMelee:      return "Resists Melee  (sword/dagger/glove/great)";
+        case BossModifier::ResistMagic:      return "Resists Magic  (wand/staff)";
+        case BossModifier::FirstTurnImmune:  return "Invulnerable on the First Round";
+        case BossModifier::DotAttacks:       return "Hits Apply a Damage-Over-Time";
+        case BossModifier::AlwaysSecondary:  return "Always Uses Multi-Target Attack";
+        case BossModifier::StrongerEachTurn: return "Damage Grows +25% Each Round";
+        case BossModifier::ExtraHealth:      return "Extra Health (2x HP)";
+        case BossModifier::ElementImmune:    return "Immune to One Element";
+        case BossModifier::TauntImmune:      return "Ignores Plate Taunt";
+        case BossModifier::RetaliateMelee:   return "Melee Hits Counter for 1/10 Dragon Damage";
+        default:                             return "";
+    }
+}
+
+static std::string ImmuneElementAdjective(DamageType type)
+{
+    switch (type)
+    {
+        case DamageType::NORMAL:    return "Friendly Neighborhood";
+        case DamageType::COLD:      return "Frosty";
+        case DamageType::FIRE:      return "Fiery";
+        case DamageType::LIGHTNING: return "Charged";
+        case DamageType::WATER:     return "Soaked";
+        case DamageType::NECROTIC:  return "Putrid";
+        case DamageType::POISON:    return "Virulent";
+        case DamageType::PSYCHIC:   return "Maddening";
+        case DamageType::DARK:      return "Shadowy";
+        case DamageType::HOLY:      return "Anointed";
+        case DamageType::STEEL:     return "Steely";
+        default:                    return "Warded";
+    }
+}
+
+std::string ToShortName(BossModifier modifier, DamageType immuneElement)
+{
+    switch (modifier)
+    {
+        case BossModifier::ResistMelee:      return "Armored";
+        case BossModifier::ResistMagic:      return "Warded";
+        case BossModifier::FirstTurnImmune:  return "Phasing";
+        case BossModifier::DotAttacks:       return "Lingering";
+        case BossModifier::AlwaysSecondary:  return "Sweeping";
+        case BossModifier::StrongerEachTurn: return "Rising";
+        case BossModifier::ExtraHealth:      return "Sturdy";
+        case BossModifier::ElementImmune:    return ImmuneElementAdjective(immuneElement);
+        case BossModifier::TauntImmune:      return "Elusive";
+        case BossModifier::RetaliateMelee:   return "Spiked";
+        default:                             return "";
+    }
+}

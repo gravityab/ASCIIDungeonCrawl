@@ -7,6 +7,9 @@
 /// Dungeon Crawl Library Headers
 #include "Sleep.h"
 
+/// Standard Template Library Headers
+#include <algorithm>
+
 // --------------------------------------------------------------------------------------------------------------------
 Time s_blinkTime = ToMilliseconds(600);
 
@@ -119,6 +122,9 @@ bool DungeonCrawl::RunLoop()
 
         // Draw the high-score list overlay (gated on cursor state HIGHSCORE_LIST).
         DrawHighScoreList(delta);
+
+        // Draw the boss-dragon modifier hover dialog (gated on COMBAT_MONSTERS over a modded boss).
+        DrawDragonModifierDialog(delta);
 
         m_console.Draw(nullptr);
     }
@@ -645,6 +651,54 @@ void DungeonCrawl::PushHighScoreList()
     context.minIndex = 0;
     context.direction = CursorIndexDirection::VERTICAL;
     m_ui.PushBack(context);
+}
+
+// --------------------------------------------------------------------------------------------------------------------
+// Hover dialog: list boss-dragon modifiers when the player is aiming at a modded monster.
+// --------------------------------------------------------------------------------------------------------------------
+void DungeonCrawl::DrawDragonModifierDialog(Time delta)
+{
+    if (m_ui.GetState() != CursorState::COMBAT_MONSTERS)
+        return;
+    if (!m_currentRoom)
+        return;
+
+    const int idx = m_ui.GetCursorIndex();
+    if (idx < 0 || idx >= (int)m_currentRoom->monsters.size())
+        return;
+
+    const Monster& monster = m_currentRoom->monsters[idx];
+    if (monster.modifiers.empty())
+        return;
+
+    // Box anchored at the spot the spec called out. The passive_dialog_short art is wide enough
+    // for two text lines; one modifier per line.
+    const int x = 1;
+    const int y = 15;
+    IMAGE("passive_dialog_short").WriteData(m_console, x, y);
+
+    // Header + up to 2 modifier rows.
+    m_console.WriteData(x + 2, y + 1, 0x000E, "DRAGON MODIFIERS");
+    for (size_t i = 0; i < monster.modifiers.size() && i < 2; ++i)
+    {
+        const std::string text = ToString(monster.modifiers[i]);
+        m_console.WriteData(x + 2, y + 2 + (int)i, 0x000F, "%s", text.c_str());
+    }
+
+    // For ElementImmune, append the immune element name on the same line as that modifier so the
+    // player can tell which element to avoid.
+    for (size_t i = 0; i < monster.modifiers.size() && i < 2; ++i)
+    {
+        if (monster.modifiers[i] == BossModifier::ElementImmune
+            && monster.immuneElement != DamageType::INVALID)
+        {
+            const std::string suffix = std::string(" (") + ToString(monster.immuneElement) + ")";
+            // Suffix is drawn in the immune element's color so it stands out.
+            const std::string base = ToString(monster.modifiers[i]);
+            m_console.WriteData(x + 2 + (int)base.size(), y + 2 + (int)i,
+                ToAttribute(monster.immuneElement), "%s", suffix.c_str());
+        }
+    }
 }
 
 void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
@@ -1582,7 +1636,20 @@ void DungeonCrawl::DrawAction(Time delta)
 
         // Next round of combat
         if (heroesAlive && monstersAlive)
+        {
+            // End-of-round bookkeeping for boss-dragon modifiers:
+            //   - Increment roundsAlive (StrongerEachTurn reads this for the +25%/round scaling).
+            //   - Clear FirstTurnImmune so round 2+ damage lands normally.
+            for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
+            {
+                Monster& m = m_currentRoom->monsters[index];
+                if (m.currentHp == 0) continue;
+                m.roundsAlive++;
+                m.firstTurnImmune = false;
+            }
+
             SetState(State::STATE_COMBAT);
+        }
         if (heroesAlive && !monstersAlive)
         {
             // Accumulate Passive XP per defeated monster:
@@ -1955,6 +2022,47 @@ void DungeonCrawl::ProcessInput()
             if (m_input.Released(Button::BUTTON_SELECT))
             {
                 PushCombatSelection();
+                return;
+            }
+
+            // Right arrow: skip this hero's turn. Awards a small MP regen (~10% of totalMp,
+            // floored at 1) as compensation for forgoing the action. Pops the current COMBAT
+            // cursor before NextHero() pushes a fresh one for the next hero.
+            if (m_input.Released(Button::BUTTON_RIGHT))
+            {
+                Actor* source = m_ui.GetContext().source;
+                if (source)
+                {
+                    int regen = source->totalMp / 10;
+                    if (regen < 1) regen = 1;
+                    source->currentMp += regen;
+                    if (source->currentMp > source->totalMp)
+                        source->currentMp = source->totalMp;
+                }
+                m_ui.PopBack(1);
+                NextHero();
+                return;
+            }
+
+            // Left arrow: rewind to the previous alive hero if one exists. No-op at the first
+            // hero (we don't want a wrap-around feel; the player should be able to mash Left
+            // without accidentally jumping to the last hero).
+            if (m_input.Released(Button::BUTTON_LEFT))
+            {
+                bool hasPrev = false;
+                for (int i = m_heroIndex - 1; i >= 0; --i)
+                {
+                    if (m_heroes[i].currentHp > 0)
+                    {
+                        hasPrev = true;
+                        break;
+                    }
+                }
+                if (hasPrev)
+                {
+                    m_ui.PopBack(1);
+                    PrevHero();
+                }
                 return;
             }
 
@@ -2620,6 +2728,16 @@ void DungeonCrawl::UseWeapon(Action action)
     Die damageDie = CalculateDamageDie(action.source, action.weapon, false);
     int damage = damageDie.Roll(&damageType);
 
+    // Boss-dragon StrongerEachTurn modifier: outgoing damage scales +25% per round survived.
+    if (action.source && action.source->GetType() == ActorType::ACTOR_MONSTER)
+    {
+        const Monster* boss = static_cast<const Monster*>(action.source);
+        if (std::find(boss->modifiers.begin(), boss->modifiers.end(), BossModifier::StrongerEachTurn) != boss->modifiers.end())
+        {
+            damage = damage + (damage * boss->roundsAlive) / 4;  // *(1 + 0.25 * roundsAlive)
+        }
+    }
+
     // Keep track of damage before modifiers
     m_damageOriginal = damage;
     m_damageAttribute2 = ToAttribute(damageType);
@@ -2766,6 +2884,39 @@ void DungeonCrawl::UseWeapon(Action action)
                 damage = int(damage * 2);
             }
 
+            // Boss-dragon challenge modifiers: when the target is a monster with modifiers, fold
+            // in element/weapon-class resistances and the first-turn / element immunities.
+            if (actor->GetType() == ActorType::ACTOR_MONSTER && !static_cast<Monster*>(actor)->modifiers.empty())
+            {
+                const Monster* boss = static_cast<Monster*>(actor);
+                auto hasMod = [&](BossModifier m)
+                {
+                    return std::find(boss->modifiers.begin(), boss->modifiers.end(), m) != boss->modifiers.end();
+                };
+
+                if (hasMod(BossModifier::FirstTurnImmune) && boss->firstTurnImmune)
+                    damage = 0;
+
+                if (hasMod(BossModifier::ElementImmune) && damageType == boss->immuneElement)
+                    damage = 0;
+
+                if (hasMod(BossModifier::ResistMelee) && action.weapon)
+                {
+                    const WeaponType wt = action.weapon->weaponType;
+                    if (wt == WeaponType::SWORD || wt == WeaponType::DAGGER
+                        || wt == WeaponType::GLOVES || wt == WeaponType::GREATSWORD)
+                    {
+                        damage = damage / 2;
+                    }
+                }
+                if (hasMod(BossModifier::ResistMagic) && action.weapon)
+                {
+                    const WeaponType wt = action.weapon->weaponType;
+                    if (wt == WeaponType::WAND || wt == WeaponType::STAFF)
+                        damage = damage / 2;
+                }
+            }
+
             // Subtract armor class
             damage -= actor->armor.armorClass;
 
@@ -2880,6 +3031,23 @@ void DungeonCrawl::UseWeapon(Action action)
             if (actor->currentHp > actor->totalHp)
                 actor->currentHp = actor->totalHp;
 
+            // Boss-dragon DotAttacks modifier: every hit on a hero adds a damage-over-time
+            // condition tied to the floor's element type. The condition naturally decays as
+            // existing condition turns count down.
+            if (action.source && action.source->GetType() == ActorType::ACTOR_MONSTER
+                && actor->GetType() == ActorType::ACTOR_HERO
+                && !parry && !ignored)
+            {
+                const Monster* boss = static_cast<const Monster*>(action.source);
+                if (std::find(boss->modifiers.begin(), boss->modifiers.end(), BossModifier::DotAttacks) != boss->modifiers.end())
+                {
+                    Hero* hero = static_cast<Hero*>(actor);
+                    DamageType dotType = (boss->element != DamageType::NORMAL) ? boss->element : DamageType::POISON;
+                    hero->condition = Die(1, 4, m_floor / 3, dotType);
+                    hero->conditionTurnsLeft = std::max<int>(hero->conditionTurnsLeft, 3);
+                }
+            }
+
             if (reposte)
             {
                 // Find an equipped sword and counter-attack with its rolled damage
@@ -2940,6 +3108,26 @@ void DungeonCrawl::UseWeapon(Action action)
                     && EquippingWeapon(action.source, WeaponType::LEATHER, 1))
                 {
                     m_gold += ((int)monster->rarity + (int)action.weapon->rarity - 1);
+                }
+            }
+
+            // Boss-dragon RetaliateMelee modifier: any melee hit on the dragon (sword, dagger,
+            // glove, greatsword) is countered immediately for 1/10 of the dragon's primary
+            // weapon damage. Fires every melee swing, not gated by the 25% on-hit roll above.
+            if (action.weapon)
+            {
+                const WeaponType wt = action.weapon->weaponType;
+                const bool isMelee = (wt == WeaponType::SWORD || wt == WeaponType::DAGGER
+                    || wt == WeaponType::GLOVES || wt == WeaponType::GREATSWORD);
+                if (isMelee
+                    && std::find(monster->modifiers.begin(), monster->modifiers.end(),
+                        BossModifier::RetaliateMelee) != monster->modifiers.end())
+                {
+                    int retaliate = monster->weapon1.die.Roll() / 10;
+                    if (retaliate < 1) retaliate = 1;
+                    action.source->currentHp -= retaliate;
+                    if (action.source->currentHp < 0)
+                        action.source->currentHp = 0;
                 }
             }
         }
@@ -3369,6 +3557,12 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
     // Roll random weapon based on rarity of monster
     Weapon* weapon = ROLLTABLE(weapons);
 
+    // Boss-dragon AlwaysSecondary modifier: forces use of weapon2 (the multi-target attack).
+    const bool hasAlwaysSecondary = std::find(monster.modifiers.begin(), monster.modifiers.end(),
+        BossModifier::AlwaysSecondary) != monster.modifiers.end();
+    if (hasAlwaysSecondary)
+        weapon = &monster.weapon2;
+
     // Gather list of available targets
     std::vector<Actor*> targets;
     for (int index = 0; index < (int)m_heroes.size(); index++)
@@ -3419,8 +3613,11 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
                 if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
                     targets.push_back(&m_heroes[index]);
 
-                // PLATE_TAUNT: additional weighting on plate wearers
-                if (OwnsPassive(PassiveType::PLATE_TAUNT))
+                // PLATE_TAUNT: additional weighting on plate wearers (skipped if the attacking
+                // monster has the boss-dragon TauntImmune modifier).
+                const bool bossIsTauntImmune = std::find(monster.modifiers.begin(),
+                    monster.modifiers.end(), BossModifier::TauntImmune) != monster.modifiers.end();
+                if (OwnsPassive(PassiveType::PLATE_TAUNT) && !bossIsTauntImmune)
                 {
                     if (m_heroes[index].armor.rarity >= Rarity::COMMON)
                         targets.push_back(&m_heroes[index]);
@@ -3929,7 +4126,21 @@ void DungeonCrawl::PushCombatSelection()
     if (m_heroes[m_heroIndex].currentMp < GetEffectiveMpCost(&m_heroes[m_heroIndex], weapon))
         weapon = &WEAPON("Unarmed");
 
-    // If we can create an action already 
+    // Charge the MP cost of the chosen combat weapon. (Previously combat went straight to action
+    // queuing without ever spending MP - UseSelectedItem only fires for the out-of-combat "Use
+    // Item" menu - so wands, staves, and Protect staves all cast for free. Now deducted here for
+    // every weapon path: ENEMY, ALLENEMIES, ALLPLAYERSHP, PLAYER_PROTECT, PLAYER_PROTECTALL.)
+    {
+        const int cost = GetEffectiveMpCost(&m_heroes[m_heroIndex], weapon);
+        if (cost > 0)
+        {
+            m_heroes[m_heroIndex].currentMp -= cost;
+            if (m_heroes[m_heroIndex].currentMp < 0)
+                m_heroes[m_heroIndex].currentMp = 0;
+        }
+    }
+
+    // If we can create an action already
     if (weapon->target == Target::ALLENEMIES)
     {
         Action action;

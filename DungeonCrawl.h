@@ -64,6 +64,10 @@ private:
     /// Draw the high-score entry screen (3-letter initials + stat readout) on party wipe.
     void DrawHighScoreEntry(Time delta);
 
+    /// Draw a hover dialog listing boss-dragon modifiers when the player is currently aiming at
+    /// a monster that has any. No-op when the cursor isn't on a modifier-bearing monster.
+    void DrawDragonModifierDialog(Time delta);
+
     /// Draw the read-only high-score list (accessed from the main menu via Ctrl).
     void DrawHighScoreList(Time delta);
 

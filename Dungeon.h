@@ -228,13 +228,21 @@ private:
     void GenerateEncounter(Room& room, Rarity rarity, DamageType damageType, MonsterFamily family);
 
     /// Generate the reward weapon or gold amount
-    void GenerateReward(Weapon& weapon, int& gold, Reward reward, const std::vector<Monster>& monsters, Rarity rarity);
+    void GenerateReward(Weapon& weapon, int& gold, Reward reward, const std::vector<Monster>& monsters, Rarity rarity, bool isBoss = false);
 
     /// Reset the attributes list
     void ResetAttributes();
 
     /// Return whether the floor has a boss
     bool IsBossFloor() const;
+
+    /// Roll the rarity of a boss-floor dragon using the per-floor distribution spec
+    /// (50/50 Common/Rare at floor 10, 100% Rare at 20, etc).
+    Rarity RollBossDragonRarity() const;
+
+    /// Pull a single BossModifier from the persistent pool; pool auto-refills with all 9
+    /// modifiers when empty.
+    BossModifier RollBossModifier();
 
     /// Get the elemental index
     int GetIndex() const;
@@ -269,6 +277,10 @@ private:
 
     /// The current monster family to use
     MonsterFamily m_currentFamily = MonsterFamily::GELATINOUS;
+
+    /// Persistent boss-modifier pool. Drains as we hand out modifiers to dragon bosses; refills
+    /// with the full list when empty so each modifier appears once before any repeat.
+    std::vector<BossModifier> m_bossModifierPool;
 
     /// The current damage type
     DamageType m_currentType = DamageType::NORMAL;
