@@ -1281,9 +1281,13 @@ void DungeonCrawl::DrawReward(Time delta)
                 }
             }
 
+            // Money-only rewards have no weapon to highlight, so the exit is the only cursor
+            // slot (index 0). Weapon rewards make the weapon index 0 and the exit index 1.
+            // (Fix: the third entry below was Reward::EPIC_WEAPON, which made Epic Weapon
+            //  rewards put the exit cursor at the same index as the weapon - both lit at once.)
             int exitIndex = (m_currentRoom->reward == Reward::MONEY
                 || m_currentRoom->reward == Reward::RARE_MONEY
-                || m_currentRoom->reward == Reward::EPIC_WEAPON
+                || m_currentRoom->reward == Reward::EPIC_MONEY
                 || m_currentRoom->reward == Reward::LEGENDARY_MONEY) ? 0 : 1;
 
             ANIMATION("exit").WriteData(m_console, delta, x, y, complete);
