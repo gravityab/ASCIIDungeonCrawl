@@ -1917,8 +1917,9 @@ void DungeonCrawl::ProcessInput()
 
         if (m_ui.GetState() == CursorState::COMBAT)
         {
-            if (m_actions.size() > 0)
-                m_actions.pop_back();
+            // Refund MP and pop every queued action belonging to the source we're rewinding
+            // past (so a wand cast that landed an action no longer leaves its MP spent).
+            UndoLastHeroActions();
             PrevHero();
         }
         return;
@@ -2122,6 +2123,9 @@ void DungeonCrawl::ProcessInput()
                 }
                 if (hasPrev)
                 {
+                    // Refund MP and discard any actions the previous hero already committed
+                    // so the player can re-pick their swing without losing the MP they spent.
+                    UndoLastHeroActions();
                     m_ui.PopBack(1);
                     PrevHero();
                 }
@@ -2527,6 +2531,39 @@ void DungeonCrawl::DrawPassives(Time delta)
 void DungeonCrawl::DrawCursor()
 {
     ProcessInput();
+}
+
+// Pop every trailing action belonging to the most recent action's source and refund the
+// MP that was charged for that source's turn. Used by Back and Left Arrow when the player
+// rewinds past a hero who already committed.
+//
+// Why pop multiple: duplicate-attack passives (Boxer, Dual Wield, Nimble Fingers, Wand
+// Finesse) clone the originally-queued action into N copies that all share the same
+// .source. We need to drop all of them to fully undo the turn. MP, however, was charged
+// exactly once at action-confirm time, so we refund exactly once (based on the last
+// action's weapon; for the duplication passives the cloned weapons share the same MP cost
+// as the original).
+void DungeonCrawl::UndoLastHeroActions()
+{
+    if (m_actions.empty())
+        return;
+
+    Actor*  lastSource = m_actions.back().source;
+    Weapon* lastWeapon = m_actions.back().weapon;
+
+    if (lastSource && lastWeapon)
+    {
+        const int cost = GetEffectiveMpCost(lastSource, lastWeapon);
+        if (cost > 0)
+        {
+            lastSource->currentMp += cost;
+            if (lastSource->currentMp > lastSource->totalMp)
+                lastSource->currentMp = lastSource->totalMp;
+        }
+    }
+
+    while (!m_actions.empty() && m_actions.back().source == lastSource)
+        m_actions.pop_back();
 }
 
 void DungeonCrawl::NextHero()

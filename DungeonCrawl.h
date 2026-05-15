@@ -153,6 +153,11 @@ private:
     /// Select previous hero
     void PrevHero();
 
+    /// Pop the most recent hero's queued action(s) from m_actions and refund the MP that
+    /// was charged when those actions were confirmed. Called by Back and Left Arrow when
+    /// the player rewinds to a hero who already committed this round.
+    void UndoLastHeroActions();
+
     /// Get unique passive that isn't in the current and owned list
     void GetUniquePassive();
 
