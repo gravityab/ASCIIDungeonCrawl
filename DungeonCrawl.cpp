@@ -2582,7 +2582,7 @@ void DungeonCrawl::LevelUp(Hero& hero)
             hpGain *= 2; // PLATE_HPBOOST: doubles HP gained per level when wearing plate
         hero.totalHp += hpGain;
         // MP pool grows half as fast - mages who multiclass into plate shouldn't get a fat pool too.
-        mpGain = ROLL(multLow, 10, hero.level + 1) / 2;
+        mpGain = Die(multLow, 10, hero.level + 1).Roll(nullptr) / 2;
         hero.totalMp += mpGain;
         // AC growth was the dominant late-game scaling. Was rarity + level/2 + 1 per level
         // (~180 at level 20 legendary). Now grows roughly half that, capped by rarity tier.
@@ -2593,7 +2593,7 @@ void DungeonCrawl::LevelUp(Hero& hero)
         // If you equip ROBES you gain more MP during levels (still the mage class)
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
         // Halved so the player actually has to budget casts. Was ~65/level avg at level 20.
-        mpGain = ROLL(multHigh, 10, hero.level + 1) / 2;
+        mpGain = Die(multHigh, 10, hero.level + 1).Roll(nullptr) / 2;
         hero.totalMp += mpGain;
     }
     else if (hero.armor.target == Target::PLAYERAC_SPEED)
@@ -2601,7 +2601,7 @@ void DungeonCrawl::LevelUp(Hero& hero)
         // If you equip LEATHER you lower the amount required for levels
         hero.experience /= 2;
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
-        mpGain = ROLL(multLow, 10, hero.level + 1) / 2;
+        mpGain = Die(multLow, 10, hero.level + 1).Roll(nullptr) / 2;
         hero.totalMp += mpGain;
         // Was rarity per level (~60 at level 20 legendary). Now only counts higher rarities.
         hero.bonusAC += (int)hero.armor.rarity / 2;
@@ -2610,7 +2610,7 @@ void DungeonCrawl::LevelUp(Hero& hero)
     {
         // Equiping no ARMOR makes you gain little HP / MP for levels
         hero.totalHp += ROLL(multLow, 10, hero.level + 1);
-        mpGain = ROLL(multLow, 10, hero.level + 1) / 2;
+        mpGain = Die(multLow, 10, hero.level + 1).Roll(nullptr) / 2;
         hero.totalMp += mpGain;
     }
 
