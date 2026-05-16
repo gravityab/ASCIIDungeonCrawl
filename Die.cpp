@@ -164,6 +164,21 @@ DieRange DieRange::As(Rarity rarity)
 		if (newRange.maxMp != 0)
 			newRange.maxMp += 16;
 	}
+    if (rarity >= Rarity::ARTIFACT)
+    {
+        newRange.minMult += 32;
+        newRange.maxMult += 32;
+        newRange.minConst += 16;
+        newRange.maxConst += 16;
+        newRange.cost.multiplier += 64;
+        newRange.cost.constant += 64;
+        newRange.minAc += 64;
+        newRange.maxAc += 64;
+        if (newRange.minMp != 0)
+            newRange.minMp += 16;
+        if (newRange.maxMp != 0)
+            newRange.maxMp += 16;
+    }
 	return newRange;
 }
 

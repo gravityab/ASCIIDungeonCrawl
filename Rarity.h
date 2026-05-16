@@ -16,6 +16,7 @@ enum class Rarity : uint8_t
 	RARE,      ///< Rare quality
 	EPIC,      ///< Epic quality
 	LEGENDARY, ///< Legendary quality
+    ARTIFACT,  ///< Artifact quality
 };
 
 /// Convert rarity to attribute

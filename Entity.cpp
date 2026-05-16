@@ -21,26 +21,36 @@
 //   * blink bits set       -> block in ToColor(),           glyph in palette[0] (black)
 // (Blink takes precedence when both are present, matching the original BLINK macro's intent of
 // drawing maximum-contrast highlight.)
-static void PaintCell(int x, int y, int glyph, uint16_t attribute)
+// Scale the alpha channel of an ARGB color_t by `alpha` (0..255). Other channels untouched.
+static inline color_t ApplyAlpha(color_t c, uint8_t alpha)
+{
+    const uint32_t baseA = (c >> 24) & 0xFFu;
+    const uint32_t newA  = (baseA * (uint32_t)alpha) / 255u;
+    return (c & 0x00FFFFFFu) | (newA << 24);
+}
+
+static void PaintCell(int x, int y, int glyph, uint16_t attribute, uint8_t alpha = 255)
 {
     if (glyph == (int)'.' || glyph == 0)
         return;
+    if (alpha == 0)
+        return; // fully invisible - skip the put entirely
 
     if (HasBlink(attribute))
     {
-        terminal_color(ToColor(attribute));
+        terminal_color(ApplyAlpha(ToColor(attribute), alpha));
         terminal_put(x, y, FULL_BLOCK);
-        terminal_color(EngineColor::s_palette[0]); // glyph in black against the highlight
+        terminal_color(ApplyAlpha(EngineColor::s_palette[0], alpha)); // glyph in black against the highlight
         terminal_put(x, y, glyph);
         return;
     }
 
     if (HasBackground(attribute))
     {
-        terminal_color(ToBackgroundColor(attribute));
+        terminal_color(ApplyAlpha(ToBackgroundColor(attribute), alpha));
         terminal_put(x, y, FULL_BLOCK);
     }
-    terminal_color(ToColor(attribute));
+    terminal_color(ApplyAlpha(ToColor(attribute), alpha));
     terminal_put(x, y, glyph);
 }
 
@@ -154,6 +164,25 @@ int ConsoleEntity::WriteData(const char* data, uint32_t x, uint32_t y, uint32_t 
             int glyph = (pos < len) ? (int)(unsigned char)data[pos] : 0;
             pos++;
             PaintCell((int)(x + dx), (int)(y + dy), glyph, attribute);
+        }
+    }
+    return len;
+}
+
+int ConsoleEntity::WriteData(const char* data, uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint16_t attribute, uint8_t alpha)
+{
+    if (!data || alpha == 0)
+        return 0;
+    const int len = (int)strlen(data);
+
+    int pos = 0;
+    for (uint32_t dy = 0; dy < h; dy++)
+    {
+        for (uint32_t dx = 0; dx < w; dx++)
+        {
+            int glyph = (pos < len) ? (int)(unsigned char)data[pos] : 0;
+            pos++;
+            PaintCell((int)(x + dx), (int)(y + dy), glyph, attribute, alpha);
         }
     }
     return len;

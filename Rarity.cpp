@@ -15,6 +15,7 @@ uint16_t ToAttribute(Rarity type)
 		case Rarity::RARE: attribute = 0x0009; break;
 		case Rarity::EPIC: attribute = 0x0005; break;
 		case Rarity::LEGENDARY: attribute = 0x0004; break;
+        case Rarity::ARTIFACT: attribute = 0x000D; break;
 		default: attribute = 0x0007; break;
 	}
 	return attribute;
@@ -30,6 +31,8 @@ std::string ToString(Rarity rarity)
 		return "Epic";
 	else if (rarity == Rarity::LEGENDARY)
 		return "Legendary";
+    else if (rarity == Rarity::ARTIFACT)
+        return "Artifact";
 	else
 		return std::string();
 }

@@ -324,6 +324,12 @@ private:
     /// route the chosen weapon through to PurchaseItem.
     int m_selectedRewardIndex = 0;
 
+    /// Cursor-stack depth at the moment PushRewardHero() was entered, so the post-purchase
+    /// PopBackTo() can restore the player to whichever screen launched the reward flow
+    /// (REWARD for reward rooms = depth 3, FOUNTAIN for artifact fountains = depth 2, etc.)
+    /// rather than always popping back to a hard-coded depth of 3.
+    int m_rewardReturnDepth = 0;
+
     /// The parties current gold
     int m_gold;
 

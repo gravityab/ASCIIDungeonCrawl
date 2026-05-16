@@ -100,6 +100,30 @@
     m_weaponDb[Weapon::ToString(a, DamageType::WATER, Rarity::LEGENDARY)] \
         = Weapon(a, DamageType::WATER, b, e, Rarity::LEGENDARY, c, d, f).As(DamageType::WATER, Rarity::LEGENDARY);
 
+#define WEAPON_DB_ARTIFACT(a, e, b, c, d, f) \
+    m_weaponDb[Weapon::ToString(a, DamageType::NORMAL, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::NORMAL, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::NORMAL, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::COLD, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::COLD, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::COLD, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::FIRE, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::FIRE, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::FIRE, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::LIGHTNING, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::LIGHTNING, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::LIGHTNING, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::NECROTIC, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::NECROTIC, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::NECROTIC, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::POISON, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::POISON, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::POISON, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::PSYCHIC, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::PSYCHIC, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::PSYCHIC, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::HOLY, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::HOLY, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::HOLY, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::STEEL, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::STEEL, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::STEEL, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::DARK, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::DARK, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::DARK, Rarity::ARTIFACT); \
+    m_weaponDb[Weapon::ToString(a, DamageType::WATER, Rarity::ARTIFACT)] \
+        = Weapon(a, DamageType::WATER, b, e, Rarity::ARTIFACT, c, d, f).As(DamageType::WATER, Rarity::ARTIFACT);
+
 #define WEAPON_DB_COMMON_HEALING(a, e, b, c, d, f) \
     m_weaponDb[Weapon::ToString(a, DamageType::HEALING, Rarity::COMMON)] \
         = Weapon(a, DamageType::HEALING, b, e, Rarity::COMMON, c, d, f).As(DamageType::HEALING, Rarity::COMMON); \
@@ -1248,6 +1272,190 @@ void Database::Initialize()
             ".....%....%^.%..%.%..%.^%...%......",
             0, 0, 35, 14, 0x0008);
 
+        m_imageDb["artifact_door_closed_1"] = Image(
+            "..................................." \
+            "................^^^................" \
+            ".............=`      `=............" \
+            "...........-           -..........." \
+            "..........|             |.........." \
+            ".........-               -........." \
+            ".........|               |........." \
+            ".........-               -........." \
+            ".........|               |........." \
+            ".........-               -........." \
+            "..........|             |.........." \
+            "............           ............" \
+            ".............=_     _=............." \
+            "................^^^................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_closed_1"].SetTrailing(true);
+        m_imageDb["artifact_door_closed_1"].SetStrobe(true);
+
+        m_imageDb["artifact_door_closed_2"] = Image(
+            "..................................." \
+            "................===................" \
+            ".............-`     `-............." \
+            "...........=           =..........." \
+            "..........-             -.........." \
+            ".........|               |........." \
+            ".........-               -........." \
+            ".........|               |........." \
+            ".........-               -........." \
+            ".........|               |........." \
+            "..........-             -.........." \
+            "...........=           =..........." \
+            "............._       _............." \
+            "................===................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_closed_2"].SetTrailing(true);
+        m_imageDb["artifact_door_closed_2"].SetStrobe(true);
+
+        m_imageDb["artifact_door_closed_swirl_1"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........             ..........." \
+            "..........               .........." \
+            "..........    /      #   .........." \
+            "..........   |      ###  .........." \
+            "..........   |       #   .........." \
+            "..........    \\     ^^  .........." \
+            "...........        ^    ..........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_closed_swirl_2"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........         +#  ..........." \
+            "..........         +##+  .........." \
+            "..........           ##  .........." \
+            "..........            ^  .........." \
+            "..........   |        ^  .........." \
+            "..........    \\         .........." \
+            "...........    -_       ..........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_closed_swirl_3"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........   =##=+_    ..........." \
+            "..........    ##=^       .........." \
+            "..........               .........." \
+            "..........               .........." \
+            "..........               .........." \
+            "..........               .........." \
+            "...........    -__-     ..........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_closed_swirl_4"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........   -^        ..........." \
+            "..........   #^          .........." \
+            "..........  +#           .........." \
+            "..........  ##           .........." \
+            "..........           |   .........." \
+            "..........          /    .........." \
+            "...........       -     ..........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_closed_swirl_5"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........             ..........." \
+            "..........    -          .........." \
+            "..........   =       \\  .........." \
+            "..........   #        |  .........." \
+            "..........  ###       |  .........." \
+            "..........   #       /   .........." \
+            "...........             ..........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+
+        m_imageDb["artifact_door_closed_swirl_6"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........      ^=     ..........." \
+            "..........          \\   .........." \
+            "..........           |   .........." \
+            "..........   #           .........." \
+            "..........   ##          .........." \
+            "..........   +#+_        .........." \
+            "...........    +#       ..........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_closed_swirl_7"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........     ___     ..........." \
+            "..........    /          .........." \
+            "..........               .........." \
+            "..........               .........." \
+            "..........               .........." \
+            "..........        ##     .........." \
+            "...........    _=##+    ..........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_closed_swirl_8"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........    _        ..........." \
+            "..........    /          .........." \
+            "..........   |           .........." \
+            "..........   #       #   .........." \
+            "..........          ##   .........." \
+            "..........         =#    .........." \
+            "...........       -^     .........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+        m_imageDb["artifact_door_opened_1"] = Image(
+            "..................................." \
+            "..................................." \
+            "...............     ..............." \
+            "............           ............" \
+            "...........             ..........." \
+            "..........               .........." \
+            "..........               .........." \
+            "..........               .........." \
+            "..........               .........." \
+            "..........               .........." \
+            "...........             ..........." \
+            "............           ............" \
+            "..............       .............." \
+            "...................................",
+            0, 0, 35, 14, 0x0008);
+
         m_imageDb["torch_base"] = Image("[]| ", 0, 1, 2, 2, 0x0007);
         m_imageDb["torch_fire_1"] = Image(".%", 0, 0, 2, 1, 0x0004);
         m_imageDb["torch_fire_2"] = Image(".^", 0, 0, 2, 1, 0x0004);
@@ -1714,6 +1922,55 @@ void Database::Initialize()
             "................",
             0, 0, 16, 10, 0x0007);
 
+        m_imageDb["artifact_1"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["artifact_2"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["artifact_3"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0007);
+        m_imageDb["artifact_4"] = Image(
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0007);
+
         m_imageDb["robe"] = Image(
             "................" \
             "................" \
@@ -2081,9 +2338,9 @@ void Database::Initialize()
             "................" \
             ".              ." \
             ".   ||     .   ." \
-            ".  / \    ..   ." \
+            ".  / \\    ..   ." \
             ". |...|  ..    ." \
-            ".  --- \.._    ." \
+            ".  --- \\.._    ." \
             ".      //   .  ." \
             ".         .... ." \
             ".        . .   ." \
@@ -2141,11 +2398,11 @@ void Database::Initialize()
         m_imageDb["passive_improved_trap_disarm"] = Image(
             "................" \
             "..^..^.^.^..^..." \
-            "^.|^.|.|.|.^|.^." \
-            "|.||^|.^.|^||.|." \
-            "|.||||.|.||||.|." \
-            "|.||||.|.||||.|." \
-            "|.o||o.|.o||o.|." \
+            "..|^.|.|.|.^|.^." \
+            "..||^|.^.|^||.|." \
+            "..||||.|.||||.|." \
+            "..||||.|.||||.|." \
+            "..o||o.|.o||o.|." \
             "...o|..|..|o...." \
             "....o..o..o....." \
             "................",
@@ -2154,14 +2411,14 @@ void Database::Initialize()
         m_imageDb["passive_boss_reward_head"] = Image(
             "................" \
             "................" \
-            "..............,;" \
-            ".../|......|\\' ," \
-            "...`,'(__)-'' ` " \
-            "....|%    %|  ` " \
-            ".../   __   \\   " \
-            "...\\\\ ^__^ /;``," \
-            "....._`__-_,' ,'" \
-            ".....((^^,__(...",
+            "..............,." \
+            ".../|......|\\' ." \
+            "...`,'(__)-'' `." \
+            "....|%    %|  `." \
+            ".../   __   \\  ." \
+            "...\\\\ ^__^ /;``." \
+            "....._`__-_,' ,." \
+            ".......^^.......",
             0, 0, 16, 10, 0x0007);
         m_imageDb["passive_boss_reward_eyes"] = Image(
             "................" \
@@ -2186,7 +2443,7 @@ void Database::Initialize()
             "... //:=|=:\\\\ .." \
             ".. //.:=|=:.\\\\ ." \
             ".. \\\\.:=|=:.// ." \
-            ".. /\\.(_=_)./\\ .",
+            "................",
             0, 0, 16, 10, 0x0007);
         m_imageDb["passive_skeleton_slayer_eyes"] = Image(
             "................" \
@@ -2256,9 +2513,9 @@ void Database::Initialize()
             "................" \
             "................" \
             ". /\\.. __ . /\\ ." \
-            " / .\\/....\\/. \\ " \
-            "/ / |  ..  | \\ \\" \
-            " / . \\____/ . \\ " \
+            "./ .\\/....\\/. \\." \
+            ". / |  ..  | \\ ." \
+            "./ . \\____/ . \\." \
             "................" \
             "................" \
             "................",
@@ -2300,6 +2557,20 @@ void Database::Initialize()
             "................" \
             "................",
             0, 0, 16, 10, 0x0006);
+
+        m_imageDb["passive_artifact"] = Image(
+            "................" \
+            ".......=###....." \
+            ".....#^...^##..." \
+            "....#^......##.." \
+            "...........#^..." \
+            ".........=#....." \
+            "........##......" \
+            "................" \
+            "........##......" \
+            "................",
+            0, 0, 16, 10, 0x0002);
+        m_imageDb["passive_artifact"].SetTrailing(true);
 
         m_imageDb["hero_card"] = Image(
             "................" \
@@ -4786,6 +5057,25 @@ void Database::Initialize()
         m_frameDb["legendary_door_closed_2"] = Frame({ m_imageDb["legendary_door_closed"], m_imageDb["legendary_door_details_closed"], m_imageDb["legendary_door_spike_closed"], m_imageDb["legendary_door_smoke_2"] });
         m_frameDb["legendary_door_closed_3"] = Frame({ m_imageDb["legendary_door_closed"], m_imageDb["legendary_door_details_closed"], m_imageDb["legendary_door_spike_closed"], m_imageDb["legendary_door_smoke_3"] });
 
+        m_frameDb["artifact_door_closed_1"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_closed_swirl_1"], });
+        m_frameDb["artifact_door_closed_2"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_closed_swirl_2"], });
+        m_frameDb["artifact_door_closed_3"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_closed_swirl_3"], });
+        m_frameDb["artifact_door_closed_4"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_closed_swirl_4"], });
+        m_frameDb["artifact_door_closed_5"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_closed_swirl_5"], });
+        m_frameDb["artifact_door_closed_6"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_closed_swirl_6"], });
+        m_frameDb["artifact_door_closed_7"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_closed_swirl_7"], });
+        m_frameDb["artifact_door_closed_8"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_closed_swirl_8"], });
+
+        m_frameDb["artifact_door_opened_1"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_opened_1"], });
+        m_frameDb["artifact_door_opened_2"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_opened_1"], });
+        m_frameDb["artifact_door_opened_3"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_opened_1"], });
+        m_frameDb["artifact_door_opened_4"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_opened_1"], });
+        m_frameDb["artifact_door_opened_5"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_opened_1"], });
+        m_frameDb["artifact_door_opened_6"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_opened_1"], });
+        m_frameDb["artifact_door_opened_7"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_opened_1"], });
+        m_frameDb["artifact_door_opened_8"] = Frame({ m_imageDb["artifact_door_closed_1"], m_imageDb["artifact_door_opened_1"], });
+
+
         m_frameDb["select_nothing"] = Frame({ m_imageDb["select_nothing"], m_imageDb["select_nothing"] });
 
         m_frameDb["select_door_1"] = Frame({ m_imageDb["select_door"], m_imageDb["select_door_1"], });
@@ -4990,6 +5280,19 @@ void Database::Initialize()
         m_frameDb["armor_legendary_plate_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["plate"], m_imageDb["plate_lining"], m_imageDb["legendary_3"] });
         m_frameDb["armor_legendary_plate_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["plate"], m_imageDb["plate_lining"], m_imageDb["legendary_4"] });
 
+        m_frameDb["armor_artifact_robe_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["robe"], m_imageDb["robe_lining"], m_imageDb["artifact_1"] });
+        m_frameDb["armor_artifact_robe_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["robe"], m_imageDb["robe_lining"], m_imageDb["artifact_2"] });
+        m_frameDb["armor_artifact_robe_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["robe"], m_imageDb["robe_lining"], m_imageDb["artifact_3"] });
+        m_frameDb["armor_artifact_robe_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["robe"], m_imageDb["robe_lining"], m_imageDb["artifact_4"] });
+        m_frameDb["armor_artifact_leather_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["leather"], m_imageDb["leather_lining"], m_imageDb["artifact_1"] });
+        m_frameDb["armor_artifact_leather_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["leather"], m_imageDb["leather_lining"], m_imageDb["artifact_2"] });
+        m_frameDb["armor_artifact_leather_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["leather"], m_imageDb["leather_lining"], m_imageDb["artifact_3"] });
+        m_frameDb["armor_artifact_leather_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["leather"], m_imageDb["leather_lining"], m_imageDb["artifact_4"] });
+        m_frameDb["armor_artifact_plate_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["plate"], m_imageDb["plate_lining"], m_imageDb["artifact_1"] });
+        m_frameDb["armor_artifact_plate_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["plate"], m_imageDb["plate_lining"], m_imageDb["artifact_2"] });
+        m_frameDb["armor_artifact_plate_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["plate"], m_imageDb["plate_lining"], m_imageDb["artifact_3"] });
+        m_frameDb["armor_artifact_plate_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["plate"], m_imageDb["plate_lining"], m_imageDb["artifact_4"] });
+
 
         m_frameDb["weapon_gloves"] = Frame({ m_imageDb["weapon_border"], m_imageDb["gloves"], m_imageDb["knuckles"] });
         m_frameDb["weapon_wand"] = Frame({ m_imageDb["weapon_border"], m_imageDb["wand_handle"], m_imageDb["wand"] });
@@ -5073,6 +5376,31 @@ void Database::Initialize()
         m_frameDb["weapon_legendary_great_sword_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["great_sword_hilt"], m_imageDb["great_sword_blade"], m_imageDb["legendary_3"] });
         m_frameDb["weapon_legendary_great_sword_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["great_sword_hilt"], m_imageDb["great_sword_blade"], m_imageDb["legendary_4"] });
 
+        m_frameDb["weapon_artifact_gloves_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["gloves"], m_imageDb["knuckles"], m_imageDb["artifact_1"] });
+        m_frameDb["weapon_artifact_gloves_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["gloves"], m_imageDb["knuckles"], m_imageDb["artifact_2"] });
+        m_frameDb["weapon_artifact_gloves_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["gloves"], m_imageDb["knuckles"], m_imageDb["artifact_3"] });
+        m_frameDb["weapon_artifact_gloves_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["gloves"], m_imageDb["knuckles"], m_imageDb["artifact_4"] });
+        m_frameDb["weapon_artifact_wand_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["wand_handle"], m_imageDb["wand"], m_imageDb["artifact_1"] });
+        m_frameDb["weapon_artifact_wand_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["wand_handle"], m_imageDb["wand"], m_imageDb["artifact_2"] });
+        m_frameDb["weapon_artifact_wand_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["wand_handle"], m_imageDb["wand"], m_imageDb["artifact_3"] });
+        m_frameDb["weapon_artifact_wand_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["wand_handle"], m_imageDb["wand"], m_imageDb["artifact_4"] });
+        m_frameDb["weapon_artifact_staff_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["staff_handle"], m_imageDb["staff"], m_imageDb["artifact_1"] });
+        m_frameDb["weapon_artifact_staff_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["staff_handle"], m_imageDb["staff"], m_imageDb["artifact_2"] });
+        m_frameDb["weapon_artifact_staff_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["staff_handle"], m_imageDb["staff"], m_imageDb["artifact_3"] });
+        m_frameDb["weapon_artifact_staff_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["staff_handle"], m_imageDb["staff"], m_imageDb["artifact_4"] });
+        m_frameDb["weapon_artifact_dagger_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["dagger_hilt"], m_imageDb["dagger_blade"], m_imageDb["artifact_1"] });
+        m_frameDb["weapon_artifact_dagger_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["dagger_hilt"], m_imageDb["dagger_blade"], m_imageDb["artifact_2"] });
+        m_frameDb["weapon_artifact_dagger_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["dagger_hilt"], m_imageDb["dagger_blade"], m_imageDb["artifact_3"] });
+        m_frameDb["weapon_artifact_dagger_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["dagger_hilt"], m_imageDb["dagger_blade"], m_imageDb["artifact_4"] });
+        m_frameDb["weapon_artifact_sword_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["sword_hilt"], m_imageDb["sword_blade"], m_imageDb["artifact_1"] });
+        m_frameDb["weapon_artifact_sword_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["sword_hilt"], m_imageDb["sword_blade"], m_imageDb["artifact_2"] });
+        m_frameDb["weapon_artifact_sword_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["sword_hilt"], m_imageDb["sword_blade"], m_imageDb["artifact_3"] });
+        m_frameDb["weapon_artifact_sword_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["sword_hilt"], m_imageDb["sword_blade"], m_imageDb["artifact_4"] });
+        m_frameDb["weapon_artifact_great_sword_1"] = Frame({ m_imageDb["weapon_border"], m_imageDb["great_sword_hilt"], m_imageDb["great_sword_blade"], m_imageDb["artifact_1"] });
+        m_frameDb["weapon_artifact_great_sword_2"] = Frame({ m_imageDb["weapon_border"], m_imageDb["great_sword_hilt"], m_imageDb["great_sword_blade"], m_imageDb["artifact_2"] });
+        m_frameDb["weapon_artifact_great_sword_3"] = Frame({ m_imageDb["weapon_border"], m_imageDb["great_sword_hilt"], m_imageDb["great_sword_blade"], m_imageDb["artifact_3"] });
+        m_frameDb["weapon_artifact_great_sword_4"] = Frame({ m_imageDb["weapon_border"], m_imageDb["great_sword_hilt"], m_imageDb["great_sword_blade"], m_imageDb["artifact_4"] });
+
         m_frameDb["lesser_healing_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["lesser_potion_bottle"], m_imageDb["lesser_healing_potion"] });
         m_frameDb["lesser_magic_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["lesser_potion_bottle"], m_imageDb["lesser_magic_potion"] });
         m_frameDb["lesser_resurrect_potion"] = Frame({ m_imageDb["weapon_border"], m_imageDb["lesser_potion_bottle"], m_imageDb["lesser_resurrect_potion"] });
@@ -5099,6 +5427,7 @@ void Database::Initialize()
         m_frameDb["passive_blob_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_blob_slayer_head"], m_imageDb["passive_blob_slayer_eyes"] });
         m_frameDb["passive_bat_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_bat_slayer_head"], m_imageDb["passive_bat_slayer_eyes"] });
         m_frameDb["passive_spider_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_spider_slayer_head"], m_imageDb["passive_spider_slayer_eyes"] });
+        m_frameDb["passive_artifact"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_artifact"], });
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -5185,6 +5514,12 @@ void Database::Initialize()
         m_animationDb["legendary_door_closed"].SetData(
             { m_frameDb["legendary_door_closed_1"], m_frameDb["legendary_door_closed_2"], m_frameDb["legendary_door_closed_3"], },
             100, 300, false, true, true);
+        m_animationDb["artifact_door_opened"].SetData(
+            { m_frameDb["artifact_door_opened_1"], m_frameDb["artifact_door_opened_2"], m_frameDb["artifact_door_opened_3"], m_frameDb["artifact_door_opened_4"], m_frameDb["artifact_door_opened_5"], m_frameDb["artifact_door_opened_6"], m_frameDb["artifact_door_opened_7"], m_frameDb["artifact_door_opened_8"], },
+            100, 300, true, true, false);
+        m_animationDb["artifact_door_closed"].SetData(
+            { m_frameDb["artifact_door_closed_1"], m_frameDb["artifact_door_closed_2"], m_frameDb["artifact_door_closed_3"], m_frameDb["artifact_door_closed_4"], m_frameDb["artifact_door_closed_5"], m_frameDb["artifact_door_closed_6"], m_frameDb["artifact_door_closed_7"], m_frameDb["artifact_door_closed_8"], },
+            30, 300, true, true, false);
 
         m_animationDb["select_nothing"].SetData(
             { m_frameDb["select_nothing"] },
@@ -5403,6 +5738,35 @@ void Database::Initialize()
             { m_frameDb["armor_legendary_plate_1"], m_frameDb["armor_legendary_plate_2"], m_frameDb["armor_legendary_plate_3"], m_frameDb["armor_legendary_plate_4"], },
             200, false, true, true);
 
+        m_animationDb["weapon_artifact_gloves"].SetData(
+            { m_frameDb["weapon_artifact_gloves_1"], m_frameDb["weapon_artifact_gloves_2"], m_frameDb["weapon_artifact_gloves_3"], m_frameDb["weapon_artifact_gloves_4"] },
+            200, false, true, true);
+        m_animationDb["weapon_artifact_wand"].SetData(
+            { m_frameDb["weapon_artifact_wand_1"], m_frameDb["weapon_artifact_wand_2"], m_frameDb["weapon_artifact_wand_3"], m_frameDb["weapon_artifact_wand_4"] },
+            200, false, true, true);
+        m_animationDb["weapon_artifact_staff"].SetData(
+            { m_frameDb["weapon_artifact_staff_1"], m_frameDb["weapon_artifact_staff_2"], m_frameDb["weapon_artifact_staff_3"], m_frameDb["weapon_artifact_staff_4"] },
+            200, false, true, true);
+        m_animationDb["weapon_artifact_dagger"].SetData(
+            { m_frameDb["weapon_artifact_dagger_1"], m_frameDb["weapon_artifact_dagger_2"], m_frameDb["weapon_artifact_dagger_3"], m_frameDb["weapon_artifact_dagger_4"] },
+            200, false, true, true);
+        m_animationDb["weapon_artifact_sword"].SetData(
+            { m_frameDb["weapon_artifact_sword_1"], m_frameDb["weapon_artifact_sword_2"], m_frameDb["weapon_artifact_sword_3"], m_frameDb["weapon_artifact_sword_4"] },
+            200, false, true, true);
+        m_animationDb["weapon_artifact_great_sword"].SetData(
+            { m_frameDb["weapon_artifact_great_sword_1"], m_frameDb["weapon_artifact_great_sword_2"], m_frameDb["weapon_artifact_great_sword_3"], m_frameDb["weapon_artifact_great_sword_4"] },
+            200, false, true, true);
+        m_animationDb["armor_artifact_robe"].SetData(
+            { m_frameDb["armor_artifact_robe_1"], m_frameDb["armor_artifact_robe_2"], m_frameDb["armor_artifact_robe_3"], m_frameDb["armor_artifact_robe_4"], },
+            200, false, true, true);
+        m_animationDb["armor_artifact_leather"].SetData(
+            { m_frameDb["armor_artifact_leather_1"], m_frameDb["armor_artifact_leather_2"], m_frameDb["armor_artifact_leather_3"], m_frameDb["armor_artifact_leather_4"], },
+            200, false, true, true);
+        m_animationDb["armor_artifact_plate"].SetData(
+            { m_frameDb["armor_artifact_plate_1"], m_frameDb["armor_artifact_plate_2"], m_frameDb["armor_artifact_plate_3"], m_frameDb["armor_artifact_plate_4"], },
+            200, false, true, true);
+
+
         m_animationDb["lesser_healing_potion"].SetData(
             { m_frameDb["lesser_healing_potion"] },
             200, false, true, false);
@@ -5567,6 +5931,16 @@ void Database::Initialize()
         WEAPON_DB_LEGENDARY("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["armor_legendary_leather"], WeaponType::LEATHER);
         WEAPON_DB_LEGENDARY("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"].As(Rarity::LEGENDARY), m_animationDb["fist_attack"], m_animationDb["armor_legendary_plate"], WeaponType::PLATE);
 
+        WEAPON_DB_ARTIFACT("Gloves", Target::ENEMY, m_dieRangeDb["weapon_gloves"].As(Rarity::ARTIFACT), m_animationDb["fist_attack"], m_animationDb["weapon_artifact_gloves"], WeaponType::GLOVES);
+        WEAPON_DB_ARTIFACT("Wand", Target::ENEMY, m_dieRangeDb["weapon_wand"].As(Rarity::ARTIFACT), m_animationDb["blast_attack"], m_animationDb["weapon_artifact_wand"], WeaponType::WAND);
+        WEAPON_DB_ARTIFACT("Staff", Target::ALLENEMIES, m_dieRangeDb["weapon_staff"].As(Rarity::ARTIFACT), m_animationDb["blast_attack"], m_animationDb["weapon_artifact_staff"], WeaponType::STAFF);
+        WEAPON_DB_ARTIFACT("Dagger", Target::ENEMY, m_dieRangeDb["weapon_dagger"].As(Rarity::ARTIFACT), m_animationDb["slash_attack"], m_animationDb["weapon_artifact_dagger"], WeaponType::DAGGER);
+        WEAPON_DB_ARTIFACT("Sword", Target::ENEMY, m_dieRangeDb["weapon_sword"].As(Rarity::ARTIFACT), m_animationDb["slash_attack"], m_animationDb["weapon_artifact_sword"], WeaponType::SWORD);
+        WEAPON_DB_ARTIFACT("Great Sword", Target::ENEMY, m_dieRangeDb["weapon_great_sword"].As(Rarity::ARTIFACT), m_animationDb["slash_attack"], m_animationDb["weapon_artifact_great_sword"], WeaponType::GREATSWORD);
+        WEAPON_DB_ARTIFACT("Robe", Target::PLAYERAC_SPELL, m_dieRangeDb["armor_robe"].As(Rarity::ARTIFACT), m_animationDb["fist_attack"], m_animationDb["armor_artifact_robe"], WeaponType::ROBE);
+        WEAPON_DB_ARTIFACT("Leather", Target::PLAYERAC_SPEED, m_dieRangeDb["armor_leather"].As(Rarity::ARTIFACT), m_animationDb["fist_attack"], m_animationDb["armor_artifact_leather"], WeaponType::LEATHER);
+        WEAPON_DB_ARTIFACT("Plate", Target::PLAYERAC_SLOW, m_dieRangeDb["armor_plate"].As(Rarity::ARTIFACT), m_animationDb["fist_attack"], m_animationDb["armor_artifact_plate"], WeaponType::PLATE);
+
         m_weaponDb["Lesser Healing Potion"] = Weapon("Lesser Healing Potion", DamageType::NORMAL, m_dieRangeDb["potion_lesser"], Target::PLAYERHP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_healing_potion"], WeaponType::POTION);
         m_weaponDb["Lesser Magic Potion"] = Weapon("Lesser Magic Potion", DamageType::NORMAL, m_dieRangeDb["potion_lesser"], Target::PLAYERMP_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_magic_potion"], WeaponType::POTION);
         m_weaponDb["Lesser Resurrect Potion"] = Weapon("Lesser Resurrect Potion", DamageType::NORMAL, m_dieRangeDb["resurrect_lesser"], Target::PLAYERHP_REVIVE_CONSUME, Rarity::COMMON, m_animationDb["fist_attack"], m_animationDb["lesser_resurrect_potion"], WeaponType::POTION);
@@ -5727,6 +6101,22 @@ void Database::Initialize()
     };
 
     // ----------------------------------------------------------------------------------------------------------------
+    m_artifactTable.clear();
+    m_artifactTable =
+    {
+        WEAPON_TABLE("Gloves", Rarity::ARTIFACT)
+        WEAPON_TABLE("Wand", Rarity::ARTIFACT)
+        WEAPON_TABLE("Staff", Rarity::ARTIFACT)
+        WEAPON_TABLE("Dagger", Rarity::ARTIFACT)
+        WEAPON_TABLE("Sword", Rarity::ARTIFACT)
+        WEAPON_TABLE("Great Sword", Rarity::ARTIFACT)
+        WEAPON_TABLE("Robe", Rarity::ARTIFACT)
+        WEAPON_TABLE("Leather", Rarity::ARTIFACT)
+        WEAPON_TABLE("Plate", Rarity::ARTIFACT)
+        WEAPON_TABLE("Gloves", Rarity::ARTIFACT)
+    };
+
+    // ----------------------------------------------------------------------------------------------------------------
     m_potionTable.clear();
     m_potionTable =
     {
@@ -5792,6 +6182,7 @@ void Database::Initialize()
         m_passiveDb[PassiveType::BAT_SLAYER]            = Passive("Bat Slayer",        Rarity::COMMON, m_animationDb["passive_bat_slayer"],                            2, 1, 3, "Party deals +1 Multi to RODENT targets. +1 Passive XP per Rare/Epic/Legendary bat defeated.");
         m_passiveDb[PassiveType::SPIDER_SLAYER]         = Passive("Spider Slayer",     Rarity::COMMON, m_animationDb["passive_spider_slayer"],                         3, 1, 3, "Party deals +1 Multi to ARACHNID targets. +1 Passive XP per Rare/Epic/Legendary spider defeated.");
         m_passiveDb[PassiveType::DRAGON_SLAYER]         = Passive("Dragon Slayer",     Rarity::COMMON, m_animationDb["passive_boss_reward"],                           4, 1, 3, "Defeating a boss awards +2 extra Passive XP on top of its normal rewards.");
+        m_passiveDb[PassiveType::ARTIFACT_HUNTER]       = Passive("Mysterious Key",    Rarity::COMMON, m_animationDb["passive_artifact"],                              5, 1, 3, "Whispers of ancient power... Unlocks something mysterious deep in the dungeon.");
 
         //m_passiveDb[PassiveType::SWORD_SHIELD]          = Passive("Shield Training",   Rarity::COMMON, m_animationDb["weapon_sword"].As(0x000A),       2, 1, 0, "Swords deal twice as much damage with a shield.");
 

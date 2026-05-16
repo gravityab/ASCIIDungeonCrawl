@@ -25,6 +25,7 @@ struct RunStats
     int killsRare      = 0;
     int killsEpic      = 0;
     int killsLegendary = 0;
+    int killsArtifact = 0;
 
     int maxDamage   = 0; // highest single-hit damage dealt by any hero this run
     int shopsFound  = 0;

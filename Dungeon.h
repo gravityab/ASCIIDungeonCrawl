@@ -146,6 +146,12 @@ public:
     /// Used by the MULTI_REWARD passive to fill rewardWeapons[1] with a second pickable item.
     Weapon GenerateBonusWeapon(Reward reward);
 
+    /// Post-process a freshly generated floor: every fountain room is rebranded as an Artifact
+    /// door (rarity / label / open + close animations updated) and seeded with a random Artifact
+    /// weapon in rewardWeapons[0]. Called from DungeonCrawl after GetNextFloor() when the
+    /// ARTIFACT_HUNTER passive is owned. Skips floors with no fountain rooms - no work to do.
+    void UpgradeFountainsToArtifact(Floor& floor);
+
 private:
     /// Get the difficulty value of the floor
     int GetDifficulty() const;

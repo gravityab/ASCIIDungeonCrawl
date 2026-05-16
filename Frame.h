@@ -36,6 +36,9 @@ public:
 	/// Set the attribute to strobe every color
 	void SetStrobe(int imageIndex, bool strobe);
 
+    /// Set the attribute to trail the image
+    void SetTrailing(int imageIndex, bool trailing);
+
 private:
 	/// The list of overlaying images associated with a frame
 	std::vector<Image> m_images;

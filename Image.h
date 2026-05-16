@@ -34,6 +34,11 @@ public:
 	/// Set strobe color effect
 	void SetStrobe(bool strobe);
 
+	/// Enable an ethereal trailing effect: the image draws normally at (x, y) and three
+	/// wispy ghost copies fade off to the left, while the whole thing slowly bobs up and
+	/// down on a sine-like 8-second cycle. Toggle with a single bool just like SetStrobe.
+	void SetTrailing(bool trailing);
+
 private:
 	/// The data of the image
 	std::string m_data;
@@ -58,4 +63,7 @@ private:
 
 	/// How many ticks have gone by
 	int m_tick = 0;
+
+	/// Whether the ethereal trailing-wisp + sine-bob effect is enabled.
+	bool m_trailing = false;
 };

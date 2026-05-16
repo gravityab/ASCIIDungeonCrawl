@@ -225,6 +225,7 @@ State DungeonEx::RollState()
         for (int i = 0; i <  1; ++i) v.push_back(State::STATE_FOUNTAIN);
         return v;
     }();
+
     return ROLLTABLE(table);
 }
 
@@ -308,6 +309,9 @@ std::vector<Weapon> DungeonEx::RollWeaponTable(Rarity rarity)
             break;
         case Rarity::LEGENDARY:
             weaponTable = m_db.m_legendaryTable;
+            break;
+        case Rarity::ARTIFACT:
+            weaponTable = m_db.m_artifactTable;
             break;
     }
 
@@ -402,7 +406,7 @@ void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, Mo
             monster.weapon2.die = secondaryDie;
 
             // Pick challenge modifiers. Legendary dragons roll two; everyone else rolls one.
-            const int numModifiers = (rolledRarity == Rarity::LEGENDARY) ? 2 : 1;
+            const int numModifiers = (rolledRarity >= Rarity::LEGENDARY) ? 2 : 1;
             for (int i = 0; i < numModifiers; ++i)
             {
                 BossModifier mod = RollBossModifier();
@@ -484,6 +488,59 @@ void DungeonEx::GenerateEncounter(Room& room, Rarity rarity, DamageType type, Mo
     // reward is populated by whichever future code path wants to offer two picks.
     room.rewardWeapons.resize(1);
     GenerateReward(room.rewardWeapons[0], room.gold, room.reward, room.monsters, rewardRarity, isBoss);
+}
+
+void DungeonEx::UpgradeFountainsToArtifact(Floor& floor)
+{
+    for (auto& room : floor.rooms)
+    {
+        if (room.door.state != State::STATE_FOUNTAIN)
+            continue;
+
+        if (GetRandomValue(0, 1) != 0)
+            continue;
+
+        // Rebrand the door visuals at the Artifact tier.
+        const uint16_t primary   = room.door.attribute;     // preserve the room's color theme
+        const uint16_t secondary = 0x000D;                  // bright magenta - mystical glow
+        const uint16_t tertiary  = 0x000E;                  // bright yellow - golden sigil
+        room.door.rarity = Rarity::ARTIFACT;
+        room.door.label  = ToDoorLabel(Rarity::ARTIFACT);
+        room.door.open   = ToOpenAnimation (Rarity::ARTIFACT, primary, secondary, tertiary);
+        room.door.close  = ToCloseAnimation(Rarity::ARTIFACT, primary, secondary, tertiary);
+
+        // Seed the room with a single rolled Artifact weapon. The artifact reward pool intentionally
+        // never overlaps with normal RollReward output - this passive is the only path to artifacts.
+        //
+        // The artifact table can contain default-constructed Weapon{} sentinels: a WEAPON_TABLE()
+        // macro entry that references a name with no matching WEAPON_DB_ARTIFACT() definition
+        // silently inserts a default Weapon via map::operator[] on lookup. Drawing one of those
+        // crashes inside Animation::WriteData (empty m_frames). Retry past invalid entries.
+        if (!m_db.m_artifactTable.empty())
+        {
+            Weapon w;
+            const int maxAttempts = 32;
+            for (int attempt = 0; attempt < maxAttempts; ++attempt)
+            {
+                Weapon candidate = ROLLTABLE(m_db.m_artifactTable);
+                if (!candidate.name.empty() && candidate.weaponType != WeaponType::INVALID)
+                {
+                    w = candidate;
+                    break;
+                }
+            }
+            // If 32 rolls still missed (table is mostly sentinels), leave the fountain alone for
+            // this floor rather than seed a broken weapon.
+            if (w.weaponType == WeaponType::INVALID)
+                continue;
+
+            w.Randomize();
+            w.gold      = 0;     // gift from the fairies, not a purchase
+            w.purchased = false;
+            room.rewardWeapons.clear();
+            room.rewardWeapons.push_back(w);
+        }
+    }
 }
 
 Weapon DungeonEx::GenerateBonusWeapon(Reward reward)
@@ -715,7 +772,8 @@ std::string DungeonEx::ToDoorLabel(Rarity rarity)
         case Rarity::COMMON:    return "Common Door";
         case Rarity::RARE:      return "Rare Door";
         case Rarity::EPIC:      return "Epic Door";
-        case Rarity::LEGENDARY: return "Lgndry Door";
+        case Rarity::LEGENDARY: return "Legendary Door";
+        case Rarity::ARTIFACT:  return "Artifact Gate";
     }
 
     return std::string();
@@ -738,6 +796,9 @@ Animation DungeonEx::ToOpenAnimation(Rarity rarity, uint16_t primary, uint16_t s
         case Rarity::LEGENDARY:
             open = ANIMATION("legendary_door_opened");
             break;
+        case Rarity::ARTIFACT:
+            open = ANIMATION("artifact_door_opened");
+            break;
         default:
             open = ANIMATION("common_door_opened");
     }
@@ -748,6 +809,11 @@ Animation DungeonEx::ToOpenAnimation(Rarity rarity, uint16_t primary, uint16_t s
     {
         open.SetAttributes(2, primary);
         open.SetAttributes(3, secondary);
+    }
+    if (rarity == Rarity::ARTIFACT)
+    {
+        open.SetAttributes(0, 0xD);
+        open.SetAttributes(1, 0xD);
     }
     return open;
 }
@@ -769,6 +835,9 @@ Animation DungeonEx::ToCloseAnimation(Rarity rarity, uint16_t primary, uint16_t 
         case Rarity::LEGENDARY:
             close = ANIMATION("legendary_door_closed");
             break;
+        case Rarity::ARTIFACT:
+            close = ANIMATION("artifact_door_closed");
+            break;
         default:
             close = ANIMATION("common_door_closed");
     }
@@ -779,6 +848,11 @@ Animation DungeonEx::ToCloseAnimation(Rarity rarity, uint16_t primary, uint16_t 
     {
         close.SetAttributes(2, primary);
         close.SetAttributes(3, secondary);
+    }
+    if (rarity == Rarity::ARTIFACT)
+    {
+        close.SetAttributes(0, 0xD);
+        close.SetAttributes(1, 0xD);
     }
     return close;
 }

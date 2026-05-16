@@ -52,6 +52,7 @@ enum class PassiveType : int32_t
     BLOB_SLAYER,            // [x] All attacks deal +1 Multi vs GELATINOUS; +1 Passive XP per Rare/Epic/Legendary blob kill
     BAT_SLAYER,             // [x] All attacks deal +1 Multi vs RODENT; +1 Passive XP per Rare/Epic/Legendary bat kill
     SPIDER_SLAYER,          // [x] All attacks deal +1 Multi vs ARACHNID; +1 Passive XP per Rare/Epic/Legendary spider kill
+    ARTIFACT_HUNTER,        // [x] Mysterious. Unlocks Artifact doors at fountains; awards a random Artifact item on entry
     COUNT,
 };
 

@@ -119,6 +119,14 @@ void Animation::SetStrobe(int image, bool strobe)
     }
 }
 
+void Animation::SetTrailing(int image, bool trailing)
+{
+    for (auto&& frame : m_frames)
+    {
+        frame.SetTrailing(image, trailing);
+    }
+}
+
 void Animation::SetFramesPerTick(int fpt)
 {
     if (fpt > 0)

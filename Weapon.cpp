@@ -60,13 +60,14 @@ void Weapon::Randomize()
             case Rarity::RARE:      mult = 1.3; break;
             case Rarity::EPIC:      mult = 2.6; break;
             case Rarity::LEGENDARY: mult = 3.0; break;
+            case Rarity::ARTIFACT:  mult = 4.3; break;
             default:                mult = 1.0; break;
         }
         mpCost = int(double(mpCost) * mult + 0.5);
     }
 
     std::vector<DamageType> damageTypes = { DamageType::COLD, DamageType::FIRE, DamageType::LIGHTNING, DamageType::NECROTIC, DamageType::POISON, DamageType::PSYCHIC };
-    if (rarity == Rarity::LEGENDARY)
+    if (rarity >= Rarity::LEGENDARY)
         resistances.push_back(ROLLTABLE(damageTypes));
 }
 
@@ -106,6 +107,14 @@ Weapon Weapon::As(DamageType type_, Rarity rarity_)
         newWeapon.attack.SetStrobe(0, true);
         newWeapon.idle.SetStrobe(3, true);
         newWeapon.idle.SetStrobe(2, true);
+    }
+    if (rarity_ == Rarity::ARTIFACT)
+    {
+        newWeapon.attack.SetTrailing(0, true);
+        newWeapon.idle.SetTrailing(3, true);
+        newWeapon.idle.SetTrailing(2, true);
+        newWeapon.idle.SetTrailing(1, true);
+        newWeapon.idle.SetTrailing(0, true);
     }
 
     return newWeapon;

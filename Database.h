@@ -59,6 +59,9 @@ public:
     /// The legendary table
     std::vector<Weapon> m_legendaryTable;
 
+    /// The artifact table
+    std::vector<Weapon> m_artifactTable;
+
     /// The potion table
     std::vector<Weapon> m_potionTable;
 };

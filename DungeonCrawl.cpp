@@ -282,6 +282,21 @@ void DungeonCrawl::DrawFountain(Time delta)
     // Draw the fairies
     DrawFairies(delta);
 
+    // Artifact fountain overlay: draws only the artifact reward in the middle. The exit icon
+    // is already drawn by DrawFairies above at (2, 3) with its own cursor-index-0 highlight,
+    // so we don't duplicate it here. The fountain still heals + revives + spawns fairies; this
+    // just adds the claim UI for the artifact reward.
+    if (m_currentRoom != nullptr
+        && m_currentRoom->door.rarity == Rarity::ARTIFACT
+        && !m_currentRoom->rewardWeapons.empty())
+    {
+        const int artifactX = 40;
+        const int artifactY = 4;
+        DrawItem(delta, &m_currentRoom->rewardWeapons[0], artifactX, artifactY);
+        if (m_ui.GetState() == CursorState::FOUNTAIN && m_ui.GetCursorIndex() == 1)
+            m_ui.GetAnimation().WriteData(m_console, delta, artifactX, artifactY, complete);
+    }
+
     // Draw cursor
     DrawCursor();
 }
@@ -627,6 +642,8 @@ void DungeonCrawl::DrawHighScoreList(Time delta)
             m_console.WriteData(x + 23, y, ToAttribute(Rarity::RARE), "%2d", s.killsRare);
             m_console.WriteData(x + 26, y, ToAttribute(Rarity::EPIC), "%2d", s.killsEpic);
             m_console.WriteData(x + 29, y, ToAttribute(Rarity::LEGENDARY), "%2d", s.killsLegendary);
+            if (s.killsArtifact > 0)
+                m_console.WriteData(x + 32, y, ToAttribute(Rarity::ARTIFACT), "%2d", s.killsArtifact);
             if (s.heroLevels.size() > 0)
                 m_console.WriteData(x + 36, y, attr, "%d",    s.heroLevels[0]);
             if (s.heroLevels.size() > 1)
@@ -1056,7 +1073,8 @@ void DungeonCrawl::DrawHero(Time delta)
             m_console.WriteData("#################", x + 6, y + 2, mp, 1, 0x0001);
 
             int levelMultiplier = (hero.level / 3);
-            int spellMultiplier = (hero.level / (5 - (int)hero.armor.rarity)) + 1;
+            // Stacks on top of the level-scaled levelMultiplier in the buffDie below.
+            int spellMultiplier = (int)hero.armor.rarity;
             Die buffDie = Die((hero.armor.target == Target::PLAYERAC_SPELL && hero.weapon1.mpCost) 
                 ? spellMultiplier + levelMultiplier : 0 + levelMultiplier,
                 0,
@@ -1287,6 +1305,8 @@ void DungeonCrawl::DrawReward(Time delta)
                         extraGold += m_currentRoom->monsters.size();
                     if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
                         extraGold += m_currentRoom->monsters.size();
+                    if (m_heroes[index].armor.rarity >= Rarity::ARTIFACT)
+                        extraGold += m_currentRoom->monsters.size();
                 }
             }
 
@@ -1384,6 +1404,16 @@ void DungeonCrawl::DrawFairies(Time delta)
     int x = 2;
     int y = 3;
 
+    // When the artifact reward is on screen (drawn by DrawFountain at y=4), shift the exit
+    // down one row so the two boxes are horizontally aligned, matching the layout used by
+    // the reward room where the exit and reward icons share y=4.
+    if (m_currentRoom != nullptr
+        && m_currentRoom->door.rarity == Rarity::ARTIFACT
+        && !m_currentRoom->rewardWeapons.empty())
+    {
+        y = 4;
+    }
+
     for (int index = 0; index < (int)m_fairies.size(); index++)
     {
         Fairy& fairy = m_fairies[index];
@@ -1453,10 +1483,12 @@ void DungeonCrawl::DrawFairies(Time delta)
     }
 
     ANIMATION("exit").WriteData(m_console, delta, x, y, complete);
-    if (m_ui.GetCursorIndex() == 0)
+    // Only highlight the exit when the fountain itself owns the cursor. Without the state
+    // guard, transitioning to REWARD_HERO / HERO (e.g. assigning an artifact reward) would
+    // hijack the highlight: those states use the `select_hero` cursor which carries a
+    // hero_border underneath, and that border would render on top of the exit box.
+    if (m_ui.GetState() == CursorState::FOUNTAIN && m_ui.GetCursorIndex() == 0)
         m_ui.GetAnimation().WriteData(m_console, delta, x, y, complete);
-    //if (m_cursorIndex == 0)
-    //	m_cursor.WriteData(m_console, delta, x, y, complete);
 }
 
 void DungeonCrawl::DrawAction(Time delta)
@@ -1707,6 +1739,8 @@ void DungeonCrawl::DrawAction(Time delta)
                     xpEarned += 2;
                 else if (m.rarity == Rarity::LEGENDARY)
                     xpEarned += 4;
+                else if (m.rarity == Rarity::ARTIFACT)
+                    xpEarned += 8;
 
                 if (m.family == MonsterFamily::DRAGON && (int)m.rarity >= (int)Rarity::RARE)
                     xpEarned += 1;
@@ -2278,6 +2312,21 @@ void DungeonCrawl::ProcessInput()
     {
         if (m_ui.GetState() == CursorState::FOUNTAIN && m_input.Released(Button::BUTTON_SELECT))
         {
+            // Artifact fountain: cursor 0 = exit (advance to next floor), cursor 1 = claim
+            // the artifact. Claiming routes through the same hero-picker flow rewards use, so
+            // the player picks which hero receives the item and which weapon slot to put it in.
+            const bool artifact = (m_currentRoom != nullptr
+                && m_currentRoom->door.rarity == Rarity::ARTIFACT
+                && !m_currentRoom->rewardWeapons.empty());
+            if (artifact && m_ui.GetCursorIndex() == 1)
+            {
+                if (!m_currentRoom->rewardWeapons[0].purchased)
+                {
+                    m_selectedRewardIndex = 0;
+                    PushRewardHero();
+                }
+                return;
+            }
             SetState(State::STATE_NEXT_FLOOR);
             return;
         }
@@ -2360,6 +2409,8 @@ void DungeonCrawl::ProcessInput()
                         extraGold += m_currentRoom->monsters.size();
                     if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
                         extraGold += m_currentRoom->monsters.size();
+                    if (m_heroes[index].armor.rarity >= Rarity::ARTIFACT)
+                        extraGold += m_currentRoom->monsters.size();
                 }
             }
 
@@ -2406,7 +2457,10 @@ void DungeonCrawl::ProcessInput()
             if (m_input.Released(Button::BUTTON_SELECT))
             {
                 PurchaseItem();
-                m_ui.PopBackTo(3);
+                // Pop back to whichever screen launched this reward flow (REWARD for reward
+                // rooms, FOUNTAIN for artifact fountains). Snapshot was captured in
+                // PushRewardHero().
+                m_ui.PopBackTo(m_rewardReturnDepth);
                 return;
             }
 
@@ -3267,10 +3321,11 @@ void DungeonCrawl::UseWeapon(Action action)
             {
                 switch (monster->rarity)
                 {
-                case Rarity::COMMON:    m_currentRun.killsCommon++;    break;
-                case Rarity::RARE:      m_currentRun.killsRare++;      break;
-                case Rarity::EPIC:      m_currentRun.killsEpic++;      break;
-                case Rarity::LEGENDARY: m_currentRun.killsLegendary++; break;
+                    case Rarity::COMMON:    m_currentRun.killsCommon++;    break;
+                    case Rarity::RARE:      m_currentRun.killsRare++;      break;
+                    case Rarity::EPIC:      m_currentRun.killsEpic++;      break;
+                    case Rarity::LEGENDARY: m_currentRun.killsLegendary++; break;
+                    case Rarity::ARTIFACT:  m_currentRun.killsArtifact++;  break;
                 default: break;
                 }
             }
@@ -3507,7 +3562,7 @@ void DungeonCrawl::SetState(State state)
         m_passivesY = 0;
         m_passivesTab = false;
         m_passivesTabIndex = 0;
-        m_passiveXP = 0;
+        m_passiveXP = 9; // First combat will award a passive trait. First rare defeated will award a Passive.
 
         // Reset live run-stat tracking for the new game.
         m_currentRun = RunStats();
@@ -3524,6 +3579,16 @@ void DungeonCrawl::SetState(State state)
         //m_currentFloor = &m_dungeon.GetFloor(m_floor);
         m_dungeonEx.GetNextFloor(std::move(m_currentFloor));
         m_currentFloorPtr = &m_currentFloor;
+
+        // ARTIFACT_HUNTER passive: any fountain on this floor is rebranded as an Artifact door
+        // and seeded with a random Artifact item. Fountains naturally appear ~once per 30 floors
+        // (per the RollState table) so this hits that "1 every 30 floors" cadence automatically.
+        // Gated to floor 20+ so the artifact tier stays a true late-game milestone (matches the
+        // floor-20 wall where monster scaling first ramps hard).
+        if (m_floor >= 25 && OwnsPassive(PassiveType::ARTIFACT_HUNTER))
+        {
+            m_dungeonEx.UpgradeFountainsToArtifact(m_currentFloor);
+        }
 
         // MP regen now only happens at attribute-change boundaries (every 5 floors) instead of
         // every floor. Previous 25%/50% per-floor regen meant the pool effectively topped off
@@ -3818,6 +3883,8 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
                     targets.push_back(&m_heroes[index]);
                 if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
                     targets.push_back(&m_heroes[index]);
+                if (m_heroes[index].armor.rarity >= Rarity::ARTIFACT)
+                    targets.push_back(&m_heroes[index]);
 
                 // PLATE_TAUNT: additional weighting on plate wearers (skipped if the attacking
                 // monster has the boss-dragon TauntImmune modifier).
@@ -3832,6 +3899,8 @@ void DungeonCrawl::CreateMonsterAction(Monster& monster)
                     if (m_heroes[index].armor.rarity >= Rarity::EPIC)
                         targets.push_back(&m_heroes[index]);
                     if (m_heroes[index].armor.rarity >= Rarity::LEGENDARY)
+                        targets.push_back(&m_heroes[index]);
+                    if (m_heroes[index].armor.rarity >= Rarity::ARTIFACT)
                         targets.push_back(&m_heroes[index]);
                 }
             }
@@ -4100,8 +4169,16 @@ void DungeonCrawl::PushFountain()
     context.cursor = ANIMATION("select_weapon");
     context.cursor.SetAttributes(0, 0x0007);
     context.cursor.SetAttributes(1, 0x0008);
-    context.index = 0; // Start at the exit
-    context.maxIndex = 0;
+
+    // Artifact fountains have a second cursor slot for claiming the artifact reward. Cursor
+    // index layout: 0 = exit (left), 1 = artifact (middle). Default fountains keep the
+    // single-slot exit-only behavior. The cursor starts hovered on the artifact so the player
+    // sees it highlighted on entry (per design ask).
+    const bool artifact = (m_currentRoom != nullptr
+        && m_currentRoom->door.rarity == Rarity::ARTIFACT
+        && !m_currentRoom->rewardWeapons.empty());
+    context.index    = artifact ? 1 : 0;
+    context.maxIndex = artifact ? 1 : 0;
     context.direction = CursorIndexDirection::HORIZONTAL;
     m_ui.PushBack(context);
 }
@@ -4256,6 +4333,12 @@ void DungeonCrawl::PushReward()
 
 void DungeonCrawl::PushRewardHero()
 {
+    // Snapshot the stack depth before pushing the hero picker so the eventual completion
+    // pop can restore the player to whichever screen kicked off the reward flow:
+    //   reward room  -> [ROOT, CHEST, REWARD] (depth 3) -> back to REWARD
+    //   artifact fountain -> [ROOT, FOUNTAIN] (depth 2) -> back to FOUNTAIN
+    m_rewardReturnDepth = m_ui.GetSize();
+
     CursorContext context;
     context.cursor = ANIMATION("select_hero");
     context.cursor.SetAttributes(0, 0x0007);
@@ -4300,7 +4383,9 @@ void DungeonCrawl::PushRewardHeroItem()
         m_ui.GetContext().target = &m_heroes[m_ui.GetCursorIndex()];
         m_ui.GetContext().weapon = picked;
         PurchaseItem();
-        m_ui.PopBackTo(3);
+        // Pop back to whichever screen launched this reward flow (depth captured in
+        // PushRewardHero): REWARD for reward rooms, FOUNTAIN for artifact fountains.
+        m_ui.PopBackTo(m_rewardReturnDepth);
         return;
     }
 

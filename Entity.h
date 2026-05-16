@@ -31,6 +31,11 @@ public:
     void SetData(const wchar_t* data, uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint16_t attribute);
     int  WriteData(const char* data, uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint16_t attribute);
     int  WriteData(uint32_t x, uint32_t y, uint16_t attribute, const char* format, ...);
+
+    // Alpha-modulated variant used by the Image trailing-wisp effect. `alpha` 0..255 scales the
+    // foreground (and background, if any) color's alpha channel. 255 == identical to the normal
+    // WriteData; 0 == fully invisible (skipped). Glyphs of '.' and 0 still treated as transparent.
+    int  WriteData(const char* data, uint32_t x, uint32_t y, uint32_t w, uint32_t h, uint16_t attribute, uint8_t alpha);
     void SetPosition(uint32_t x, uint32_t y);
     void SetAttribute(uint16_t attribute);
 

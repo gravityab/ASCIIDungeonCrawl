@@ -47,6 +47,9 @@ public:
     /// Perform a strobe like effect
     void SetStrobe(int image, bool strobe);
 
+    /// Perform a trailing effect
+    void SetTrailing(int image, bool trailing);
+
     /// Set the frames per tick to a different tate
     void SetFramesPerTick(int fpt);
 

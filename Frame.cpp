@@ -35,3 +35,8 @@ void Frame::SetStrobe(int imageIndex, bool strobe)
 {
 	m_images[imageIndex].SetStrobe(strobe);
 }
+
+void Frame::SetTrailing(int imageIndex, bool trailing)
+{
+    m_images[imageIndex].SetTrailing(trailing);
+}
