@@ -105,6 +105,12 @@ private:
     /// Draw the trap background
     void DrawTrap(Time delta, uint16_t attribute, bool showExit, bool triggered);
 
+    /// Draw Passive XP indicators in the footer (next to the floor / gold text). One
+    /// `passive_xp` glyph per accumulated XP point, starting at (26, 26) and stepping +10
+    /// in X for each subsequent point, capped at 5 visible icons. When the player has 5+ XP
+    /// the icons stay pinned at 5 to signal "next combat will trigger a passive screen".
+    void DrawPassiveXP(Time delta);
+
     /// Draw the doors
     void DrawDoors(Time delta);
 

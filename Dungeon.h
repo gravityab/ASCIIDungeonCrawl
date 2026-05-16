@@ -152,6 +152,23 @@ public:
     /// ARTIFACT_HUNTER passive is owned. Skips floors with no fountain rooms - no work to do.
     void UpgradeFountainsToArtifact(Floor& floor);
 
+    /// Post-process a freshly generated floor: for each non-fountain, non-boss room, roll
+    /// `percentPerDoor` chance to convert it into a fountain room (clearing its prior contents
+    /// and updating the door label so the layout reads consistently). Called from DungeonCrawl
+    /// when the FAIRY_FRIEND passive is owned to nudge the fountain rate up.
+    void BoostFountainRate(Floor& floor, int percentPerDoor);
+
+    /// Post-process a freshly generated floor: for each non-shop, non-boss room, roll
+    /// `percentPerDoor` chance to convert it into a fully-populated shop room. Called from
+    /// DungeonCrawl when the CONNOISSEUR passive is owned to bump the shop rate up.
+    void BoostShopRate(Floor& floor, int percentPerDoor);
+
+    /// Walk every shop room on the floor and, for each item, roll `percentPerItem` chance to
+    /// replace it with a fresh roll from the next-tier weapon table (Common -> Rare ->
+    /// Epic -> Legendary). Items already at Legendary or above are left alone. Called from
+    /// DungeonCrawl when the CONNOISSEUR passive is owned.
+    void ImproveShopRarity(Floor& floor, int percentPerItem);
+
 private:
     /// Get the difficulty value of the floor
     int GetDifficulty() const;

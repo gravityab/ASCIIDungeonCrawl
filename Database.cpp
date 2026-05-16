@@ -930,6 +930,11 @@ void Database::Initialize()
             "-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-\\--------/-",
             0, 26, 100, 4, 0x0008);
 
+        m_imageDb["passive_xp"] = Image(
+            "/##\\" \
+            "\\##/",
+            0, 0, 4, 2, 0x0007);
+
         m_imageDb["common_door_closed"] = Image(
             "..................................." \
             "............. .==.==. ............." \
@@ -2536,10 +2541,10 @@ void Database::Initialize()
         m_imageDb["passive_multi_reward_chest"] = Image(
             "................" \
             "...----------..." \
-            "./.----------.\." \
-            "..\........../.." \
-            "../..........\.." \
-            "./.__________.\." \
+            "./.----------.\\." \
+            "..\\........../.." \
+            "../..........\\.." \
+            "./.__________.\\." \
             ".|....|__|....|." \
             ".|............|." \
             ".+------------+." \
@@ -2571,6 +2576,19 @@ void Database::Initialize()
             "................",
             0, 0, 16, 10, 0x0002);
         m_imageDb["passive_artifact"].SetTrailing(true);
+
+        m_imageDb["passive_fairies"] = Image(
+            "................" \
+            "...........|o|.." \
+            "...(\\o/)...|||.." \
+            "...(/|\\)........" \
+            "................" \
+            ".......(\\o/)...." \
+            ".......(/|\\)...." \
+            "................" \
+            "................" \
+            "................",
+            0, 0, 16, 10, 0x0002);
 
         m_imageDb["hero_card"] = Image(
             "................" \
@@ -5428,6 +5446,7 @@ void Database::Initialize()
         m_frameDb["passive_bat_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_bat_slayer_head"], m_imageDb["passive_bat_slayer_eyes"] });
         m_frameDb["passive_spider_slayer"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_spider_slayer_head"], m_imageDb["passive_spider_slayer_eyes"] });
         m_frameDb["passive_artifact"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_artifact"], });
+        m_frameDb["passive_fairies"] = Frame({ m_imageDb["weapon_border"], m_imageDb["passive_fairies"], });
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -5833,6 +5852,12 @@ void Database::Initialize()
         m_animationDb["passive_spider_slayer"].SetData(
             { m_frameDb["passive_spider_slayer"] },
             200, false, true, false);
+        m_animationDb["passive_artifact"].SetData(
+            { m_frameDb["passive_artifact"] },
+            200, false, true, false);
+        m_animationDb["passive_fairies"].SetData(
+            { m_frameDb["passive_fairies"] },
+            200, false, true, false);
     }
 
     // ----------------------------------------------------------------------------------------------------------------
@@ -6183,6 +6208,8 @@ void Database::Initialize()
         m_passiveDb[PassiveType::SPIDER_SLAYER]         = Passive("Spider Slayer",     Rarity::COMMON, m_animationDb["passive_spider_slayer"],                         3, 1, 3, "Party deals +1 Multi to ARACHNID targets. +1 Passive XP per Rare/Epic/Legendary spider defeated.");
         m_passiveDb[PassiveType::DRAGON_SLAYER]         = Passive("Dragon Slayer",     Rarity::COMMON, m_animationDb["passive_boss_reward"],                           4, 1, 3, "Defeating a boss awards +2 extra Passive XP on top of its normal rewards.");
         m_passiveDb[PassiveType::ARTIFACT_HUNTER]       = Passive("Mysterious Key",    Rarity::COMMON, m_animationDb["passive_artifact"],                              5, 1, 3, "Whispers of ancient power... Unlocks something mysterious deep in the dungeon.");
+        m_passiveDb[PassiveType::FAIRY_FRIEND]          = Passive("Fairy Friend",      Rarity::COMMON, m_animationDb["passive_fairies"],                               4, 0, 3, "Increases chance of seeing Fairies in the dungeon. Their blessing also awards extra Passive XP on entry.");
+        m_passiveDb[PassiveType::CONNOISSEUR]           = Passive("Connoisseur",       Rarity::COMMON, m_animationDb["passive_haggler"].As(0x0006),                    5, 0, 3, "Slightly increases the chance of finding shops, and the rarity of items those shops carry.");
 
         //m_passiveDb[PassiveType::SWORD_SHIELD]          = Passive("Shield Training",   Rarity::COMMON, m_animationDb["weapon_sword"].As(0x000A),       2, 1, 0, "Swords deal twice as much damage with a shield.");
 

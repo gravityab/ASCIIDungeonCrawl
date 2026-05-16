@@ -466,6 +466,18 @@ void DungeonCrawl::DrawStairs(Time delta, uint16_t attribute)
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
+    DrawPassiveXP(delta);
+}
+
+void DungeonCrawl::DrawPassiveXP(Time delta)
+{
+    const int visible = m_passiveXP < 5 ? m_passiveXP : 5;
+    for (int i = 0; i < visible; ++i)
+    {
+        const int x = 26 + (i * 11);
+        const int y = 27;
+        IMAGE("passive_xp").WriteData(m_console, x, y);
+    }
 }
 
 void DungeonCrawl::DrawMenu(Time delta)
@@ -755,6 +767,7 @@ void DungeonCrawl::DrawBackground(Time delta, int index, uint16_t attribute)
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
+    DrawPassiveXP(delta);
 
     // Draw torches
     static Animation torches[4] = { ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch") };
@@ -792,6 +805,7 @@ void DungeonCrawl::DrawTrap(Time delta, uint16_t attribute, bool showExit, bool 
     m_console.WriteData(2, 27, 0x0007, "Floor: %d", m_floor);
     m_console.WriteData(90, 27, 0x0006, "o", m_floor);
     m_console.WriteData(92, 27, 0x0007, "%d", m_gold);
+    DrawPassiveXP(delta);
 
     // Draw torches
     static Animation torches[4] = { ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch"), ANIMATION("torch") };
@@ -1766,11 +1780,49 @@ void DungeonCrawl::DrawAction(Time delta)
                     && (int)m.rarity >= (int)Rarity::RARE)
                     xpEarned += 1;
             }
+
+            // Boss fights double the entire Passive XP tally - base rarity XP, the dragon
+            // bonus, the DRAGON_SLAYER bonus, and every family-slayer bonus all get the 2x.
+            // Detected by the room.boss flag (set during GenerateEncounter on boss floors).
+            if (m_currentRoom != nullptr && m_currentRoom->boss)
+            {
+                xpEarned *= 2;
+
+                // Boss kill reward: fully heal living heroes and apply the same MP regen
+                // calculation used at attribute-change floors. Bosses drain HP/MP hard, so
+                // this is the player's "minor reward" for surviving the fight. ARCANE_BATTERY
+                // still adds its per-5-levels MP bump on top, just like the every-5-floor regen.
+                const bool hasBattery = OwnsPassive(PassiveType::ARCANE_BATTERY);
+                for (int index = 0; index < (int)m_heroes.size(); index++)
+                {
+                    auto& hero = m_heroes[index];
+                    if (hero.currentHp == 0)
+                        continue;
+
+                    hero.currentHp = hero.totalHp;
+
+                    int regen = hero.totalMp / 10;                          // 10% baseline
+                    if (hero.armor.target == Target::PLAYERAC_SPELL)
+                        regen = hero.totalMp / 5;                           // 20% for robe wearers
+                    if (hasBattery)
+                    {
+                        const int tiers = hero.level / 5;                   // 0..4 (capped at 4 since hero.level <= 20)
+                        regen += (hero.totalMp * 5 * tiers) / 100;          // +5% per tier
+                    }
+                    hero.currentMp += regen;
+                    if (hero.currentMp > hero.totalMp)
+                        hero.currentMp = hero.totalMp;
+                }
+            }
+
             m_passiveXP += xpEarned;
 
             if (m_passiveXP >= 5)
             {
-                m_passiveXP -= 5;
+                // XP is NOT decremented here - we wait until the player actually confirms
+                // their pick on the PASSIVE_SELECT screen so the footer Passive XP icons
+                // stay visible (full bar) the whole time they're choosing. The deduction
+                // happens in the PASSIVE_SELECT confirm handler.
                 SetState(State::STATE_PASSIVE);
             }
             else
@@ -2095,6 +2147,17 @@ void DungeonCrawl::ProcessInput()
             passive.owned = true;
             m_passives.push_back(passive);
             m_currentRun.passiveNames.push_back(passive.name);
+
+            // Spend the 5 Passive XP here (deferred from the combat tally that triggered
+            // STATE_PASSIVE) so the footer XP icons stay full while the player is choosing
+            // and only deplete the moment they commit. Clamp to 0 in case excess XP was
+            // accumulated through Dragon Slayer / Fairy Friend / etc.
+            m_passiveXP -= 5;
+            if (m_passiveXP < 0)
+                m_passiveXP = 0;
+
+            // Passive picked - calm the footer Passive XP icons back down.
+            IMAGE("passive_xp").SetTrailing(false);
 
             SetState(State::STATE_TREASURE);
             return;
@@ -3562,7 +3625,7 @@ void DungeonCrawl::SetState(State state)
         m_passivesY = 0;
         m_passivesTab = false;
         m_passivesTabIndex = 0;
-        m_passiveXP = 9; // First combat will award a passive trait. First rare defeated will award a Passive.
+        m_passiveXP = 5; // First combat will award a passive trait.
 
         // Reset live run-stat tracking for the new game.
         m_currentRun = RunStats();
@@ -3585,6 +3648,23 @@ void DungeonCrawl::SetState(State state)
         // (per the RollState table) so this hits that "1 every 30 floors" cadence automatically.
         // Gated to floor 20+ so the artifact tier stays a true late-game milestone (matches the
         // floor-20 wall where monster scaling first ramps hard).
+        // FAIRY_FRIEND passive: bumps the fountain rate by +2% per door. Applied BEFORE the
+        // artifact upgrade below so a freshly-converted fountain can also become an Artifact
+        // door if the player also owns ARTIFACT_HUNTER.
+        if (OwnsPassive(PassiveType::FAIRY_FRIEND))
+        {
+            m_dungeonEx.BoostFountainRate(m_currentFloor, 2);
+        }
+
+        // CONNOISSEUR passive: slight bump to shop rate (+5% per door) AND a per-item
+        // chance (20%) to bump each shop weapon up one rarity tier. Run after the fountain
+        // boost so the rooms FAIRY_FRIEND already claimed stay fountains.
+        if (OwnsPassive(PassiveType::CONNOISSEUR))
+        {
+            m_dungeonEx.BoostShopRate(m_currentFloor, 5);
+            m_dungeonEx.ImproveShopRarity(m_currentFloor, 20);
+        }
+
         if (m_floor >= 25 && OwnsPassive(PassiveType::ARTIFACT_HUNTER))
         {
             m_dungeonEx.UpgradeFountainsToArtifact(m_currentFloor);
@@ -3672,6 +3752,10 @@ void DungeonCrawl::SetState(State state)
             GetUniquePassive();
         }
 
+        // Make the footer Passive XP icons trail/bob while the player is on the selection
+        // screen, visually connecting them to the passive screen the player is now seeing.
+        IMAGE("passive_xp").SetTrailing(true);
+
         PushPassive();
     }
     else if (state == State::STATE_COMBAT)
@@ -3744,6 +3828,15 @@ void DungeonCrawl::SetState(State state)
             m_heroes[index].currentMp = m_heroes[index].totalMp;
             m_heroes[index].protect = true;
         }
+
+        // FAIRY_FRIEND passive: finding a fountain awards +4 Passive XP. Accumulates silently
+        // so the player gets a passive selection after their next combat (no mid-fountain state
+        // transition needed).
+        if (OwnsPassive(PassiveType::FAIRY_FRIEND))
+        {
+            m_passiveXP += 4;
+        }
+
         PushFountain();
     }
     else if (state == State::STATE_TRAP)

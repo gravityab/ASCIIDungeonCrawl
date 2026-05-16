@@ -543,6 +543,112 @@ void DungeonEx::UpgradeFountainsToArtifact(Floor& floor)
     }
 }
 
+void DungeonEx::BoostFountainRate(Floor& floor, int percentPerDoor)
+{
+    if (percentPerDoor <= 0)
+        return;
+
+    for (auto& room : floor.rooms)
+    {
+        // Skip rooms that are already fountains or that belong to a boss encounter
+        // (boss rooms are special - flipping them to a fountain would break the run pacing).
+        if (room.door.state == State::STATE_FOUNTAIN)
+            continue;
+        if (room.boss || floor.boss)
+            continue;
+
+        if (GetRandomValue(0, 99) >= percentPerDoor)
+            continue;
+
+        // Convert the room to a fountain: clear the prior encounter / shop / trap payload
+        // so the room is a clean fountain, and rewrite the door label to match.
+        room.door.state = State::STATE_FOUNTAIN;
+        room.door.stateLabel = ToStateLabel(State::STATE_FOUNTAIN, room.door.monsterCount);
+        room.monsters.clear();
+        room.shop.clear();
+        room.trap = TrapType::INVALID;
+        room.reward = Reward::INVALID;
+        room.rewardWeapons.clear();
+        room.gold = 0;
+    }
+}
+
+void DungeonEx::BoostShopRate(Floor& floor, int percentPerDoor)
+{
+    if (percentPerDoor <= 0)
+        return;
+
+    for (auto& room : floor.rooms)
+    {
+        if (room.door.state == State::STATE_SHOP)
+            continue;
+        if (room.boss || floor.boss)
+            continue;
+
+        if (GetRandomValue(0, 99) >= percentPerDoor)
+            continue;
+
+        // Convert the room to a shop: clear the prior payload, mark it as a shop, then
+        // generate fresh shop contents using the floor's rarity/family/element.
+        room.door.state = State::STATE_SHOP;
+        room.door.stateLabel = ToStateLabel(State::STATE_SHOP, room.door.monsterCount);
+        room.monsters.clear();
+        room.shop.clear();
+        room.trap = TrapType::INVALID;
+        room.reward = Reward::INVALID;
+        room.rewardWeapons.clear();
+        room.gold = 0;
+
+        GenerateShop(room, floor.rarity, room.roomAttribute, floor.family);
+    }
+}
+
+void DungeonEx::ImproveShopRarity(Floor& floor, int percentPerItem)
+{
+    if (percentPerItem <= 0)
+        return;
+
+    static const std::vector<uint16_t> hiltColor = { 0x0006, 0x0008, 0x000E, 0x000F };
+
+    for (auto& room : floor.rooms)
+    {
+        if (room.door.state != State::STATE_SHOP)
+            continue;
+
+        for (auto& weapon : room.shop)
+        {
+            if (GetRandomValue(0, 99) >= percentPerItem)
+                continue;
+
+            // Pick the next-tier table. Items already at Legendary (or higher) stay put -
+            // we deliberately don't promote into the Artifact tier from a regular shop.
+            std::vector<Weapon>* nextTable = nullptr;
+            switch (weapon.rarity)
+            {
+                case Rarity::COMMON: nextTable = &m_db.m_rareTable;      break;
+                case Rarity::RARE:   nextTable = &m_db.m_epicTable;      break;
+                case Rarity::EPIC:   nextTable = &m_db.m_legendaryTable; break;
+                default: break;
+            }
+            if (nextTable == nullptr || nextTable->empty())
+                continue;
+
+            // Re-roll a fresh weapon at the higher tier, matching the original shop
+            // generation flow (hilt color tint + Randomize for cost/AC/speed/etc.).
+            // Dereference into a named reference before ROLLTABLE - the macro expands its
+            // argument twice and operator-precedence vs `*` and `.size()` would otherwise
+            // misparse `ROLLTABLE(*nextTable)`.
+            std::vector<Weapon>& table = *nextTable;
+            Weapon replacement = ROLLTABLE(table);
+            if (replacement.name.empty() || replacement.weaponType == WeaponType::INVALID)
+                continue;
+            replacement.idle.SetAttributes(1, ROLLTABLE(hiltColor));
+            replacement.Randomize();
+            weapon = replacement;
+        }
+    }
+}
+
 Weapon DungeonEx::GenerateBonusWeapon(Reward reward)
 {
     Weapon weapon;
