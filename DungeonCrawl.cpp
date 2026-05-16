@@ -1781,17 +1781,16 @@ void DungeonCrawl::DrawAction(Time delta)
                     xpEarned += 1;
             }
 
-            // Boss fights double the entire Passive XP tally - base rarity XP, the dragon
-            // bonus, the DRAGON_SLAYER bonus, and every family-slayer bonus all get the 2x.
-            // Detected by the room.boss flag (set during GenerateEncounter on boss floors).
+            m_passiveXP += xpEarned;
+
+            // Boss kill reward: fully heal living heroes and apply the same MP regen
+            // calculation used at attribute-change floors. Bosses drain HP/MP hard, so
+            // this is the player's "minor reward" for surviving the fight. ARCANE_BATTERY
+            // still adds its per-5-levels MP bump on top, just like the every-5-floor regen.
+            // (Hero level-up XP doubling for bosses is applied in ReceiveXP, not here -
+            // m_passiveXP and hero.experience are two different XP pools.)
             if (m_currentRoom != nullptr && m_currentRoom->boss)
             {
-                xpEarned *= 2;
-
-                // Boss kill reward: fully heal living heroes and apply the same MP regen
-                // calculation used at attribute-change floors. Bosses drain HP/MP hard, so
-                // this is the player's "minor reward" for surviving the fight. ARCANE_BATTERY
-                // still adds its per-5-levels MP bump on top, just like the every-5-floor regen.
                 const bool hasBattery = OwnsPassive(PassiveType::ARCANE_BATTERY);
                 for (int index = 0; index < (int)m_heroes.size(); index++)
                 {
@@ -1814,8 +1813,6 @@ void DungeonCrawl::DrawAction(Time delta)
                         hero.currentMp = hero.totalMp;
                 }
             }
-
-            m_passiveXP += xpEarned;
 
             if (m_passiveXP >= 5)
             {
@@ -2780,12 +2777,17 @@ void DungeonCrawl::ReceiveXP(Hero& hero)
     const bool leatherGold = OwnsPassive(PassiveType::LEATHER_GOLD)
         && hero.armor.target == Target::PLAYERAC_SPEED;
 
+    // Boss fights award double hero level-up XP. Bosses are a much steeper fight, so
+    // every monster's xp contribution is doubled before being subtracted from the
+    // hero's xp-to-next-level pool.
+    const int xpMultiplier = (m_currentRoom != nullptr && m_currentRoom->boss) ? 2 : 1;
+
     for (int index = 0; index < (int)m_currentRoom->monsters.size(); index++)
     {
         Monster& monster = m_currentRoom->monsters[index];
 
         // Subtract xp from xp left to level
-        hero.experience -= monster.experience;
+        hero.experience -= monster.experience * xpMultiplier;
         if (hero.experience <= 0)
             LevelUp(hero);
 
